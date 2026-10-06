@@ -1,0 +1,5 @@
+# Ignorar todos los archivos dentro de la carpeta
+data/horarios_cercanias/*
+
+# Evitar ignorar el archivo .gitkeep para que Git suba la carpeta
+!data/horarios_cercanias/.gitkeep

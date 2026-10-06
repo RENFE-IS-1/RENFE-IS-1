@@ -1,0 +1,2 @@
+﻿feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_version
+Consorcio Regional de Transportes de Madrid,https://www.crtm.es,es,,,20240717

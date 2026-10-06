@@ -1,0 +1,98 @@
+﻿stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+par_5_11,11,ATOCHA,Avda de la Ciudad de Barcelona 2 B,40.40659,-3.6893,A,http://www.crtm.es,0,est_90_54,,2
+par_5_133,133,FUENTE DE LA MORA,Calle de Dulce Chacón 15,40.48475,-3.66282,A,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_142,142,AEROPUERTO T4,Ctra de Alcobendas a Barajas SN,40.49177,-3.59333,A,http://www.crtm.es,0,est_90_33,,2
+par_5_144,144,VALDEBEBAS,Avda de las Fuerzas Armadas 322,40.4823,-3.61642,A,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_18,18,CHAMARTÍN,Calle de Agustín de Foxá 40,40.4721,-3.68247,A,http://www.crtm.es,0,est_90_25,,2
+par_5_25,25,DELICIAS,Calle de Ramírez de Prado 3 B,40.40037,-3.69277,A,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_46,46,MÉNDEZ ÁLVARO,Calle del Ombu 16,40.39538,-3.67808,A,http://www.crtm.es,0,est_90_13,,1
+par_5_51,51,NUEVOS MINISTERIOS,Calle de Raimundo Fernández Villaverde 67,40.44662,-3.69234,A,http://www.crtm.es,0,est_90_71,,2
+par_5_57,57,PIRÁMIDES,Paseo del Doctor Vallejo Nágera 37,40.4026,-3.71134,A,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_61,61,PRÍNCIPE PÍO,Paseo de la Florida 2,40.42107,-3.72026,A,http://www.crtm.es,0,est_90_18,,0
+par_5_65,65,RECOLETOS,Paseo de Recoletos 20,40.42341,-3.69086,A,http://www.crtm.es,0,,Europe/Madrid,0
+est_90_13,13,Méndez Álvaro Estación Sur,Calle del Ombu 16,40.39538,-3.67819,A,http://www.crtm.es,1,,Europe/Madrid,0
+est_90_18,18,Intercambiador de Príncipe Pío,Paseo de la Florida 2,40.42107,-3.72037,A,http://www.crtm.es,1,,Europe/Madrid,0
+est_90_25,25,Chamartín,Calle de Agustín de Foxá 40,40.4721,-3.68269,A,http://www.crtm.es,1,,Europe/Madrid,0
+est_90_33,33,Aeropuerto T4,Ctra de Alcobendas a Barajas SN,40.49176,-3.59356,A,http://www.crtm.es,1,,Europe/Madrid,0
+est_90_54,54,Atocha-Renfe,Avda de la Ciudad de Barcelona 2 B,40.40659,-3.68944,A,http://www.crtm.es,1,,Europe/Madrid,0
+est_90_71,71,Nuevos Ministerios,Calle de Raimundo Fernández Villaverde 67,40.44662,-3.69246,A,http://www.crtm.es,1,,Europe/Madrid,0
+par_5_10,10,ASAMBLEA DE MADRID-ENTREVÍAS,Calle del Vizconde de Arlessón 45,40.38167,-3.668,A,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_106,106,GARENA LA,Calle   Fausto Elhuyar 6,40.48043,-3.39317,B3,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_12,12,AZUQUECA,Paseo de la Estacion SN,40.56103,-3.26546,E1,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_143,143,SOTO DEL HENARES,Paseo de la Democracia 17,40.46353,-3.44134,B2,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_2,2,ALCALÁ DE HENARES,Calle   Pedro Lainez 2,40.48903,-3.36634,B3,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_22,22,COSLADA,Calle de Luis Braille 8,40.42374,-3.56114,B1,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_3,3,ALCALÁ DE HENARES UNIVERSIDAD,Ctra del  Campus SN,40.50534,-3.33541,B3,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_38,38,GUADALAJARA,Plaza de la Estación SN,40.64408,-3.18239,E1,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_45,45,MECO,Trva de la Calera 3,40.53462,-3.29866,C1,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_59,59,POZO EL,Avda de Entrevías 140,40.3759,-3.65623,A,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_71,71,SAN FERNANDO,Calle   Estación de ferrocarril 6,40.44266,-3.53385,B1,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_75,75,SANTA EUGENIA,Avda de Santa Eugenia 2,40.38699,-3.60906,A,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_81,81,TORREJÓN DE ARDOZ,Paseo   Estación 3,40.4546,-3.47982,B2,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_87,87,VALLECAS,Avda de la Democracia 1,40.38221,-3.62455,A,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_90,90,VICÁLVARO,Calle de San Cipriano 85,40.40132,-3.59593,A,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_103,103,CASAR EL,Avda del Casar 2,40.31847,-3.70984,B1,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_122,122,SOL,Plaza de la Puerta del Sol 6,40.41685,-3.70309,A,http://www.crtm.es,0,est_90_58,,0
+par_5_19,19,CIEMPOZUELOS,Avda de San Juan de Dios 7,40.15906,-3.61003,B3,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_35,35,GETAFE INDUSTRIAL,Paseo de John Lennon 15400,40.30548,-3.70769,B1,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_56,56,PINTO,Calle del Ferrocarril 4,40.24279,-3.70374,B2,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_69,69,SAN CRISTÓBAL DE LOS ANGELES,Calle de Paterna 17,40.34236,-3.68385,A,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_70,70,SAN CRISTÓBAL INDUSTRIAL,Acces a la Colonia Marconi 11,40.33191,-3.69872,A,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_8,8,ARANJUEZ,Calle de la Estación 5,40.03483,-3.61831,C1,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_86,86,VALDEMORO,Paseo de la Estación 86,40.19604,-3.66482,B3,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_93,93,VILLAVERDE BAJO,Paseo de la Estación 2,40.35264,-3.68398,A,http://www.crtm.es,0,,Europe/Madrid,2
+est_90_58,58,Puerta del Sol,Plaza de la Puerta del Sol 6,40.41688,-3.70331,A,http://www.crtm.es,1,,Europe/Madrid,0
+par_5_15,15,CANTOBLANCO UNIVERSIDAD,Calle de Freud 3,40.54378,-3.70034,B1,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_31,31,FUENCARRAL,Calle de Antonio de Cabezón 10,40.50156,-3.68234,A,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_34,34,GETAFE CENTRO,Calle  Ferrocarril 2,40.3101,-3.73394,B1,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_36,36,GETAFE SECTOR 3,Calle del Cementerio Municipal SN,40.28824,-3.73734,B1,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_4,4,ALCOBENDAS-S.S. DE LOS REYES,Plaza de Francisco Casillas 1,40.54657,-3.63519,B1,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_43,43,MARGARITAS-UNIVERSIDAD LAS,Calle   Madrid 152,40.32304,-3.72737,B1,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_53,53,PARLA,Calle  Real 81,40.24077,-3.76936,B2,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_84,84,UNIVERSIDAD P. COMILLAS,Ctra del Goloso SN,40.55406,-3.68334,B1,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_85,85,VALDELASFUENTES,Calle del Marqués de la Valdavia 140,40.54745,-3.65434,B1,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_92,92,VILLAVERDE ALTO,Calle del Valle de Tobalina 56,40.34123,-3.71193,A,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_21,21,COLMENAR VIEJO,Calle de la Doctora Nogales de la Morena SN,40.64497,-3.77573,B3,http://www.crtm.es,0,,Europe/Madrid,2
+par_5_37,37,GOLOSO EL,Ctra de Colmenar Viejo SN,40.55857,-3.71407,B1,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_83,83,TRES CANTOS,Plaza de la Estación 1,40.59844,-3.71564,B2,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_1,1,ÁGUILAS LAS,Avda del General Fanjul 110,40.38119,-3.78027,A,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_104,104,HUMANES,Calle   Cenicientos 26,40.25565,-3.82847,B3,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_105,105,PARQUE POLVORANCA,Calle   Alcalde Francisco Moreno Menéndez 4,40.3125,-3.78334,B1,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_24,24,CUATRO VIENTOS,Paseo de Extremadura 567 A,40.37771,-3.79143,A,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_26,26,DOCE DE OCTUBRE,Avda de Córdoba 39,40.37896,-3.69861,A,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_28,28,EMBAJADORES,Gta de Embajadores 1,40.40513,-3.70262,A,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_30,30,FANJUL,Avda del General Fanjul 27,40.38365,-3.76856,A,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_32,32,FUENLABRADA,Plaza  Constitución 1,40.28268,-3.79885,B2,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_40,40,LAGUNA,Calle de Cuart de Poblet 1,40.39918,-3.74422,A,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_41,41,LEGANES,Calle  Virgen del Camino 1,40.32899,-3.77148,B1,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_48,48,MÓSTOLES,Paseo de la Estación 13,40.3285,-3.86349,B2,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_49,49,MÓSTOLES EL SOTO,Calle   Granada 17,40.33089,-3.88234,B2,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_5,5,ALCORCÓN,Avda de Móstoles 12,40.35008,-3.83173,B1,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_52,52,ORCASITAS,Calle de Campotejar 24,40.36691,-3.70442,A,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_62,62,PUENTE ALCOCER,Calle de Alcocer 54,40.35028,-3.70516,A,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_66,66,RETAMAS LAS,Avda de Retamas 2,40.34189,-3.84242,B1,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_7,7,ALUCHE,Calle de Valmojado 293,40.38563,-3.76074,A,http://www.crtm.es,0,est_90_1,,0
+par_5_72,72,SAN JOSÉ DE VALDERAS,Calle de Sahagún 36,40.35653,-3.81588,B1,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_77,77,SERNA LA,Calle   Barcelona 28,40.29672,-3.79248,B2,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_95,95,ZARZAQUEMADA,Avda   Europa 14,40.34085,-3.7483,B1,http://www.crtm.es,0,,Europe/Madrid,1
+est_90_1,1,Aluche,Calle de Valmojado 293,40.38563,-3.76085,A,http://www.crtm.es,1,,Europe/Madrid,0
+par_5_13,13,BARRIAL-C.COM.POZUELO EL,Via   Ferrocarril SN,40.46537,-3.80774,B1,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_145,145,MIRASIERRA-PACO DE LUCÍA,Calle de la Costa Brava 14 B,40.49971,-3.70918,A,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_42,42,MAJADAHONDA,Cmno   Estación del Plantío 6,40.47428,-3.84534,B2,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_58,58,PITIS,Ctra a la Estación de Pitis 19,40.4951,-3.72584,A,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_60,60,POZUELO,Calle   Estación 2,40.44727,-3.80012,B1,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_64,64,RAMÓN Y CAJAL,Calle de San Modesto 50,40.48824,-3.69473,A,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_68,68,ROZAS LAS,Calle de la Vía de Servicio de las Rozas 1,40.49423,-3.86812,B2,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_9,9,ARAVACA,Calle de la Golondrina 104,40.44833,-3.78586,A,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_16,16,CERCEDILLA,Calle del Cascajal 7,40.73757,-4.0659,C2,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_20,20,COLLADO MEDIANO,Paseo de los Rosales 47,40.69276,-4.03587,C1,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_33,33,GALAPAGAR-LA NAVATA,Ctra de Galapagar-La Navata 154,40.60011,-3.98185,B3,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_44,44,MATAS LAS,Plaza del Ferrocarril 1,40.55252,-3.89683,B2,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_47,47,MOLINOS LOS,Gta de la Estación 2,40.70734,-4.06681,C2,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_50,50,NEGRALES LOS,Avda de la Reina Victoria 47,40.63858,-4.02189,C1,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_55,55,PINAR DE LAS ROZAS,Lugar   Estación Ferrocarril El Pinar 1,40.5223,-3.88216,B2,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_6,6,ALPEDRETE,Cmno de la Estación 36,40.65816,-4.03506,C1,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_82,82,TORRELODONES,Plaza de Salvador Sánchez Frascuelo 6,40.57451,-3.95654,B3,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_91,91,VILLALBA,Plaza de la Estación 1,40.62637,-4.0081,B3,http://www.crtm.es,0,,Europe/Madrid,1
+par_5_23,23,COTOS,Ctra   M-604 (de la A-1 al Puerto de Navacerrada) 1,40.82226,-3.96452,C2,http://www.crtm.es,0,,Europe/Madrid,0
+par_5_63,63,PUERTO NAVACERRADA,Calle de la Virgen de las Nieves 7,40.78441,-4.00473,C2,http://www.crtm.es,0,,Europe/Madrid,0
