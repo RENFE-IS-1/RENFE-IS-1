@@ -25,4 +25,4 @@ src/Java/data/
 * Rodrigo Antequera Díaz
 * Diego Bañares Díez
 * Pedro Vicente Polo
-* Sergio Vázquez Fernández
+* Sergio Alcalá Cervantes
