@@ -4,7 +4,7 @@ src/Java/data/*
 
 # Evitar ignorar el archivo .gitkeep para que Git suba la carpeta
 !data/horarios_cercanias/.gitkeep
-src/Java/data/.gitkeep
+!src/Java/data/.gitkeep
 
 # Compiled class file
 *.class
