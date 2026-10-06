@@ -14,6 +14,7 @@ Aplicación para la planificación de rutas y consulta de horarios de la red de 
 
 Por aqui poner que hay que descargar el zip de https://data.renfe.com/dataset/horarios-cercanias y extraer los txt en la carpeta data/horarios_cercanias/ y en
 src/Java/data/
+Recordad hacer refresh en la carpeta mas exterior al hacer pull para que se cargen los archivos
 
 ## Estructura del Proyecto
 * `/src`: Código fuente de la aplicación.
