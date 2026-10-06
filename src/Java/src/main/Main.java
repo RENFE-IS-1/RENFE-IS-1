@@ -1,13 +1,25 @@
 package main;
 
+import consultas.BuscadorEstaciones;
+import consultas.ConsultaLlegadas;
 import loader.GTFSLoader;
 import modelo.Estacion;
 import modelo.Linea;
+import modelo.Llegada;
 import modelo.ParadaHorario;
 import modelo.Viaje;
 import repositorio.RedTransporte;
 
+import java.io.File;
 import java.text.Normalizer;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Arrays;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -24,7 +36,7 @@ public class Main {
         System.out.println("Iniciando carga estructurada...");
         long startTime = System.currentTimeMillis();
         
-        loader.cargarDesdeDirectorio("data/", red);
+        loader.cargarDesdeDirectorio(directorioDatos(), red);
         
         long endTime = System.currentTimeMillis();
         System.out.println("Carga y optimización completadas en " + (endTime - startTime) + " ms.");
@@ -53,6 +65,7 @@ public class Main {
                     + " - 'linea Cx'           : Estaciones de una línea (Orden geográfico)\n"
                     + " - 'lineas'             : Muestra todas las líneas del sistema\n"
                     + " - 'estaciones'         : Muestra todas las estaciones y sus líneas\n"
+                    + " - 'llegadas <estación> [Cx] [HH:MM] [dd/mm]' : Próximos trenes de una estación\n"
                     + " - 'salir'              : Termina la ejecución\n> ");
             
             String input = scanner.nextLine().trim();
@@ -157,13 +170,19 @@ public class Main {
                 continue;
             }
             
-            // 5. Búsqueda de Estaciones
+            // 5. Comando: llegadas <estación> [línea] [HH:MM] [dd/mm]  (US-004)
+            if (inputNorm.equals("llegadas") || inputNorm.startsWith("llegadas ")) {
+                mostrarLlegadas(red, input.substring("llegadas".length()).trim());
+                continue;
+            }
+            
+            // 6. Búsqueda de Estaciones
             Estacion est = null;
             
-            // 5.1 Búsqueda por ID
+            // 6.1 Búsqueda por ID
             est = red.getEstacion(input);
             
-            // 5.2 Búsqueda exacta normalizada
+            // 6.2 Búsqueda exacta normalizada
             if (est == null) {
                 for (Estacion e : red.getAllEstaciones()) {
                     if (normalizar(e.getNombre()).equals(inputNorm)) {
@@ -173,7 +192,7 @@ public class Main {
                 }
             }
             
-            // 5.3 Búsqueda parcial (Avisando si hay múltiples)
+            // 6.3 Búsqueda parcial (Avisando si hay múltiples)
             if (est == null) {
                 List<Estacion> coincidencias = new ArrayList<>();
                 for (Estacion e : red.getAllEstaciones()) {
@@ -211,6 +230,114 @@ public class Main {
         }
         scanner.close();
         System.out.println("Ejecución finalizada.");
+    }
+
+    private static final ZoneId ZONA_MADRID = ZoneId.of("Europe/Madrid");
+    private static final int LLEGADAS_A_MOSTRAR = 10;
+    private static final DateTimeFormatter FMT_HORA = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter FMT_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    /**
+     * Carpeta con los .txt del GTFS de Renfe. Se admite tanto src/Java/data/ (directorio de
+     * trabajo de Eclipse) como data/horarios_cercanias/ en la raíz del repositorio.
+     */
+    private static String directorioDatos() {
+        String[] candidatos = {"data/", "../../data/horarios_cercanias/", "data/horarios_cercanias/"};
+        for (String c : candidatos) {
+            if (new File(c + "stop_times.txt").exists()) return c;
+        }
+        return candidatos[0];
+    }
+
+    /** US-004: muestra los próximos trenes que pasan por una estación. */
+    private static void mostrarLlegadas(RedTransporte red, String argumentos) {
+        if (argumentos.isEmpty()) {
+            System.out.println("Uso: llegadas <estación> [línea] [HH:MM] [dd/mm]   p. ej. 'llegadas atocha C3 08:30'");
+            return;
+        }
+
+        // Los parámetros opcionales se reconocen por su formato al final del texto
+        List<String> partes = new ArrayList<>(Arrays.asList(argumentos.split("\\s+")));
+        String filtroLinea = null;
+        LocalDateTime ahora = LocalDateTime.now(ZONA_MADRID).withSecond(0).withNano(0);
+        LocalDate fecha = ahora.toLocalDate();
+        LocalTime hora = ahora.toLocalTime();
+        try {
+            boolean quedanOpciones = true;
+            while (partes.size() > 1 && quedanOpciones) {
+                String ultimo = partes.get(partes.size() - 1);
+                if (ultimo.matches("\\d{1,2}:\\d{2}")) {
+                    hora = LocalTime.parse(ultimo.length() == 4 ? "0" + ultimo : ultimo);
+                } else if (ultimo.matches("\\d{1,2}/\\d{1,2}")) {
+                    String[] dm = ultimo.split("/");
+                    fecha = LocalDate.of(ahora.getYear(), Integer.parseInt(dm[1]), Integer.parseInt(dm[0]));
+                } else if (ultimo.matches("(?i)c\\d+[a-z]?")) {
+                    filtroLinea = ultimo;
+                } else {
+                    quedanOpciones = false;
+                    continue;
+                }
+                partes.remove(partes.size() - 1);
+            }
+        } catch (RuntimeException e) {
+            System.out.println("Hora o fecha no válida. Usa HH:MM para la hora y dd/mm para la fecha.");
+            return;
+        }
+
+        String textoEstacion = String.join(" ", partes);
+        List<Estacion> encontradas = new BuscadorEstaciones(red).buscar(textoEstacion);
+        if (encontradas.isEmpty()) {
+            System.out.println("Estación no encontrada: '" + textoEstacion + "'.");
+            return;
+        }
+        if (encontradas.size() > 1) {
+            System.out.println("\nVarias estaciones coinciden con '" + textoEstacion + "'. Sé más específico:");
+            for (Estacion e : encontradas) {
+                System.out.println(" - " + e.getNombre() + " (ID: " + e.getId() + ")");
+            }
+            return;
+        }
+
+        Estacion estacion = encontradas.get(0);
+        LocalDateTime desde = LocalDateTime.of(fecha, hora);
+        ConsultaLlegadas consulta = new ConsultaLlegadas(red);
+
+        String dia = fecha.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.forLanguageTag("es-ES"));
+        System.out.println("\nPróximas llegadas a " + estacion.getNombre()
+                + (filtroLinea != null ? " (línea " + filtroLinea.toUpperCase() + ")" : "")
+                + " — " + dia + " " + fecha.format(FMT_FECHA) + " desde las " + hora.format(FMT_HORA));
+
+        if (!red.hayCalendario()) {
+            System.out.println("No se ha podido cargar el calendario de servicios (calendar.txt): no se sabe qué trenes circulan cada día.");
+            return;
+        }
+        if (!consulta.fechaCubierta(fecha)) {
+            System.out.println("No hay horarios para esa fecha. Los datos cargados cubren del "
+                    + red.getInicioValidez().format(FMT_FECHA) + " al " + red.getFinValidez().format(FMT_FECHA)
+                    + ". Descarga un GTFS más reciente de data.renfe.com.");
+            return;
+        }
+
+        List<Llegada> llegadas = consulta.proximasLlegadas(estacion, desde, LLEGADAS_A_MOSTRAR, filtroLinea);
+        if (llegadas.isEmpty()) {
+            System.out.println("No hay trenes programados en las próximas horas"
+                    + (filtroLinea != null ? " para esa línea." : "."));
+        } else {
+            for (Llegada ll : llegadas) {
+                String linea = ll.linea() != null ? ll.linea().getShortName() : "?";
+                String destino = ll.terminaAqui() ? "(termina en esta estación)"
+                        : "→ " + (ll.destino() != null ? ll.destino().getNombre() : "destino desconocido");
+                String otroDia = ll.hora().toLocalDate().equals(fecha) ? "" : " (" + ll.hora().format(DateTimeFormatter.ofPattern("dd/MM")) + ")";
+                System.out.printf("  %s%s  %-4s %s%n", ll.hora().format(FMT_HORA), otroDia, linea, destino);
+            }
+        }
+
+        System.out.println("Horario planificado: no incluye retrasos ni incidencias en tiempo real.");
+        String fechaDatos = red.getFechaDatos() != null
+                ? red.getFechaDatos().atZone(ZONA_MADRID).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                : "desconocida";
+        System.out.println("Horarios válidos del " + red.getInicioValidez().format(FMT_FECHA) + " al "
+                + red.getFinValidez().format(FMT_FECHA) + " · Archivos de datos del " + fechaDatos);
     }
 
     private static String normalizar(String texto) {
