@@ -9,6 +9,10 @@ import modelo.Llegada;
 import modelo.ParadaHorario;
 import modelo.Viaje;
 import repositorio.RedTransporte;
+import modelo.Ruta;
+import modelo.Tramo;
+import servicio.ComparadoresRuta;
+import servicio.ServicioComparadorRutas;
 
 import java.io.File;
 import java.text.Normalizer;
@@ -72,6 +76,7 @@ public class Main {
                     + " - 'lineas'             : Muestra todas las líneas del sistema\n"
                     + " - 'estaciones'         : Muestra todas las estaciones y sus líneas\n"
                     + " - 'llegadas <estación> [Cx] [HH:MM] [dd/mm]' : Próximos trenes de una estación\n"
+                    + " - 'comparar'           : Compara diferentes opciones de ruta entre estaciones\n"
                     + " - 'salir'              : Termina la ejecución\n> ");
             
             String input = scanner.nextLine().trim();
@@ -182,13 +187,118 @@ public class Main {
                 continue;
             }
             
-            // 6. Búsqueda de Estaciones
+         // 6. Comando: comparar (US-002)
+            if (inputNorm.equals("comparar")) {
+                System.out.println("\n--- BÚSQUEDA Y COMPARACIÓN DE RUTAS (US-002) ---");
+                BuscadorEstaciones buscador = new BuscadorEstaciones(red);
+
+                // 6.1 Pedir y validar ORIGEN
+                Estacion origen = null;
+                while (origen == null) {
+                    System.out.print("Introduce la estación de ORIGEN (o 'cancelar'): ");
+                    String origenInput = scanner.nextLine().trim();
+                    if (origenInput.equalsIgnoreCase("cancelar")) break;
+
+                    List<Estacion> origenes = buscador.buscar(origenInput);
+                    if (origenes.isEmpty()) {
+                        System.out.println("Estación de origen no encontrada. Verifica el ID o prueba con otro texto.\n");
+                    } else if (origenes.size() == 1) {
+                        origen = origenes.get(0);
+                        System.out.println("-> Estación seleccionada: " + origen.getNombre() + " (ID: " + origen.getId() + ")\n");
+                    } else {
+                        System.out.println("\nMúltiples estaciones coinciden con '" + origenInput + "':");
+                        for (Estacion e : origenes) {
+                            System.out.println(" - " + e.getNombre() + " (ID: " + e.getId() + ")");
+                        }
+                        System.out.print("Escribe el nombre exacto/ID de la estación deseada (o 'm' para modificar la búsqueda): ");
+                        String seleccion = scanner.nextLine().trim();
+                        
+                        if (!seleccion.equalsIgnoreCase("m") && !seleccion.equalsIgnoreCase("modificar")) {
+                            List<Estacion> reBuscadas = buscador.buscar(seleccion);
+                            if (reBuscadas.size() == 1) {
+                                origen = reBuscadas.get(0);
+                                System.out.println("-> Estación seleccionada: " + origen.getNombre() + " (ID: " + origen.getId() + ")\n");
+                            } else {
+                                System.out.println("Selección no válida. Inténtalo de nuevo.\n");
+                            }
+                        } else {
+                            System.out.println();
+                        }
+                    }
+                }
+                if (origen == null) continue;
+
+                // 6.2 Pedir y validar DESTINO
+                Estacion destino = null;
+                while (destino == null) {
+                    System.out.print("Introduce la estación de DESTINO (o 'cancelar'): ");
+                    String destinoInput = scanner.nextLine().trim();
+                    if (destinoInput.equalsIgnoreCase("cancelar")) break;
+
+                    List<Estacion> destinos = buscador.buscar(destinoInput);
+                    if (destinos.isEmpty()) {
+                        System.out.println("Estación de destino no encontrada. Verifica el ID o prueba con otro texto.\n");
+                    } else if (destinos.size() == 1) {
+                        destino = destinos.get(0);
+                        System.out.println("-> Estación seleccionada: " + destino.getNombre() + " (ID: " + destino.getId() + ")\n");
+                    } else {
+                        System.out.println("\nMúltiples estaciones coinciden con '" + destinoInput + "':");
+                        for (Estacion e : destinos) {
+                            System.out.println(" - " + e.getNombre() + " (ID: " + e.getId() + ")");
+                        }
+                        System.out.print("Escribe el nombre exacto/ID de la estación deseada (o 'm' para modificar la búsqueda): ");
+                        String seleccion = scanner.nextLine().trim();
+                        
+                        if (!seleccion.equalsIgnoreCase("m") && !seleccion.equalsIgnoreCase("modificar")) {
+                            List<Estacion> reBuscadas = buscador.buscar(seleccion);
+                            if (reBuscadas.size() == 1) {
+                                destino = reBuscadas.get(0);
+                                System.out.println("-> Estación seleccionada: " + destino.getNombre() + " (ID: " + destino.getId() + ")\n");
+                            } else {
+                                System.out.println("Selección no válida. Inténtalo de nuevo.\n");
+                            }
+                        } else {
+                            System.out.println();
+                        }
+                    }
+                }
+                if (destino == null) continue;
+
+                System.out.println("Buscando opciones desde " + origen.getNombre() + " hasta " + destino.getNombre() + "...");
+
+                // 6.3 Obtener rutas disponibles y compararlas
+                List<Ruta> rutasEncontradas = new ArrayList<>(); ///////////////LO TENGO QUE CAMBIAR ES PROVISIONAL hasta que hagamos lo de buscador de trayectos
+
+                if (rutasEncontradas.isEmpty()) {
+                    System.out.println("No se han encontrado rutas disponibles entre " + origen.getNombre() + " y " + destino.getNombre() + ".");
+                } else {
+                    ServicioComparadorRutas servicioComparador = new ServicioComparadorRutas();
+
+                    System.out.println("\n⏱️  --- ORDENADAS POR MENOR TIEMPO DE VIAJE ---");
+                    List<Ruta> porTiempo = servicioComparador.ordenarRutas(rutasEncontradas, ComparadoresRuta.POR_TIEMPO);
+                    porTiempo.forEach(r -> System.out.println("  -> " + r));
+                    System.out.println("⭐ Mejor opción por tiempo: " + servicioComparador.obtenerMejorRuta(rutasEncontradas, ComparadoresRuta.POR_TIEMPO));
+
+                    System.out.println("\n💶 --- ORDENADAS POR MENOR PRECIO ---");
+                    List<Ruta> porPrecio = servicioComparador.ordenarRutas(rutasEncontradas, ComparadoresRuta.POR_PRECIO);
+                    porPrecio.forEach(r -> System.out.println("  -> " + r));
+                    System.out.println("⭐ Mejor opción por precio: " + servicioComparador.obtenerMejorRuta(rutasEncontradas, ComparadoresRuta.POR_PRECIO));
+
+                    System.out.println("\n🔄 --- ORDENADAS POR MENOS TRANSBORDOS ---");
+                    List<Ruta> porTransbordos = servicioComparador.ordenarRutas(rutasEncontradas, ComparadoresRuta.POR_TRANSBORDOS);
+                    porTransbordos.forEach(r -> System.out.println("  -> " + r));
+                    System.out.println("⭐ Mejor opción por transbordos: " + servicioComparador.obtenerMejorRuta(rutasEncontradas, ComparadoresRuta.POR_TRANSBORDOS));
+                }
+                continue;
+            }
+            
+            // 7. Búsqueda de Estaciones
             Estacion est = null;
             
-            // 6.1 Búsqueda por ID
+            // 7.1 Búsqueda por ID
             est = red.getEstacion(input);
             
-            // 6.2 Búsqueda exacta normalizada
+            // 7.2 Búsqueda exacta normalizada
             if (est == null) {
                 for (Estacion e : red.getAllEstaciones()) {
                     if (normalizar(e.getNombre()).equals(inputNorm)) {
@@ -198,7 +308,7 @@ public class Main {
                 }
             }
             
-            // 6.3 Búsqueda parcial (Avisando si hay múltiples)
+            // 7.3 Búsqueda parcial (Avisando si hay múltiples)
             if (est == null) {
                 List<Estacion> coincidencias = new ArrayList<>();
                 for (Estacion e : red.getAllEstaciones()) {
