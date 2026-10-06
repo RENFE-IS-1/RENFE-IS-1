@@ -12,7 +12,8 @@ Aplicación para la planificación de rutas y consulta de horarios de la red de 
 2. Instalar dependencias: `[comando de instalación]` a ver que usamos
 3. Ejecutar la aplicación: `[comando de ejecución]` depende de la versión lo cambiamos
 
-Por aqui poner que hay que descargar el zip de https://data.renfe.com/dataset/horarios-cercanias y extraer los txt en la carpeta data/horarios_cercanias/
+Por aqui poner que hay que descargar el zip de https://data.renfe.com/dataset/horarios-cercanias y extraer los txt en la carpeta data/horarios_cercanias/ y en
+src/Java/data/
 
 ## Estructura del Proyecto
 * `/src`: Código fuente de la aplicación.
