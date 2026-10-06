@@ -8,7 +8,7 @@ Aplicación para la planificación de rutas y consulta de horarios de la red de 
 * [Librerías o dependencias externas necesarias: ] a ver que programas usamos Eclipse 2026 y JDK25
 
 ## Instalación y Ejecución
-1. Clonar el repositorio: `git clone https://github.com/pedrovipo2007-design/proyectoIS1.git`
+1. Clonar el repositorio: `git clone https://github.com/RENFE-IS-1/RENFE-IS-1`
 2. Instalar dependencias: `[comando de instalación]` a ver que usamos
 3. Ejecutar la aplicación: `[comando de ejecución]` depende de la versión lo cambiamos
 
