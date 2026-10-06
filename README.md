@@ -16,6 +16,7 @@ Por aqui poner que hay que descargar el zip de https://data.renfe.com/dataset/ho
 src/Java/data/
 Recordad hacer refresh en la carpeta mas exterior al hacer pull para que se cargen los archivos
 Crear una carpeta vacia (ej. Workspace), clonar el repositorio dentro, y hacer new > Java proyect > desmarcar la casilla default location y elegir src/Java
+y desmarcar create mmodulo info java (esta abajo)
 
 ## Estructura del Proyecto
 * `/src`: Código fuente de la aplicación.
