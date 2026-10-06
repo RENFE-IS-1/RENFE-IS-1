@@ -3,9 +3,12 @@ package repositorio;
 import modelo.Estacion;
 import modelo.Linea;
 import modelo.ParadaHorario;
+import modelo.ServicioCalendario;
 import modelo.Transbordo;
 import modelo.Viaje;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,6 +28,12 @@ public class RedTransporte {
     private Map<String, List<ParadaHorario>> paradasPorViaje = new HashMap<>();
     private Map<String, Set<Linea>> lineasPorEstacion = new HashMap<>();
     private Map<String, List<Transbordo>> transbordosPorEstacion = new HashMap<>();
+
+    // Calendario de servicios (calendar.txt / calendar_dates.txt)
+    private Map<String, ServicioCalendario> calendarioPorServicio = new HashMap<>();
+    private LocalDate inicioValidez;
+    private LocalDate finValidez;
+    private Instant fechaDatos; // fecha de los archivos de datos cargados
 
     // --- ESCRITURA ---
     
@@ -61,6 +70,27 @@ public class RedTransporte {
         transbordosPorEstacion.putIfAbsent(transbordo.getFromStopId(), new ArrayList<>());
         transbordosPorEstacion.get(transbordo.getFromStopId()).add(transbordo);
     }
+
+    public void addServicioCalendario(ServicioCalendario servicio) {
+        calendarioPorServicio.put(servicio.getServiceId(), servicio);
+        ampliarValidez(servicio.getInicio());
+        ampliarValidez(servicio.getFin());
+    }
+
+    public void addExcepcionCalendario(String serviceId, LocalDate fecha, int exceptionType) {
+        calendarioPorServicio
+            .computeIfAbsent(serviceId, ServicioCalendario::soloExcepciones)
+            .addExcepcion(fecha, exceptionType);
+        if (exceptionType == 1) ampliarValidez(fecha);
+    }
+
+    private void ampliarValidez(LocalDate fecha) {
+        if (fecha == null) return;
+        if (inicioValidez == null || fecha.isBefore(inicioValidez)) inicioValidez = fecha;
+        if (finValidez == null || fecha.isAfter(finValidez)) finValidez = fecha;
+    }
+
+    public void setFechaDatos(Instant fechaDatos) { this.fechaDatos = fechaDatos; }
 
     public void aplicarAliasComerciales() {
         Linea aliasC8 = new Linea("VIRTUAL_C8", "C8", "Alias Comercial", "868584");
@@ -153,6 +183,17 @@ public class RedTransporte {
     public List<ParadaHorario> getRutaDeViaje(String tripId) {
         return paradasPorViaje.getOrDefault(tripId, new ArrayList<>());
     }
+
+    /** Indica si los viajes con este service_id circulan en la fecha dada. */
+    public boolean isServicioActivo(String serviceId, LocalDate fecha) {
+        ServicioCalendario servicio = calendarioPorServicio.get(serviceId);
+        return servicio != null && servicio.activoEn(fecha);
+    }
+
+    public boolean hayCalendario() { return !calendarioPorServicio.isEmpty(); }
+    public LocalDate getInicioValidez() { return inicioValidez; }
+    public LocalDate getFinValidez() { return finValidez; }
+    public Instant getFechaDatos() { return fechaDatos; }
 
     public List<Transbordo> getTransbordosDesde(String stopId) {
         return transbordosPorEstacion.getOrDefault(stopId, new ArrayList<>());
