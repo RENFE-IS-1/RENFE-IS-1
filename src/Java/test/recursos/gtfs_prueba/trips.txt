@@ -1,0 +1,7 @@
+route_id,service_id,trip_id,trip_headsign,wheelchair_accessible,block_id,shape_id
+10T0001C3,LUNES,T1,,1,,
+10T0001C3,LUNES,T2,,1,,
+10T0002C4a,DOMINGO,T3,,1,,
+10T0001C3,LUNES,T4,,1,,
+10T0003C10,LUNES,T5,,1,,
+10T0002C4a,EXTRA,T6,,1,,

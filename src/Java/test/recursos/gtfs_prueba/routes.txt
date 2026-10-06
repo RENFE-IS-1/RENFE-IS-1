@@ -1,0 +1,4 @@
+route_id,route_short_name,route_long_name,route_type,route_color,route_text_color
+10T0001C3,C3,Árbol-Cumbre,2,952585,FFFFFF
+10T0002C4a,C4a,Bosque-Bosquecillo,2,2C2A86,FFFFFF
+10T0003C10,C10,Bosque-Cumbre,2,BCCF00,FFFFFF

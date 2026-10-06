@@ -18,12 +18,13 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
-import java.util.Arrays;
-import java.util.Locale;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
@@ -40,6 +41,11 @@ public class Main {
         
         long endTime = System.currentTimeMillis();
         System.out.println("Carga y optimización completadas en " + (endTime - startTime) + " ms.");
+        if (red.getAllEstaciones().isEmpty()) {
+            System.out.println("AVISO: no se ha cargado ninguna estación. Descarga el GTFS de "
+                    + "https://data.renfe.com/dataset/horarios-cercanias y extrae los .txt en "
+                    + "data/horarios_cercanias/ (raíz del repositorio) o en src/Java/data/.");
+        }
         
         // Comparador numérico para forzar orden lógico en las líneas (C1, C2, C3... en lugar de C1, C10, C2)
         Comparator<String> ordenComercialLineas = new Comparator<String>() {
@@ -256,6 +262,12 @@ public class Main {
             return;
         }
 
+        if (red.getAllEstaciones().isEmpty()) {
+            System.out.println("No hay datos de horarios cargados, así que no se pueden consultar llegadas. "
+                    + "Revisa que los archivos GTFS estén en data/horarios_cercanias/.");
+            return;
+        }
+
         // Los parámetros opcionales se reconocen por su formato al final del texto
         List<String> partes = new ArrayList<>(Arrays.asList(argumentos.split("\\s+")));
         String filtroLinea = null;
@@ -316,6 +328,17 @@ public class Main {
                     + red.getInicioValidez().format(FMT_FECHA) + " al " + red.getFinValidez().format(FMT_FECHA)
                     + ". Descarga un GTFS más reciente de data.renfe.com.");
             return;
+        }
+
+        Map<String, Set<String>> lineas = consulta.lineasYSentidos(estacion, fecha, filtroLinea);
+        if (!lineas.isEmpty()) {
+            System.out.println("Líneas que paran aquí ese día y sus sentidos:");
+            for (Map.Entry<String, Set<String>> e : lineas.entrySet()) {
+                String sentidos = e.getValue().isEmpty() ? "(todos sus trenes terminan aquí)"
+                        : "→ " + String.join(" / ", e.getValue());
+                System.out.printf("  %-4s %s%n", e.getKey(), sentidos);
+            }
+            System.out.println("Próximos trenes:");
         }
 
         List<Llegada> llegadas = consulta.proximasLlegadas(estacion, desde, LLEGADAS_A_MOSTRAR, filtroLinea);

@@ -1,0 +1,3 @@
+service_id,date,exception_type
+LUNES,20261012,2
+EXTRA,20261007,1

@@ -15,6 +15,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * US-004: próximas llegadas a una estación según los horarios planificados (GTFS).
@@ -72,6 +75,42 @@ public class ConsultaLlegadas {
 
         resultado.sort(Comparator.comparing(Llegada::hora));
         return resultado.size() > maximo ? new ArrayList<>(resultado.subList(0, maximo)) : resultado;
+    }
+
+    /**
+     * Líneas que paran en la estación en un día de servicio y, para cada una, los destinos
+     * (sentidos) de sus trenes. Los trenes que terminan en la estación no aportan sentido;
+     * si todos los de una línea terminan allí, la línea aparece con el conjunto vacío.
+     * Las líneas se ordenan de forma comercial (C1, C2, ..., C10) y {@code filtroLinea}
+     * funciona igual que en {@link #proximasLlegadas}.
+     */
+    public Map<String, Set<String>> lineasYSentidos(Estacion estacion, LocalDate fecha, String filtroLinea) {
+        Map<String, Set<String>> resultado = new TreeMap<>(ConsultaLlegadas::compararLineas);
+        if (estacion == null) return resultado;
+
+        for (ParadaHorario ph : red.getHorariosEstacion(estacion.getId())) {
+            Viaje viaje = red.getViaje(ph.getTripId());
+            if (viaje == null || !red.isServicioActivo(viaje.getServiceId(), fecha)) continue;
+            Linea linea = red.getLinea(viaje.getRouteId());
+            if (linea == null || (filtroLinea != null && !coincideLinea(linea, filtroLinea))) continue;
+
+            Set<String> destinos = resultado.computeIfAbsent(linea.getShortName(), k -> new TreeSet<>());
+            ParadaHorario ultima = ultimaParada(viaje.getId());
+            boolean terminaAqui = ultima != null && ultima.getStopSequence() == ph.getStopSequence();
+            Estacion destino = ultima != null ? red.getEstacion(ultima.getStopId()) : null;
+            if (!terminaAqui && destino != null) destinos.add(destino.getNombre());
+        }
+        return resultado;
+    }
+
+    /** Orden comercial de líneas: por número y, a igualdad, alfabético (C4 < C4a < C4b < C10). */
+    static int compararLineas(String a, String b) {
+        String na = a.replaceAll("[^0-9]", "");
+        String nb = b.replaceAll("[^0-9]", "");
+        int ia = na.isEmpty() ? Integer.MAX_VALUE : Integer.parseInt(na);
+        int ib = nb.isEmpty() ? Integer.MAX_VALUE : Integer.parseInt(nb);
+        if (ia != ib) return Integer.compare(ia, ib);
+        return a.compareToIgnoreCase(b);
     }
 
     /** true si la fecha está dentro del periodo cubierto por los horarios cargados. */
