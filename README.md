@@ -20,7 +20,7 @@ y desmarcar create mmodulo info java (esta abajo)
 
 ## Estructura del Proyecto
 * `/src`: Código fuente de la aplicación.
-* `/data`: Archivos de datos estáticos (horarios, estaciones, conexiones...).
+* `/data`: Archivos de datos estáticos (horarios, estaciones, conexiones...)
 * `/docs`: Documentación adicional y memorias.
 
 ## Autores
