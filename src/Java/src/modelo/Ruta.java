@@ -33,8 +33,10 @@ public class Ruta {
         return Duration.between(salidaRuta, llegadaRuta).toMinutes();
     }
 
+    /** Cambios de tren: los tramos a pie (línea "TRANS") no cuentan como tren. */
     public int getNumeroTransbordos() {
-        return Math.max(0, tramos.size() - 1);
+        long trenes = tramos.stream().filter(t -> !"TRANS".equals(t.getLinea().getId())).count();
+        return (int) Math.max(0, trenes - 1);
     }
 
     @Override

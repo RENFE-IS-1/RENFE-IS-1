@@ -284,8 +284,13 @@ public class Main {
                     String hSalida = r.getTramos().get(0).getHoraSalida().format(FMT_HORA);
                     String hLlegada = r.getTramos().get(r.getTramos().size() - 1).getHoraLlegada().format(FMT_HORA);
                     
-                    System.out.printf("%d. Salida: %s -> Llegada: %s | Duración: %d min | Precio: %.2f EUR | Transbordos: %d\n",
-                            i + 1, hSalida, hLlegada, r.getTiempoTotalMinutos(), r.getPrecioTotal(), r.getNumeroTransbordos());
+                    StringBuilder lineasRuta = new StringBuilder();
+                    for (Tramo t : r.getTramos()) {
+                        if (lineasRuta.length() > 0) lineasRuta.append(" > ");
+                        lineasRuta.append(t.getLinea().getShortName());
+                    }
+                    System.out.printf("%d. Salida: %s -> Llegada: %s | Duración: %d min | Precio: %.2f EUR | Transbordos: %d | %s\n",
+                            i + 1, hSalida, hLlegada, r.getTiempoTotalMinutos(), r.getPrecioTotal(), r.getNumeroTransbordos(), lineasRuta);
                 }
 
                 System.out.print("\nIntroduce el número de la ruta para ver los detalles (0 para salir): ");
