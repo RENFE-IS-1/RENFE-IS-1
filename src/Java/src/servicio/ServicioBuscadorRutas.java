@@ -2,15 +2,14 @@ package servicio;
 
 import modelo.Estacion;
 import modelo.Linea;
+import modelo.ParadaHorario;
 import modelo.Ruta;
 import modelo.Tramo;
+import modelo.Transbordo;
 import repositorio.RedTransporte;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ServicioBuscadorRutas {
     private final RedTransporte red;
@@ -23,67 +22,108 @@ public class ServicioBuscadorRutas {
         List<Ruta> opciones = new ArrayList<>();
         if (origen.getId().equals(destino.getId())) return opciones;
 
-        Set<Linea> lineasOrigen = red.getLineasEnEstacion(origen.getId());
-        Set<Linea> lineasDestino = red.getLineasEnEstacion(destino.getId());
-        
-        // Base horaria simulada para el constructor de Tramo
-        LocalTime horaBase = LocalTime.now();
+        // Estructuras para el algoritmo BFS en el grafo de estaciones
+        Map<String, String> anteriorEstacion = new HashMap<>();
+        Map<String, Linea> lineaUsada = new HashMap<>();
+        Queue<String> cola = new LinkedList<>();
+        Set<String> visitados = new HashSet<>();
 
-        // 1. Opciones directas (0 transbordos)
-        Set<Linea> directas = new HashSet<>(lineasOrigen);
-        directas.retainAll(lineasDestino);
+        cola.add(origen.getId());
+        visitados.add(origen.getId());
 
-        if (!directas.isEmpty()) {
-            Linea l = directas.iterator().next(); // Toma solo una línea representativa para evitar duplicados
-            Ruta r = new Ruta();
-            double dist = origen.distanciaEnKm(destino.getLatitud(), destino.getLongitud());
-            long duracion = (long) Math.max(2, (dist * 1.33) + 2);
-            double precio = calcularPrecio(dist);
-            
-            r.agregarTramo(new Tramo(origen, destino, l, horaBase, horaBase.plusMinutes(duracion), precio));
-            opciones.add(r);
-        }
+        boolean encontrado = false;
 
-        // 2. Opciones con 1 transbordo (limitado a 5 alternativas)
-        int alternativasTransbordo = 0;
-        for (Estacion intermedia : red.getAllEstaciones()) {
-            if (intermedia.getId().equals(origen.getId()) || intermedia.getId().equals(destino.getId())) continue;
-            
-            Set<Linea> lineasInter = red.getLineasEnEstacion(intermedia.getId());
-            Set<Linea> inter1 = new HashSet<>(lineasOrigen);
-            inter1.retainAll(lineasInter);
-            Set<Linea> inter2 = new HashSet<>(lineasDestino);
-            inter2.retainAll(lineasInter);
+        while (!cola.isEmpty()) {
+            String actualId = cola.poll();
 
-            if (!inter1.isEmpty() && !inter2.isEmpty()) {
-                Linea l1 = inter1.iterator().next();
-                Linea l2 = inter2.iterator().next();
-                
-                if (l1.getId().equals(l2.getId())) continue;
+            if (actualId.equals(destino.getId())) {
+                encontrado = true;
+                break;
+            }
 
-                Ruta r = new Ruta();
-                
-                // Cálculo del primer Tramo
-                double dist1 = origen.distanciaEnKm(intermedia.getLatitud(), intermedia.getLongitud());
-                long duracion1 = (long) Math.max(2, (dist1 * 1.33) + 2);
-                double precio1 = calcularPrecio(dist1);
-                LocalTime llegadaIntermedia = horaBase.plusMinutes(duracion1);
-                
-                r.agregarTramo(new Tramo(origen, intermedia, l1, horaBase, llegadaIntermedia, precio1));
-                
-                // Cálculo del segundo Tramo (añadiendo 5 minutos fijos de transbordo)
-                LocalTime salidaIntermedia = llegadaIntermedia.plusMinutes(5);
-                double dist2 = intermedia.distanciaEnKm(destino.getLatitud(), destino.getLongitud());
-                long duracion2 = (long) Math.max(2, (dist2 * 1.33) + 2);
-                double precio2 = calcularPrecio(dist2);
-                
-                r.agregarTramo(new Tramo(intermedia, destino, l2, salidaIntermedia, salidaIntermedia.plusMinutes(duracion2), precio2));
-                
-                opciones.add(r);
-                alternativasTransbordo++;
-                if (alternativasTransbordo >= 5) break; 
+            // 1. Explorar vecinos a través de los trayectos de los trenes (tripId)
+            List<ParadaHorario> horarios = red.getHorariosEstacion(actualId);
+            Set<String> tripsRevisados = new HashSet<>();
+            for (ParadaHorario ph : horarios) {
+                String tripId = ph.getTripId();
+                if (tripsRevisados.contains(tripId)) continue;
+                tripsRevisados.add(tripId);
+
+                List<ParadaHorario> rutaViaje = red.getRutaDeViaje(tripId);
+                boolean pasar = false;
+                for (ParadaHorario paradaTrip : rutaViaje) {
+                    if (paradaTrip.getStopId().equals(actualId)) {
+                        pasar = true;
+                        continue;
+                    }
+                    if (pasar) {
+                        String siguienteId = paradaTrip.getStopId();
+                        if (!visitados.contains(siguienteId)) {
+                            visitados.add(siguienteId);
+                            anteriorEstacion.put(siguienteId, actualId);
+                            var viaje = red.getViaje(tripId);
+                            if (viaje != null) {
+                                Linea l = red.getLinea(viaje.getRouteId());
+                                lineaUsada.put(siguienteId, l);
+                            }
+                            cola.add(siguienteId);
+                        }
+                    }
+                }
+            }
+
+            // 2. Explorar vecinos a través de transbordos peatonales oficiales (transfers.txt)
+            List<Transbordo> transbordos = red.getTransbordosDesde(actualId);
+            for (Transbordo t : transbordos) {
+                String siguienteId = t.getToStopId();
+                if (!visitados.contains(siguienteId)) {
+                    visitados.add(siguienteId);
+                    anteriorEstacion.put(siguienteId, actualId);
+                    lineaUsada.put(siguienteId, null); // Transbordo a pie
+                    cola.add(siguienteId);
+                }
             }
         }
+
+        if (!encontrado) {
+            return opciones;
+        }
+
+        // Reconstruir la secuencia de estaciones desde el destino hasta el origen
+        List<String> caminoIds = new ArrayList<>();
+        String actual = destino.getId();
+        while (actual != null) {
+            caminoIds.add(0, actual);
+            actual = anteriorEstacion.get(actual);
+        }
+
+        // Construir la ruta final con sus tramos
+        Ruta r = new Ruta();
+        LocalTime horaBase = LocalTime.now();
+        LocalTime horaActual = horaBase;
+
+        for (int i = 0; i < caminoIds.size() - 1; i++) {
+            String estActualId = caminoIds.get(i);
+            String estSiguienteId = caminoIds.get(i + 1);
+
+            Estacion eActual = red.getEstacion(estActualId);
+            Estacion eSiguiente = red.getEstacion(estSiguienteId);
+            Linea l = lineaUsada.get(estSiguienteId);
+
+            if (l == null) {
+                l = new Linea("TRANS", "A pie", "Transbordo a pie", "000000");
+            }
+
+            double dist = eActual.distanciaEnKm(eSiguiente.getLatitud(), eSiguiente.getLongitud());
+            long duracion = (long) Math.max(2, (dist * 1.33) + 2);
+            double precio = calcularPrecio(dist);
+
+            LocalTime horaLlegada = horaActual.plusMinutes(duracion);
+            r.agregarTramo(new Tramo(eActual, eSiguiente, l, horaActual, horaLlegada, precio));
+            horaActual = horaLlegada.plusMinutes(2);
+        }
+
+        opciones.add(r);
         return opciones;
     }
 
