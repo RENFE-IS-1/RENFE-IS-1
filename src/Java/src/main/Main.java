@@ -266,28 +266,43 @@ public class Main {
 
                 System.out.println("Buscando opciones desde " + origen.getNombre() + " hasta " + destino.getNombre() + "...");
 
-                // 6.3 Obtener rutas disponibles y compararlas
-                List<Ruta> rutasEncontradas = new ArrayList<>(); ///////////////LO TENGO QUE CAMBIAR ES PROVISIONAL hasta que hagamos lo de buscador de trayectos
+             // 6.3 Obtener rutas disponibles y compararlas
+                servicio.ServicioBuscadorRutas buscadorRutas = new servicio.ServicioBuscadorRutas(red);
+                List<Ruta> rutasEncontradas = buscadorRutas.buscarRutas(origen, destino);
 
                 if (rutasEncontradas.isEmpty()) {
                     System.out.println("No se han encontrado rutas disponibles entre " + origen.getNombre() + " y " + destino.getNombre() + ".");
-                } else {
-                    ServicioComparadorRutas servicioComparador = new ServicioComparadorRutas();
+                    continue;
+                }
 
-                    System.out.println("\n⏱️  --- ORDENADAS POR MENOR TIEMPO DE VIAJE ---");
-                    List<Ruta> porTiempo = servicioComparador.ordenarRutas(rutasEncontradas, ComparadoresRuta.POR_TIEMPO);
-                    porTiempo.forEach(r -> System.out.println("  -> " + r));
-                    System.out.println("⭐ Mejor opción por tiempo: " + servicioComparador.obtenerMejorRuta(rutasEncontradas, ComparadoresRuta.POR_TIEMPO));
+                servicio.ServicioComparadorRutas servicioComparador = new servicio.ServicioComparadorRutas();
+                List<Ruta> opciones = servicioComparador.ordenarRutas(rutasEncontradas, servicio.ComparadoresRuta.POR_TIEMPO);
 
-                    System.out.println("\n💶 --- ORDENADAS POR MENOR PRECIO ---");
-                    List<Ruta> porPrecio = servicioComparador.ordenarRutas(rutasEncontradas, ComparadoresRuta.POR_PRECIO);
-                    porPrecio.forEach(r -> System.out.println("  -> " + r));
-                    System.out.println("⭐ Mejor opción por precio: " + servicioComparador.obtenerMejorRuta(rutasEncontradas, ComparadoresRuta.POR_PRECIO));
+                System.out.println("\n--- RUTAS ENCONTRADAS (Mejor opción primero) ---");
+                for (int i = 0; i < opciones.size(); i++) {
+                    Ruta r = opciones.get(i);
+                    String hSalida = r.getTramos().get(0).getHoraSalida().format(FMT_HORA);
+                    String hLlegada = r.getTramos().get(r.getTramos().size() - 1).getHoraLlegada().format(FMT_HORA);
+                    
+                    System.out.printf("%d. Salida: %s -> Llegada: %s | Duración: %d min | Precio: %.2f EUR | Transbordos: %d\n",
+                            i + 1, hSalida, hLlegada, r.getTiempoTotalMinutos(), r.getPrecioTotal(), r.getNumeroTransbordos());
+                }
 
-                    System.out.println("\n🔄 --- ORDENADAS POR MENOS TRANSBORDOS ---");
-                    List<Ruta> porTransbordos = servicioComparador.ordenarRutas(rutasEncontradas, ComparadoresRuta.POR_TRANSBORDOS);
-                    porTransbordos.forEach(r -> System.out.println("  -> " + r));
-                    System.out.println("⭐ Mejor opción por transbordos: " + servicioComparador.obtenerMejorRuta(rutasEncontradas, ComparadoresRuta.POR_TRANSBORDOS));
+                System.out.print("\nIntroduce el número de la ruta para ver los detalles (0 para salir): ");
+                String seleccionRuta = scanner.nextLine().trim();
+                
+                try {
+                    int num = Integer.parseInt(seleccionRuta);
+                    if (num > 0 && num <= opciones.size()) {
+                        Ruta elegida = opciones.get(num - 1);
+                        System.out.println("\nDetalles del itinerario:");
+                        for (Tramo t : elegida.getTramos()) {
+                            System.out.println(" - [" + t.getHoraSalida().format(FMT_HORA) + " a " + t.getHoraLlegada().format(FMT_HORA) + "] " +
+                                    t.getLinea().getShortName() + ": " + t.getOrigen().getNombre() + " -> " + t.getDestino().getNombre());
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    // Si el usuario pulsa Enter vacío o introduce texto, se cancela la visualización
                 }
                 continue;
             }
