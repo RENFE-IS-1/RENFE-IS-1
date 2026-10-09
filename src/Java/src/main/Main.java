@@ -288,18 +288,36 @@ public class Main {
                 List<Ruta> rutasEncontradas = buscadorRutas.buscarRutas(origen, destino, horaSalida);
 
                 if (rutasEncontradas.isEmpty()) {
-                    System.out.println("No se han encontrado rutas disponibles entre " + origen.getNombre() + " y " + destino.getNombre() + ".");
+                    System.out.println("No se han encontrado rutas disponibles entre " + origen.getNombre() + " y " + destino.getNombre()
+                            + ". Puede que no haya trenes a esa hora o que la fecha quede fuera del periodo de los horarios cargados.");
                     continue;
                 }
 
-                servicio.ServicioComparadorRutas servicioComparador = new servicio.ServicioComparadorRutas();
-                List<Ruta> opciones = servicioComparador.ordenarRutas(rutasEncontradas, servicio.ComparadoresRuta.POR_TIEMPO);
+                // El buscador ya las devuelve ordenadas por hora de llegada con trenes reales: la
+                // mejor opción es la que llega antes, no la de menor duración (podría salir más tarde)
+                List<Ruta> opciones = rutasEncontradas;
+
+                // Si ninguna opción sale cerca de la hora pedida (de noche no hay servicio), se avisa
+                LocalDateTime pedida = LocalDateTime.of(LocalDate.now(ZONA_MADRID), horaSalida.withSecond(0).withNano(0));
+                LocalDateTime primeraSalida = null;
+                for (Ruta r : opciones) {
+                    LocalDateTime s = r.getFechaHoraSalida();
+                    if (s != null && (primeraSalida == null || s.isBefore(primeraSalida))) primeraSalida = s;
+                }
+                if (primeraSalida != null && primeraSalida.isAfter(pedida.plusMinutes(servicio.ServicioBuscadorRutas.MAX_ESPERA_MINUTOS))) {
+                    String cuando = primeraSalida.toLocalDate().equals(pedida.toLocalDate()) ? "hoy" : "mañana";
+                    System.out.println("\nAVISO: no hay ninguna conexión entre " + origen.getNombre() + " y " + destino.getNombre()
+                            + " cerca de las " + pedida.format(FMT_HORA) + ". El primer viaje posible sale " + cuando
+                            + " a las " + primeraSalida.format(FMT_HORA) + ".");
+                }
 
                 System.out.println("\n--- RUTAS ENCONTRADAS (Mejor opción primero) ---");
                 for (int i = 0; i < opciones.size(); i++) {
                     Ruta r = opciones.get(i);
-                    String hSalida = r.getTramos().get(0).getHoraSalida().format(FMT_HORA);
-                    String hLlegada = r.getTramos().get(r.getTramos().size() - 1).getHoraLlegada().format(FMT_HORA);
+                    Tramo primero = r.getTramos().get(0);
+                    Tramo ultimo = r.getTramos().get(r.getTramos().size() - 1);
+                    String hSalida = formatearHora(primero.getFechaHoraSalida(), primero.getHoraSalida());
+                    String hLlegada = formatearHora(ultimo.getFechaHoraLlegada(), ultimo.getHoraLlegada());
                     
                     StringBuilder lineasRuta = new StringBuilder();
                     for (Tramo t : r.getTramos()) {
@@ -319,7 +337,8 @@ public class Main {
                         Ruta elegida = opciones.get(num - 1);
                         System.out.println("\nDetalles del itinerario:");
                         for (Tramo t : elegida.getTramos()) {
-                            System.out.println(" - [" + t.getHoraSalida().format(FMT_HORA) + " a " + t.getHoraLlegada().format(FMT_HORA) + "] " +
+                            System.out.println(" - [" + formatearHora(t.getFechaHoraSalida(), t.getHoraSalida()) + " a "
+                                    + formatearHora(t.getFechaHoraLlegada(), t.getHoraLlegada()) + "] " +
                                     t.getLinea().getShortName() + ": " + t.getOrigen().getNombre() + " -> " + t.getDestino().getNombre());
                         }
                     }
@@ -401,6 +420,14 @@ public class Main {
             if (new File(c + "stop_times.txt").exists()) return c;
         }
         return candidatos[0];
+    }
+
+    /** Hora HH:mm; si el tren es de otro día distinto a hoy, añade la fecha (p. ej. "07:20 (12/10)"). */
+    private static String formatearHora(LocalDateTime fechaHora, LocalTime hora) {
+        if (fechaHora != null && !fechaHora.toLocalDate().equals(LocalDate.now(ZONA_MADRID))) {
+            return fechaHora.format(DateTimeFormatter.ofPattern("HH:mm (dd/MM)"));
+        }
+        return hora.format(FMT_HORA);
     }
 
     /** US-004: muestra los próximos trenes que pasan por una estación. */
