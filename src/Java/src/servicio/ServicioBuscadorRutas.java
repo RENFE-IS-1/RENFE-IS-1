@@ -164,7 +164,13 @@ public class ServicioBuscadorRutas {
         this.red = red;
     }
 
+ // 1. Sobrecarga para mantener compatibilidad si no se pasa una hora
     public List<Ruta> buscarRutas(Estacion origen, Estacion destino) {
+        return buscarRutas(origen, destino, LocalTime.now());
+    }
+
+    // 2. Método principal modificado para recibir LocalTime horaSalida
+    public List<Ruta> buscarRutas(Estacion origen, Estacion destino, LocalTime horaSalida) {
         List<Ruta> opciones = new ArrayList<>();
         if (origen == null || destino == null || origen.getId().equals(destino.getId())) return opciones;
         construirRecorridos();
@@ -199,9 +205,35 @@ public class ServicioBuscadorRutas {
                 .thenComparing(k -> k)); // desempate fijo, para que el orden no dependa del HashMap
 
         for (String k : elegidas.subList(0, Math.min(MAX_OPCIONES, elegidas.size()))) {
-            opciones.add(construirRuta(b.mejorPorLineas.get(k)));
+            // Se pasa la horaSalida al constructor de la ruta
+            opciones.add(construirRuta(b.mejorPorLineas.get(k), horaSalida)); 
         }
         return opciones;
+    }
+
+    // 3. Método construirRuta modificado para usar horaSalida en lugar de LocalTime.now()
+    private Ruta construirRuta(List<Paso> pasos, LocalTime horaSalida) {
+        Ruta ruta = new Ruta();
+        LocalTime hora = horaSalida.withSecond(0).withNano(0);
+        boolean yaEnTren = false;
+        for (Paso p : pasos) {
+            Estacion desde = red.getEstacion(p.desde());
+            Estacion hasta = red.getEstacion(p.hasta());
+            if (p.recorrido() < 0) {
+                LocalTime llegada = hora.plusMinutes(p.minutos());
+                ruta.agregarTramo(new Tramo(desde, hasta, A_PIE, hora, llegada, 0));
+                hora = llegada;
+            } else {
+                if (yaEnTren) hora = hora.plusMinutes(MINUTOS_TRANSBORDO);
+                Recorrido r = recorridos.get(p.recorrido());
+                LocalTime llegada = hora.plusMinutes(p.minutos());
+                double dist = desde.distanciaEnKm(hasta.getLatitud(), hasta.getLongitud());
+                ruta.agregarTramo(new Tramo(desde, hasta, r.linea, hora, llegada, calcularPrecio(dist)));
+                hora = llegada;
+                yaEnTren = true;
+            }
+        }
+        return ruta;
     }
 
     /**
@@ -236,30 +268,7 @@ public class ServicioBuscadorRutas {
         return dist;
     }
 
-    /** Convierte la secuencia de pasos en una Ruta con horas orientativas desde ahora. */
-    private Ruta construirRuta(List<Paso> pasos) {
-        Ruta ruta = new Ruta();
-        LocalTime hora = LocalTime.now().withSecond(0).withNano(0);
-        boolean yaEnTren = false;
-        for (Paso p : pasos) {
-            Estacion desde = red.getEstacion(p.desde());
-            Estacion hasta = red.getEstacion(p.hasta());
-            if (p.recorrido() < 0) {
-                LocalTime llegada = hora.plusMinutes(p.minutos());
-                ruta.agregarTramo(new Tramo(desde, hasta, A_PIE, hora, llegada, 0));
-                hora = llegada;
-            } else {
-                if (yaEnTren) hora = hora.plusMinutes(MINUTOS_TRANSBORDO);
-                Recorrido r = recorridos.get(p.recorrido());
-                LocalTime llegada = hora.plusMinutes(p.minutos());
-                double dist = desde.distanciaEnKm(hasta.getLatitud(), hasta.getLongitud());
-                ruta.agregarTramo(new Tramo(desde, hasta, r.linea, hora, llegada, calcularPrecio(dist)));
-                hora = llegada;
-                yaEnTren = true;
-            }
-        }
-        return ruta;
-    }
+    
 
     /**
      * Agrupa los viajes en recorridos (línea comercial + secuencia de estaciones) y crea el índice

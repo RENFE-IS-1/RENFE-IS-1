@@ -264,11 +264,28 @@ public class Main {
                 }
                 if (destino == null) continue;
 
-                System.out.println("Buscando opciones desde " + origen.getNombre() + " hasta " + destino.getNombre() + "...");
+                // --- NUEVO: Solicitar y validar la hora de salida ---
+                System.out.print("Introduce la hora de salida (HH:MM) o pulsa ENTER para usar la hora actual: ");
+                String inputHora = scanner.nextLine().trim();
+                LocalTime horaSalida;
 
-             // 6.3 Obtener rutas disponibles y compararlas
+                if (inputHora.isEmpty()) {
+                    horaSalida = LocalTime.now(ZONA_MADRID);
+                } else {
+                    try {
+                        // Admite formatos como "8:30" añadiendo un cero delante para parsear "08:30"
+                        horaSalida = LocalTime.parse(inputHora.length() == 4 ? "0" + inputHora : inputHora);
+                    } catch (Exception e) {
+                        System.out.println("Formato de hora incorrecto. Se utilizará la hora actual por defecto.");
+                        horaSalida = LocalTime.now(ZONA_MADRID);
+                    }
+                }
+
+                System.out.println("Buscando opciones desde " + origen.getNombre() + " hasta " + destino.getNombre() + " a partir de las " + horaSalida.format(FMT_HORA) + "...");
+
+                // 6.3 Obtener rutas disponibles y compararlas usando la hora indicada
                 servicio.ServicioBuscadorRutas buscadorRutas = new servicio.ServicioBuscadorRutas(red);
-                List<Ruta> rutasEncontradas = buscadorRutas.buscarRutas(origen, destino);
+                List<Ruta> rutasEncontradas = buscadorRutas.buscarRutas(origen, destino, horaSalida);
 
                 if (rutasEncontradas.isEmpty()) {
                     System.out.println("No se han encontrado rutas disponibles entre " + origen.getNombre() + " y " + destino.getNombre() + ".");
@@ -310,6 +327,7 @@ public class Main {
                     // Si el usuario pulsa Enter vacío o introduce texto, se cancela la visualización
                 }
                 continue;
+            
             }
             
             // 7. Búsqueda de Estaciones
