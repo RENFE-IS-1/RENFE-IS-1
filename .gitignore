@@ -1,13 +1,13 @@
 # Ignorar todos los archivos dentro de la carpeta
 data/horarios_cercanias/*
-files/data/*
+files/Java/data/*
 
 # Ignorar carpeta bin
-files/bin
+files/Java/bin
 
 # Evitar ignorar el archivo .gitkeep para que Git suba la carpeta
 !data/horarios_cercanias/.gitkeep
-!files/data/.gitkeep
+!files/Java/data/.gitkeep
 
 # Compiled class file
 *.class
