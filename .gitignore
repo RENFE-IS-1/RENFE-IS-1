@@ -1,10 +1,13 @@
 # Ignorar todos los archivos dentro de la carpeta
 data/horarios_cercanias/*
-src/Java/data/*
+files/data/*
+
+# Ignorar carpeta bin
+files/bin
 
 # Evitar ignorar el archivo .gitkeep para que Git suba la carpeta
 !data/horarios_cercanias/.gitkeep
-!src/Java/data/.gitkeep
+!files/data/.gitkeep
 
 # Compiled class file
 *.class
@@ -27,7 +30,7 @@ src/Java/data/*
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
 bin/"data/" 
