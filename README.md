@@ -18,6 +18,9 @@ Recordad hacer refresh en la carpeta mas exterior al hacer pull para que se carg
 Crear una carpeta vacia (ej. Workspace), clonar el repositorio dentro, y hacer new > Java proyect > desmarcar la casilla default location y elegir src/Java
 y desmarcar create mmodulo info java (esta abajo)
 
+He cambiado que ya no hace falta descargar el zip manualmente ni nada pues se descarga automaticamente como el resto del repo. La unica diferencia es que la repo guarda un puntero al txt en vez del txt como tal
+
+
 ## Estructura del Proyecto
 * `/src`: Código fuente de la aplicación.
 * `/data`: Archivos de datos estáticos (horarios, estaciones, conexiones...)
