@@ -1,7 +1,7 @@
 # Sistema de Planificación de Cercanías Madrid <Nombre a elegir>
 
 ## Descripción
-Aplicación para la planificación de rutas y consulta de horarios de la red de transporte. (Poner más cosas)
+Aplicación para la planificación de rutas y consulta de horarios de la red de transporte. 
 
 ## Requisitos Previos
 * [Lenguaje y versión exacta: ] Java 17
