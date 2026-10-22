@@ -23,6 +23,15 @@ He cambiado que ya no hace falta descargar el zip manualmente ni nada pues se de
 De todas formas solo podemos utilzar el lfs con un maximo de 1 GB de descarga y como el txt ya pesa como 400 Mb solo podemos hacer dos clonaciones por mes. En principio los git pull y git push no deberian afectar o sumar a este maximo. Si no siempre se puede quitar.
 
 
+## Backend (API REST con Spring Boot)
+El proyecto `files/backendAPI` expone nuestras clases como una API web. Usa los mismos datos que `files/Java` (`files/Java/data`), así que no hay que copiarlos.
+
+1. En Eclipse: **File → Import… → Maven → Existing Maven Projects** → `files/backendAPI` → **Finish**. La primera vez descarga las dependencias (un par de minutos).
+2. Abre `com.backendapi.BackendApiApplication` → clic derecho → **Run As → Java Application** (o **Spring Boot App** si tienes Spring Tools).
+3. Cuando la consola diga `Started BackendApiApplication`, abre http://localhost:8080/swagger-ui.html para probar los endpoints.
+
+Las clases de `modelo`, `consultas`, `servicio`, etc. están copiadas en `files/backendAPI/src/main/java`. **Si cambias una en `files/Java/src`, copia también el cambio allí.**
+
 ## Estructura del Proyecto
 * `/src`: Código fuente de la aplicación.
 * `/data`: Archivos de datos estáticos (horarios, estaciones, conexiones...)

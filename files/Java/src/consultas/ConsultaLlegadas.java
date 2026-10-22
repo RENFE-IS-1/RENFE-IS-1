@@ -12,12 +12,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * US-004: próximas llegadas a una estación según los horarios planificados (GTFS).
@@ -31,7 +31,8 @@ public class ConsultaLlegadas {
     private static final int SEGUNDOS_DIA = 24 * 3600;
 
     private final RedTransporte red;
-    private final Map<String, ParadaHorario> ultimaParadaPorViaje = new HashMap<>();
+    // ConcurrentHashMap: la API web puede atender varias consultas a la vez
+    private final Map<String, ParadaHorario> ultimaParadaPorViaje = new ConcurrentHashMap<>();
 
     public ConsultaLlegadas(RedTransporte red) {
         this.red = red;
