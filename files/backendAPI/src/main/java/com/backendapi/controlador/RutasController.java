@@ -6,7 +6,10 @@ import modelo.Estacion;
 import modelo.Llegada;
 import modelo.Ruta;
 import repositorio.RedTransporte;
+import servicio.ComparadoresRuta;
 import servicio.ServicioBuscadorRutas;
+import servicio.ServicioComparadorRutas;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,12 +21,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * API REST del proyecto. Se puede probar desde el navegador en /swagger-ui.html.
- * Las fechas van en formato ISO, por ejemplo 2026-10-28T08:00:00; si no se indica, se usa la hora
- * actual de Madrid.
  */
 @RestController
 @RequestMapping("/api")
@@ -35,14 +37,15 @@ public class RutasController {
     private final BuscadorEstaciones buscadorEstaciones;
     private final ConsultaLlegadas consultaLlegadas;
     private final ServicioBuscadorRutas buscadorRutas;
+    private final ServicioComparadorRutas comparadorRutas;
 
-    // Spring pasa aquí los objetos creados en ConfiguracionRed
     public RutasController(RedTransporte red, BuscadorEstaciones buscadorEstaciones,
                            ConsultaLlegadas consultaLlegadas, ServicioBuscadorRutas buscadorRutas) {
         this.red = red;
         this.buscadorEstaciones = buscadorEstaciones;
         this.consultaLlegadas = consultaLlegadas;
         this.buscadorRutas = buscadorRutas;
+        this.comparadorRutas = new ServicioComparadorRutas();
     }
 
     /** Todas las estaciones o, con ?nombre=, las que coinciden (sin distinguir tildes ni mayúsculas). */
@@ -64,23 +67,74 @@ public class RutasController {
         return consultaLlegadas.proximasLlegadas(estacion(id), hora, max, linea);
     }
 
-    /** US-002 / US-010 / US-011: rutas con trenes reales, ordenadas por hora de llegada. */
+    /** US-002 / US-010 / US-011: rutas con trenes reales, ordenadas por hora de llegada o criterio de comparación. */
     @GetMapping("/rutas")
     public List<Ruta> rutas(
             @RequestParam(name = "origen") String origen,
             @RequestParam(name = "destino") String destino,
             @RequestParam(name = "salida", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime salida) {
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime salida,
+            @RequestParam(name = "criterio", required = false, defaultValue = "tiempo") String criterio) {
+        
         LocalDateTime hora = salida != null ? salida : ahora();
-        return buscadorRutas.buscarRutas(estacion(origen), estacion(destino), hora);
+        List<Ruta> encontradas = buscadorRutas.buscarRutas(estacion(origen), estacion(destino), hora);
+
+        if (encontradas.isEmpty()) {
+            return encontradas;
+        }
+
+        Comparator<Ruta> comp = switch (criterio.toLowerCase()) {
+            case "precio" -> ComparadoresRuta.POR_PRECIO;
+            case "transbordos" -> ComparadoresRuta.POR_TRANSBORDOS;
+            default -> ComparadoresRuta.POR_TIEMPO;
+        };
+
+        return comparadorRutas.ordenarRutas(encontradas, comp);
     }
 
-    private Estacion estacion(String id) {
-        Estacion e = red.getEstacion(id);
-        if (e == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Estación no encontrada: " + id);
+    private Estacion estacion(String texto) {
+        List<Estacion> encontradas = buscadorEstaciones.buscar(texto);
+        
+        // 1. Sin coincidencias
+        if (encontradas.isEmpty()) {
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND, 
+                "No se encontró ninguna estación llamada '" + texto + "'. Revisa la ortografía."
+            );
         }
-        return e;
+        
+        String normBuscado = BuscadorEstaciones.normalizar(texto);
+
+        // 2. Coincidencia EXACTA (mayúsculas/tildes ignoradas)
+        for (Estacion e : encontradas) {
+            if (BuscadorEstaciones.normalizar(e.getNombre()).equals(normBuscado)) {
+                return e;
+            }
+        }
+
+        // 3. Caso especial de alias para Atocha o Chamartín
+        for (Estacion e : encontradas) {
+            String normNombre = BuscadorEstaciones.normalizar(e.getNombre());
+            if (normNombre.contains(normBuscado) && (normBuscado.equals("atocha") || normBuscado.equals("chamartin"))) {
+                return e;
+            }
+        }
+
+        // 4. Si solo hay 1 coincidencia única
+        if (encontradas.size() == 1) {
+            return encontradas.get(0);
+        }
+
+        // 5. Si hay 2 o más coincidencias (ej: "alcala" o "san"), lanzamos el error de ambigüedad
+        String listaOpciones = encontradas.stream()
+                .map(Estacion::getNombre)
+                .reduce((a, b) -> a + " | " + b)
+                .orElse("");
+
+        throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, 
+            "AMBIGUEDAD:" + texto + ":" + listaOpciones
+        );
     }
 
     private static LocalDateTime ahora() {
