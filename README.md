@@ -29,6 +29,7 @@ El proyecto `files/backendAPI` expone nuestras clases como una API web. Usa los 
 1. En Eclipse: **File → Import… → Maven → Existing Maven Projects** → `files/backendAPI` → **Finish**. La primera vez descarga las dependencias (un par de minutos).
 2. Abre `com.backendapi.BackendApiApplication` → clic derecho → **Run As → Java Application** (o **Spring Boot App** si tienes Spring Tools).
 3. Cuando la consola diga `Started BackendApiApplication`, abre http://localhost:8080/swagger-ui.html para probar los endpoints.
+4. 4. Si quieres meterte en la web visual pensada para el usuario, abre http://localhost:8080/ en su lugar.
 
 Las clases de `modelo`, `consultas`, `servicio`, etc. están copiadas en `files/backendAPI/src/main/java`. **Si cambias una en `files/Java/src`, copia también el cambio allí.**
 
@@ -42,4 +43,4 @@ Las clases de `modelo`, `consultas`, `servicio`, etc. están copiadas en `files/
 * Rodrigo Antequera Díaz
 * Diego Bañares Díez
 * Pedro Vicente Polo
-* Sergio Alcalá Cervantes
+* Sergio Alcalá-Zamora
