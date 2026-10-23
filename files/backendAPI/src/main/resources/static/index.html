@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cercanías Madrid - Portal Completo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .renfe-red { background-color: #E2001A; }
+        
+        .line-badge {
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            color: white;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+        .line-C1 { background-color: #75B6E0; }
+        .line-C2 { background-color: #00943D; }
+        .line-C3 { background-color: #952585; }
+        .line-C4, .line-C4a, .line-C4b { background-color: #2C2A86; }
+        .line-C5 { background-color: #ECA328; color: black; }
+        .line-C7 { background-color: #C0272D; }
+        .line-C8, .line-C8a, .line-C8b { background-color: #868584; }
+        .line-C10 { background-color: #BCCF00; color: black; }
+        .line-TRANS { background-color: #6B7280; }
+
+        .tab-btn.active {
+            background-color: white;
+            color: #E2001A;
+            font-weight: 700;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <header class="renfe-red text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white text-[#E2001A] p-2.5 rounded-xl font-bold text-xl shadow-inner">🚆</div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Cercanías Madrid</h1>
+                    <p class="text-xs text-red-100">Sistema Integral de Transporte (API REST / Swagger)</p>
+                </div>
+            </div>
+
+            <nav class="flex bg-red-900/40 p-1 rounded-xl text-xs font-medium border border-red-400/20">
+                <button onclick="cambiarPestana('rutas')" id="tab-rutas" class="tab-btn active px-4 py-2 rounded-lg transition">
+                    <i class="fa-solid fa-route mr-1.5"></i>Comparar Rutas
+                </button>
+                <button onclick="cambiarPestana('llegadas')" id="tab-llegadas" class="tab-btn px-4 py-2 rounded-lg text-red-100 hover:text-white transition">
+                    <i class="fa-solid fa-clock mr-1.5"></i>Próximas Llegadas
+                </button>
+                <button onclick="cambiarPestana('estaciones')" id="tab-estaciones" class="tab-btn px-4 py-2 rounded-lg text-red-100 hover:text-white transition">
+                    <i class="fa-solid fa-map-pin mr-1.5"></i>Estaciones
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
+        <!-- PESTAÑA RUTAS -->
+        <div id="sec-rutas" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <section class="lg:col-span-4 space-y-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-route text-[#E2001A]"></i>
+                        Planificar Trayecto
+                    </h2>
+
+                    <form id="routeForm" onsubmit="event.preventDefault(); buscarRutas();" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Origen</label>
+                            <input type="text" id="origen" value="Atocha" required
+                                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+
+                        <div class="flex justify-center -my-2 relative z-10">
+                            <button type="button" onclick="intercambiarEstaciones()" 
+                                class="bg-white border border-gray-200 p-2 rounded-full text-gray-500 hover:text-[#E2001A] shadow-sm transition transform hover:rotate-180">
+                                <i class="fa-solid fa-arrows-up-down text-xs"></i>
+                            </button>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Destino</label>
+                            <input type="text" id="destino" value="alcala" required
+                                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Criterio de Ordenación (US-002)</label>
+                            <div class="grid grid-cols-3 gap-2 bg-gray-100 p-1 rounded-xl">
+                                <button type="button" onclick="setCriterio('tiempo')" id="btn-tiempo" class="criterio-btn text-xs py-2 font-medium rounded-lg text-gray-700">⏱️ Tiempo</button>
+                                <button type="button" onclick="setCriterio('precio')" id="btn-precio" class="criterio-btn text-xs py-2 font-medium rounded-lg text-gray-700">💶 Precio</button>
+                                <button type="button" onclick="setCriterio('transbordos')" id="btn-transbordos" class="criterio-btn text-xs py-2 font-medium rounded-lg text-gray-700">🔄 Cambios</button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full renfe-red text-white font-semibold py-3 rounded-xl shadow-lg shadow-red-500/20 hover:bg-red-700 transition">
+                            Buscar Rutas
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="lg:col-span-8">
+                <div id="resultsHeaderRutas" class="hidden mb-4 flex justify-between items-center bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                    <div>
+                        <h2 id="routeTitle" class="font-bold text-gray-800"></h2>
+                        <p id="routeSub" class="text-xs text-gray-500"></p>
+                    </div>
+                    <span id="badgeCriterio" class="text-xs font-bold px-3 py-1.5 rounded-full bg-red-50 text-[#E2001A] uppercase"></span>
+                </div>
+                <div id="resultsRutas" class="space-y-4">
+                    <div class="bg-white rounded-2xl p-12 text-center text-gray-400 border border-gray-100">
+                        <i class="fa-solid fa-train text-4xl mb-3 text-gray-300"></i>
+                        <p class="text-sm">Busca un trayecto para comparar horarios, tiempos, costes y transbordos.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- PESTAÑA LLEGADAS -->
+        <div id="sec-llegadas" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <section class="lg:col-span-4 space-y-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-clock text-[#E2001A]"></i>
+                        Consultar Estación (US-004)
+                    </h2>
+
+                    <form onsubmit="event.preventDefault(); buscarLlegadas();" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Nombre o ID de Estación</label>
+                            <input type="text" id="estacionLlegadas" value="Atocha" required
+                                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Filtrar por Línea (Opcional)</label>
+                            <input type="text" id="filtroLinea" placeholder="Ej: C4, C5, C10..."
+                                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Número de Trenes</label>
+                            <select id="maxLlegadas" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm">
+                                <option value="5">5 próximos trenes</option>
+                                <option value="10" selected>10 próximos trenes</option>
+                                <option value="20">20 próximos trenes</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="w-full renfe-red text-white font-semibold py-3 rounded-xl shadow-lg shadow-red-500/20 hover:bg-red-700 transition">
+                            Ver Panel de Llegadas
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="lg:col-span-8">
+                <div id="resultsLlegadas" class="space-y-3">
+                    <div class="bg-white rounded-2xl p-12 text-center text-gray-400 border border-gray-100">
+                        <i class="fa-solid fa-tv text-4xl mb-3 text-gray-300"></i>
+                        <p class="text-sm">Ingresa una estación para ver el panel electrónico con los próximos pasos de trenes.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- PESTAÑA ESTACIONES -->
+        <div id="sec-estaciones" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="w-full md:w-1/2 relative">
+                    <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400"></i>
+                    <input type="text" id="buscarEstacionTexto" onkeyup="filtrarDirectorioEstaciones()" placeholder="Buscar estación por nombre..."
+                        class="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+                <button onclick="cargarTodasEstaciones()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-semibold transition">
+                    🔄 Cargar Red Completa
+                </button>
+            </div>
+
+            <div id="resultsEstaciones" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let criterioActual = 'tiempo';
+        let listaEstacionesCache = [];
+
+        function cambiarPestana(pestana) {
+            ['rutas', 'llegadas', 'estaciones'].forEach(p => {
+                document.getElementById(`sec-${p}`).classList.add('hidden');
+                document.getElementById(`tab-${p}`).classList.remove('active', 'text-[#E2001A]');
+                document.getElementById(`tab-${p}`).classList.add('text-red-100');
+            });
+
+            document.getElementById(`sec-${pestana}`).classList.remove('hidden');
+            const activeTab = document.getElementById(`tab-${pestana}`);
+            activeTab.classList.add('active');
+            activeTab.classList.remove('text-red-100');
+
+            if (pestana === 'estaciones' && listaEstacionesCache.length === 0) {
+                cargarTodasEstaciones();
+            }
+        }
+
+        function setCriterio(c) {
+            criterioActual = c;
+            document.querySelectorAll('.criterio-btn').forEach(b => b.className = 'criterio-btn text-xs py-2 font-medium rounded-lg text-gray-700');
+            document.getElementById(`btn-${c}`).className = 'criterio-btn text-xs py-2 font-semibold rounded-lg bg-white text-[#E2001A] shadow-sm';
+            if (document.getElementById('origen').value && document.getElementById('destino').value) buscarRutas();
+        }
+
+        function intercambiarEstaciones() {
+            const o = document.getElementById('origen'), d = document.getElementById('destino');
+            const tmp = o.value; o.value = d.value; d.value = tmp;
+        }
+
+        async function buscarRutas() {
+            const origenInput = document.getElementById('origen');
+            const destinoInput = document.getElementById('destino');
+            const origen = origenInput.value.trim();
+            const destino = destinoInput.value.trim();
+            const container = document.getElementById('resultsRutas');
+            const header = document.getElementById('resultsHeaderRutas');
+
+            if (!origen || !destino) return;
+
+            container.innerHTML = '<div class="bg-white rounded-2xl p-12 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin text-3xl text-[#E2001A] mb-3"></i><p class="text-sm">Calculando itinerarios GTFS...</p></div>';
+            header.classList.add('hidden');
+
+            try {
+                const res = await fetch(`/api/rutas?origen=${encodeURIComponent(origen)}&destino=${encodeURIComponent(destino)}&criterio=${criterioActual}`);
+                
+                // ESTRATEGIA INFALIBLE: Si la ruta falla, el frontend busca las opciones directamente
+                if (!res.ok) {
+                    const resOrig = await fetch(`/api/estaciones?nombre=${encodeURIComponent(origen)}`);
+                    const estOrig = await resOrig.json();
+
+                    const resDest = await fetch(`/api/estaciones?nombre=${encodeURIComponent(destino)}`);
+                    const estDest = await resDest.json();
+
+                    if (estOrig.length === 0) throw new Error(`No existe la estación de origen: ${origen}`);
+                    if (estDest.length === 0) throw new Error(`No existe la estación de destino: ${destino}`);
+
+                    // Detectar ambigüedad en Origen
+                    if (estOrig.length > 1 && !estOrig.some(e => e.nombre.toLowerCase() === origen.toLowerCase())) {
+                        mostrarAmbiguedad('Origen', origen, estOrig);
+                        return;
+                    }
+
+                    // Detectar ambigüedad en Destino
+                    if (estDest.length > 1 && !estDest.some(e => e.nombre.toLowerCase() === destino.toLowerCase())) {
+                        mostrarAmbiguedad('Destino', destino, estDest);
+                        return;
+                    }
+
+                    throw new Error("No se pudo calcular la ruta. Comprueba los datos introducidos.");
+                }
+
+                const rutas = await res.json();
+
+                if (!rutas || rutas.length === 0) {
+                    container.innerHTML = '<div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-6 text-center font-bold text-sm">No hay rutas disponibles para este trayecto.</div>';
+                    return;
+                }
+
+                let nombreOrigenOficial = origen;
+                let nombreDestinoOficial = destino;
+
+                if (rutas[0] && rutas[0].tramos && rutas[0].tramos.length > 0) {
+                    const primerTramo = rutas[0].tramos[0];
+                    const ultimoTramo = rutas[0].tramos[rutas[0].tramos.length - 1];
+
+                    if (primerTramo.origen && primerTramo.origen.nombre) nombreOrigenOficial = primerTramo.origen.nombre;
+                    if (ultimoTramo.destino && ultimoTramo.destino.nombre) nombreDestinoOficial = ultimoTramo.destino.nombre;
+                }
+
+                header.classList.remove('hidden');
+                document.getElementById('routeTitle').innerText = `${nombreOrigenOficial} ➔ ${nombreDestinoOficial}`;
+                document.getElementById('routeSub').innerText = `${rutas.length} opciones encontradas`;
+                document.getElementById('badgeCriterio').innerText = `ORDENADO POR ${criterioActual.toUpperCase()}`;
+
+                container.innerHTML = '';
+                rutas.forEach((r, idx) => {
+                    const esMejor = idx === 0;
+                    const duracion = r.tiempoTotalMinutos || 0;
+                    const precio = r.precioTotal ? r.precioTotal.toFixed(2) : '0.00';
+                    const transbordos = r.numeroTransbordos || 0;
+                    const hSalida = r.fechaHoraSalida ? extraeHora(r.fechaHoraSalida) : (r.tramos && r.tramos[0] ? r.tramos[0].horaSalida : '--:--');
+                    const hLlegada = r.fechaHoraLlegada ? extraeHora(r.fechaHoraLlegada) : (r.tramos && r.tramos[r.tramos.length-1] ? r.tramos[r.tramos.length-1].horaLlegada : '--:--');
+
+                    let lineasBadges = r.tramos ? r.tramos.map(t => `<span class="line-badge line-${(t.linea?.shortName || 'C1').replace(/[^a-zA-Z0-9]/g, '')} mr-1">${t.linea?.shortName || 'Tren'}</span>`).join('') : '';
+
+                    container.innerHTML += `
+                        <div class="bg-white rounded-2xl p-6 border ${esMejor ? 'border-red-400 ring-2 ring-red-500/10' : 'border-gray-100'} shadow-sm relative space-y-4">
+                            ${esMejor ? '<div class="absolute top-0 right-0 bg-[#E2001A] text-white text-[10px] uppercase font-extrabold px-3 py-1 rounded-bl-xl">MEJOR OPCIÓN</div>' : ''}
+                            <div class="flex justify-between items-center">
+                                <div>${lineasBadges}</div>
+                                <div class="flex space-x-6 text-right">
+                                    <div><span class="text-xs text-gray-400 uppercase">Tiempo</span><p class="font-bold text-gray-800">${duracion} min</p></div>
+                                    <div><span class="text-xs text-gray-400 uppercase">Precio</span><p class="font-bold text-emerald-600">${precio} €</p></div>
+                                    <div><span class="text-xs text-gray-400 uppercase">Transbordos</span><p class="font-bold text-gray-800">${transbordos}</p></div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-4 flex justify-between items-center font-bold text-gray-800">
+                                <div><p class="text-xs text-gray-400 font-normal">Salida</p>${hSalida}</div>
+                                <div class="text-xs text-gray-400 font-normal">── ${duracion} min ──</div>
+                                <div><p class="text-xs text-gray-400 font-normal">Llegada</p>${hLlegada}</div>
+                            </div>
+                            <div class="border-t border-gray-100 pt-3 space-y-2">
+                                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Detalle del Itinerario</p>
+                                ${renderTramosDetalle(r.tramos)}
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                header.classList.add('hidden');
+                container.innerHTML = `<div class="bg-red-50 border border-red-200 text-red-700 p-6 rounded-2xl text-center font-bold text-sm"><i class="fa-solid fa-triangle-exclamation mr-2"></i>${err.message}</div>`;
+            }
+        }
+
+        // Nueva función que pinta los botones
+        function mostrarAmbiguedad(campo, termino, listaEstaciones) {
+            const container = document.getElementById('resultsRutas');
+            let botonesHtml = listaEstaciones.map(e => `
+                <button onclick="seleccionarSugerencia('${campo}', '${e.nombre}')" 
+                    class="bg-white border border-red-300 text-gray-800 hover:bg-red-600 hover:text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition mb-2 mr-2">
+                    📍 ${e.nombre}
+                </button>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-6 text-left space-y-3">
+                    <div class="flex items-center space-x-2 text-red-700 font-bold text-sm">
+                        <i class="fa-solid fa-circle-question text-lg"></i>
+                        <span>Búsqueda ambigua en el campo ${campo} ("${termino}")</span>
+                    </div>
+                    <p class="text-xs text-gray-600">Haz clic en la estación exacta a la que deseas viajar:</p>
+                    <div class="flex flex-wrap pt-1">${botonesHtml}</div>
+                </div>
+            `;
+        }
+
+        function seleccionarSugerencia(campo, nombreEstacion) {
+            if (campo === 'Origen') {
+                document.getElementById('origen').value = nombreEstacion;
+            } else {
+                document.getElementById('destino').value = nombreEstacion;
+            }
+            buscarRutas();
+        }
+
+        // Función auxiliar para rellenar el campo con la estación pulsada y recalcular automáticamente
+        function seleccionarSugerencia(campo, nombreEstacion) {
+            if (campo === 'Origen') {
+                document.getElementById('origen').value = nombreEstacion;
+            } else {
+                document.getElementById('destino').value = nombreEstacion;
+            }
+            buscarRutas();
+        }
+
+        function BuscadorEstacionesNormalizar(t) {
+            if (!t) return "";
+            return t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+        }
+
+        function renderTramosDetalle(tramos) {
+            if (!tramos || tramos.length === 0) return '';
+            return tramos.map(t => {
+                const linea = t.linea ? t.linea.shortName : 'Tren';
+                const orig = t.origen ? t.origen.nombre : 'Origen';
+                const dest = t.destino ? t.destino.nombre : 'Destino';
+                const sal = t.horaSalida ? t.horaSalida.substring(0,5) : '--:--';
+                const lleg = t.horaLlegada ? t.horaLlegada.substring(0,5) : '--:--';
+                const dur = t.duracionMinutos || 0;
+
+                return `
+                    <div class="bg-gray-50/60 p-2.5 rounded-xl flex items-center justify-between text-xs">
+                        <div class="flex items-center space-x-2">
+                            <span class="line-badge line-${linea.replace(/[^a-zA-Z0-9]/g, '')} text-[10px]">${linea}</span>
+                            <span class="text-gray-700"><strong>${orig}</strong> ➔ <strong>${dest}</strong></span>
+                        </div>
+                        <div class="text-gray-500 font-medium">
+                            ${sal} - ${lleg} (${dur} min)
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function buscarLlegadas() {
+            const estacionInput = document.getElementById('estacionLlegadas').value.trim();
+            const filtroLinea = document.getElementById('filtroLinea').value.trim();
+            const max = document.getElementById('maxLlegadas').value;
+            const container = document.getElementById('resultsLlegadas');
+
+            container.innerHTML = '<div class="bg-white rounded-2xl p-12 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin text-3xl text-[#E2001A] mb-3"></i><p class="text-sm">Consultando panel de estación...</p></div>';
+
+            try {
+                const estRes = await fetch(`/api/estaciones?nombre=${encodeURIComponent(estacionInput)}`);
+                const estaciones = await estRes.json();
+                if (!estaciones || estaciones.length === 0) throw new Error('Estación no encontrada.');
+
+                const est = estaciones[0];
+                let url = `/api/estaciones/${est.id}/llegadas?max=${max}`;
+                if (filtroLinea) url += `&linea=${encodeURIComponent(filtroLinea)}`;
+
+                const res = await fetch(url);
+                const llegadas = await res.json();
+
+                if (!llegadas || llegadas.length === 0) {
+                    container.innerHTML = '<div class="bg-amber-50 text-amber-800 p-6 rounded-2xl text-center font-bold text-sm">No hay próximas llegadas registradas para esta estación.</div>';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="bg-slate-900 text-white rounded-2xl p-4 mb-4 flex justify-between items-center shadow-lg">
+                        <div>
+                            <h3 class="font-bold text-lg text-amber-400">📍 ${est.nombre}</h3>
+                            <p class="text-xs text-slate-400">Panel Electrónico en Tiempo Real</p>
+                        </div>
+                        <span class="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-300 font-mono">${llegadas.length} TRENES</span>
+                    </div>
+                `;
+
+                llegadas.forEach(l => {
+                    const horaStr = l.hora ? extraeHora(l.hora) : '--:--';
+                    const lineaNombre = l.linea ? l.linea.shortName : 'Tren';
+                    const destinoNombre = l.destino ? l.destino.nombre : 'Fin de trayecto';
+
+                    container.innerHTML += `
+                        <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <span class="line-badge line-${lineaNombre.replace(/[^a-zA-Z0-9]/g, '')} text-base px-3 py-1">${lineaNombre}</span>
+                                <div>
+                                    <p class="font-bold text-gray-800 text-sm">Destino: ${destinoNombre}</p>
+                                    <p class="text-xs text-gray-400">${l.terminaAqui ? '⚠️ Finaliza en esta estación' : 'Pasajero en tránsito'}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs text-gray-400 uppercase">Hora Prevista</span>
+                                <p class="text-lg font-extrabold text-[#E2001A] font-mono">${horaStr}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                container.innerHTML = `<div class="bg-red-50 text-red-700 p-6 rounded-2xl text-center font-bold text-sm">${err.message}</div>`;
+            }
+        }
+
+        async function cargarTodasEstaciones() {
+            const container = document.getElementById('resultsEstaciones');
+            container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-2"></i><p>Cargando estaciones de la red...</p></div>';
+
+            try {
+                const res = await fetch('/api/estaciones');
+                listaEstacionesCache = await res.json();
+                renderDirectorioEstaciones(listaEstacionesCache);
+            } catch (err) {
+                container.innerHTML = `<div class="col-span-full text-red-500 text-center font-bold">Error al cargar las estaciones.</div>`;
+            }
+        }
+
+        function renderDirectorioEstaciones(lista) {
+            const container = document.getElementById('resultsEstaciones');
+            container.innerHTML = '';
+
+            lista.forEach(e => {
+                container.innerHTML += `
+                    <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:border-red-200 transition">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-gray-800 text-sm">${e.nombre}</h4>
+                            <span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-mono">ID: ${e.id}</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">Lat: ${e.latitud.toFixed(4)} | Lon: ${e.longitud.toFixed(4)}</p>
+                        <div class="mt-3 pt-2 border-t border-gray-50 flex justify-between items-center">
+                            <button onclick="seleccionarEstacionYConsultar('${e.nombre}')" class="text-xs text-[#E2001A] font-semibold hover:underline">
+                                Ver llegadas ➔
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filtrarDirectorioEstaciones() {
+            const q = document.getElementById('buscarEstacionTexto').value.toLowerCase();
+            const filtradas = listaEstacionesCache.filter(e => e.nombre.toLowerCase().includes(q) || e.id.includes(q));
+            renderDirectorioEstaciones(filtradas);
+        }
+
+        function seleccionarEstacionYConsultar(nombre) {
+            cambiarPestana('llegadas');
+            document.getElementById('estacionLlegadas').value = nombre;
+            buscarLlegadas();
+        }
+
+        function extraeHora(fechaIso) {
+            if (!fechaIso) return '--:--';
+            return fechaIso.includes('T') ? fechaIso.split('T')[1].substring(0, 5) : fechaIso.substring(0, 5);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setCriterio('tiempo');
+        });
+    </script>
+</body>
+</html>
