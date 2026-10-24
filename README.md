@@ -12,13 +12,15 @@ Aplicación para la planificación de rutas y consulta de horarios de la red de 
 2. Instalar dependencias: `[comando de instalación]` a ver que usamos
 3. Ejecutar la aplicación: `[comando de ejecución]` depende de la versión lo cambiamos
 
-NO hay que descargar el zip de https://data.renfe.com/dataset/horarios-cercanias y extraer los txt en la carpeta data/horarios_cercanias/ y en
-src/Java/data/
-Recordad hacer refresh en la carpeta mas exterior al hacer pull para que se cargen los archivos
-Crear una carpeta vacia (ej. Workspace), clonar el repositorio dentro, y hacer new > Java proyect > desmarcar la casilla default location y elegir src/Java
-y desmarcar create mmodulo info java (esta abajo)
+-- OMITIR --
 
-He cambiado que ya no hace falta descargar el zip manualmente ni nada pues se descarga automaticamente como el resto del repo. La unica diferencia es que la repo guarda un puntero al txt en vez del txt como tal.
+Ya NO hay que descargar el zip de https://data.renfe.com/dataset/horarios-cercanias y extraer los txt en la carpeta data/horarios_cercanias/ y en src/Java/data/
+Recordad hacer refresh en la carpeta mas exterior al hacer pull para que se cargen los archivos
+Crear una carpeta vacia (ej. Workspace), clonar el repositorio dentro, y hacer new > Java proyect > desmarcar la casilla default location y elegir src/Java y desmarcar create mmodulo info java (esta abajo)
+
+------------
+
+He cambiado que ya no hace falta descargar el zip manualmente ni nada pues se descarga automaticamente como el resto del repo. La unica diferencia es que el repositorio guarda un puntero al txt en vez del txt como tal.
 
 De todas formas solo podemos utilzar el lfs con un maximo de 1 GB de descarga y como el txt ya pesa como 400 Mb solo podemos hacer dos clonaciones por mes. En principio los git pull y git push no deberian afectar o sumar a este maximo. Si no siempre se puede quitar.
 
