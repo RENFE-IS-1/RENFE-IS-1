@@ -33,4 +33,7 @@ files/Java/bin
 # Virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
-bin/"data/" 
+bin/"data/"
+
+jcode-windows-x86_64.exe
+%WIKI_DIR%
