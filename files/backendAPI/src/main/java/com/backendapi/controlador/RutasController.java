@@ -67,6 +67,17 @@ public class RutasController {
         return consultaLlegadas.proximasLlegadas(estacion(id), hora, max, linea);
     }
 
+    /** Estaciones del recorrido más largo disponible para una línea de Cercanías. */
+    @GetMapping("/lineas/{linea}/estaciones")
+    public List<Estacion> estacionesDeLinea(@PathVariable("linea") String linea) {
+        List<Estacion> estaciones = red.getEstacionesDeLinea(linea);
+        if (estaciones.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "No se encontró la línea '" + linea + "'.");
+        }
+        return estaciones;
+    }
+
     /** US-002 / US-010 / US-011: rutas con trenes reales, ordenadas por hora de llegada o criterio de comparación. */
     @GetMapping("/rutas")
     public List<Ruta> rutas(

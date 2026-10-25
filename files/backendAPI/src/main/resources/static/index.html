@@ -26,6 +26,7 @@
         .line-C5 { background-color: #ECA328; color: black; }
         .line-C7 { background-color: #C0272D; }
         .line-C8, .line-C8a, .line-C8b { background-color: #868584; }
+        .line-C9 { background-color: #915419; }
         .line-C10 { background-color: #BCCF00; color: black; }
         .line-TRANS { background-color: #6B7280; }
 
@@ -35,6 +36,26 @@
             font-weight: 700;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
+
+        .schematic-map { background: linear-gradient(135deg, #f8fafc, #eef2ff); }
+        .schematic-map svg,
+        .schematic-map svg:focus,
+        .map-line,
+        .map-line:focus,
+        .detail-station,
+        .detail-station:focus { outline: none !important; }
+        .mapa-real-svg { display: block; width: 100%; min-width: 780px; height: auto; }
+        .mapa-real-svg [data-map-line] { cursor: pointer; transition: opacity .2s, filter .2s; }
+        .mapa-real-svg.map-highlight-active [data-map-line] { opacity: .14; }
+        .mapa-real-svg.map-highlight-active [data-map-line].is-highlighted {
+            opacity: 1;
+            filter: drop-shadow(0 2px 2px rgba(15,23,42,.42));
+        }
+        .map-line-selector.active { box-shadow: 0 0 0 2px currentColor; }
+        .detail-station { cursor: pointer; }
+        .detail-station circle { fill: var(--line-color); stroke: var(--line-color); stroke-width: 2; transition: r .15s, stroke-width .15s, fill .15s; }
+        .detail-station:hover circle { fill: white; stroke: var(--line-color); stroke-width: 4; r: 8; }
+        .detail-station text { font-size: 11px; font-weight: 600; fill: #334155; pointer-events: none; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -58,6 +79,9 @@
                 </button>
                 <button onclick="cambiarPestana('estaciones')" id="tab-estaciones" class="tab-btn px-4 py-2 rounded-lg text-red-100 hover:text-white transition">
                     <i class="fa-solid fa-map-pin mr-1.5"></i>Estaciones
+                </button>
+                <button onclick="cambiarPestana('mapa')" id="tab-mapa" class="tab-btn px-4 py-2 rounded-lg text-red-100 hover:text-white transition">
+                    <i class="fa-solid fa-diagram-project mr-1.5"></i>Mapa de líneas
                 </button>
             </nav>
         </div>
@@ -190,6 +214,45 @@
             <div id="resultsEstaciones" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             </div>
         </div>
+
+        <!-- PESTAÑA MAPA DE LÍNEAS -->
+        <div id="sec-mapa" class="hidden space-y-6">
+            <div id="mapaVistaGeneral" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-diagram-project text-[#E2001A] mr-2"></i>Mapa de Cercanías Madrid</h2>
+                        <p class="text-xs text-gray-500">Pulsa una línea para abrir su recorrido completo y consultar cualquiera de sus estaciones.</p>
+                    </div>
+                    <span class="text-xs text-gray-400">Mapa de red suministrado para el proyecto</span>
+                </div>
+                <div class="schematic-map rounded-2xl border border-slate-200 overflow-auto p-2">
+                    <div id="mapaSvg" aria-live="polite" class="min-w-[780px]">
+                        <div class="py-16 text-center text-sm text-slate-500">
+                            <i class="fa-solid fa-spinner fa-spin mr-2 text-[#E2001A]"></i>Cargando mapa de Cercanías...
+                        </div>
+                    </div>
+                </div>
+                <div id="mapaSelectorLineas" class="mt-4 flex flex-wrap gap-2" aria-label="Seleccionar línea de Cercanías"></div>
+            </div>
+
+            <div id="mapaVistaLinea" class="hidden bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center gap-3 mb-5">
+                    <button type="button" onclick="volverMapaGeneral()" class="text-sm text-gray-600 hover:text-[#E2001A] font-semibold transition">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>Volver al mapa general
+                    </button>
+                </div>
+                <div class="flex items-center gap-3 mb-4">
+                    <span id="mapaLineaBadge" class="line-badge text-base px-3 py-1"></span>
+                    <div>
+                        <h2 id="mapaLineaTitulo" class="text-lg font-bold text-gray-800"></h2>
+                        <p class="text-xs text-gray-500">Todas las estaciones del recorrido cargadas desde GTFS.</p>
+                    </div>
+                </div>
+                <div id="mapaLineaContenedor" class="schematic-map rounded-2xl border border-slate-200 overflow-auto p-3">
+                    <svg id="mapaLineaSvg" viewBox="0 0 1100 430" role="img" aria-label="Recorrido de línea con todas sus estaciones" focusable="false" class="block h-auto"></svg>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script>
@@ -197,7 +260,7 @@
         let listaEstacionesCache = [];
 
         function cambiarPestana(pestana) {
-            ['rutas', 'llegadas', 'estaciones'].forEach(p => {
+            ['rutas', 'llegadas', 'estaciones', 'mapa'].forEach(p => {
                 document.getElementById(`sec-${p}`).classList.add('hidden');
                 document.getElementById(`tab-${p}`).classList.remove('active', 'text-[#E2001A]');
                 document.getElementById(`tab-${p}`).classList.add('text-red-100');
@@ -211,6 +274,7 @@
             if (pestana === 'estaciones' && listaEstacionesCache.length === 0) {
                 cargarTodasEstaciones();
             }
+            if (pestana === 'mapa') renderMapaLineas();
         }
 
         function setCriterio(c) {
@@ -508,6 +572,223 @@
             buscarLlegadas();
         }
 
+        const URL_MAPA_CERCANIAS = '/mapas/cercanias-madrid.svg';
+        const mapaLineas = {
+            C1: { color: '#75B6E0', recorrido: 'Príncipe Pío → Aeropuerto-T4', coloresSvg: ['#2D98BB', '#2C99C0'] },
+            C2: { color: '#00943D', recorrido: 'Guadalajara → Chamartín-Clara Campoamor', coloresSvg: ['#266923', '#27681F'] },
+            C3: { color: '#952585', recorrido: 'Aranjuez → Chamartín-Clara Campoamor', coloresSvg: ['#820081'] },
+            C4: { color: '#2C2A86', recorrido: 'Chamartín-Clara Campoamor → Parla', coloresSvg: ['#1E0C7D'] },
+            C5: { color: '#ECA328', recorrido: 'Móstoles-El Soto → Humanes', coloresSvg: ['#F3CB16'] },
+            C7: { color: '#C0272D', recorrido: 'Príncipe Pío → Alcalá de Henares', coloresSvg: ['#FB0F0C'] },
+            C8a: { color: '#868584', recorrido: 'Atocha Cercanías → El Escorial', coloresSvg: [] },
+            C8b: { color: '#868584', recorrido: 'Atocha Cercanías → Cercedilla', coloresSvg: [] },
+            C9: { color: '#915419', recorrido: 'Cercedilla → Los Cotos', coloresSvg: ['#F46515'] },
+            C10: { color: '#BCCF00', recorrido: 'Villalba → Aeropuerto-T4', coloresSvg: ['#BAC12D'] }
+        };
+        let mapaSolicitudActual = 0;
+
+        async function renderMapaLineas() {
+            const contenedor = document.getElementById('mapaSvg');
+            if (!contenedor || contenedor.dataset.rendered) return;
+
+            contenedor.dataset.rendered = 'cargando';
+            renderSelectorLineas();
+
+            try {
+                const respuesta = await fetch(URL_MAPA_CERCANIAS);
+                if (!respuesta.ok) throw new Error('No se pudo cargar el mapa de Cercanías.');
+
+                const contenidoSvg = (await respuesta.text())
+                    .replace(/<\?xml[^>]*\?>\s*/i, '')
+                    .replace(/<!DOCTYPE[^>]*(?:\[[\s\S]*?\]\s*)?>\s*/i, '');
+                contenedor.innerHTML = contenidoSvg;
+
+                const svg = contenedor.querySelector('svg');
+                if (!svg) throw new Error('El archivo del mapa no contiene un SVG válido.');
+                svg.classList.add('mapa-real-svg');
+                svg.setAttribute('role', 'img');
+                svg.setAttribute('aria-label', 'Mapa interactivo de líneas de Cercanías Madrid');
+                prepararInteraccionesMapa(svg);
+                contenedor.dataset.rendered = 'true';
+            } catch (error) {
+                contenedor.innerHTML = `
+                    <div class="py-12 text-center text-sm text-red-700">
+                        <i class="fa-solid fa-triangle-exclamation mr-2"></i>${error.message}
+                    </div>`;
+                delete contenedor.dataset.rendered;
+            }
+        }
+
+        function renderSelectorLineas() {
+            const selector = document.getElementById('mapaSelectorLineas');
+            if (!selector || selector.dataset.rendered) return;
+
+            Object.entries(mapaLineas).forEach(([linea, data]) => {
+                const boton = document.createElement('button');
+                boton.type = 'button';
+                boton.className = 'map-line-selector line-badge transition hover:brightness-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#E2001A]';
+                boton.dataset.lineaSelector = linea;
+                boton.textContent = linea;
+                boton.style.backgroundColor = data.color;
+                boton.style.color = ['C5', 'C10'].includes(linea) ? '#111827' : '#ffffff';
+                boton.title = `Abrir el recorrido de ${linea}`;
+                boton.addEventListener('mouseenter', () => resaltarLineaMapa(linea));
+                boton.addEventListener('mouseleave', limpiarResaltadoMapa);
+                boton.addEventListener('focus', () => resaltarLineaMapa(linea));
+                boton.addEventListener('blur', limpiarResaltadoMapa);
+                boton.addEventListener('click', () => abrirDetalleLinea(linea));
+                selector.appendChild(boton);
+            });
+            selector.dataset.rendered = 'true';
+        }
+
+        function prepararInteraccionesMapa(svg) {
+            Object.entries(mapaLineas).forEach(([linea, data]) => {
+                const colores = data.coloresSvg;
+                if (colores.length === 0) return;
+
+                const selector = colores.flatMap(color => [`[fill="${color}"]`, `[stroke="${color}"]`]).join(',');
+                svg.querySelectorAll(selector).forEach(elemento => {
+                    elemento.dataset.mapLine = linea;
+                    elemento.setAttribute('aria-label', `Abrir línea ${linea}`);
+                    elemento.addEventListener('mouseenter', () => resaltarLineaMapa(linea));
+                    elemento.addEventListener('mouseleave', limpiarResaltadoMapa);
+                    elemento.addEventListener('click', () => abrirDetalleLinea(linea));
+                });
+            });
+        }
+
+        function resaltarLineaMapa(linea) {
+            const svg = document.querySelector('#mapaSvg svg');
+            const tieneTrazoEnMapa = mapaLineas[linea]?.coloresSvg.length > 0;
+            if (svg && tieneTrazoEnMapa) {
+                svg.classList.add('map-highlight-active');
+                svg.querySelectorAll('[data-map-line]').forEach(elemento => {
+                    elemento.classList.toggle('is-highlighted', elemento.dataset.mapLine === linea);
+                });
+            } else if (svg) {
+                limpiarResaltadoMapa();
+            }
+            document.querySelectorAll('[data-linea-selector]').forEach(boton => {
+                boton.classList.toggle('active', boton.dataset.lineaSelector === linea);
+            });
+        }
+
+        function limpiarResaltadoMapa() {
+            const svg = document.querySelector('#mapaSvg svg');
+            if (svg) {
+                svg.classList.remove('map-highlight-active');
+                svg.querySelectorAll('.is-highlighted').forEach(elemento => elemento.classList.remove('is-highlighted'));
+            }
+            document.querySelectorAll('[data-linea-selector].active').forEach(boton => boton.classList.remove('active'));
+        }
+
+        async function abrirDetalleLinea(linea) {
+            const data = mapaLineas[linea];
+            if (!data) return;
+
+            const solicitud = ++mapaSolicitudActual;
+            document.getElementById('mapaVistaGeneral').classList.add('hidden');
+            document.getElementById('mapaVistaLinea').classList.remove('hidden');
+            document.getElementById('mapaLineaBadge').innerText = linea;
+            document.getElementById('mapaLineaBadge').style.backgroundColor = data.color;
+            document.getElementById('mapaLineaTitulo').innerText = `${linea}: ${data.recorrido}`;
+            const svg = document.getElementById('mapaLineaSvg');
+            svg.innerHTML = '<text x="40" y="80" font-size="16" fill="#64748b">Cargando todas las estaciones de la línea...</text>';
+
+            try {
+                const res = await fetch(`/api/lineas/${encodeURIComponent(linea)}/estaciones`);
+                if (!res.ok) throw new Error('No se pudo cargar el recorrido de la línea.');
+                const estaciones = await res.json();
+                if (solicitud !== mapaSolicitudActual) return;
+                renderDetalleLinea(linea, estaciones);
+            } catch (err) {
+                if (solicitud !== mapaSolicitudActual) return;
+                svg.innerHTML = `<text x="40" y="80" font-size="16" fill="#b91c1c">${err.message}</text>`;
+            }
+        }
+
+        function escaparHtml(valor) {
+            return String(valor).replace(/[&<>"']/g, caracter => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[caracter]));
+        }
+
+        function partirNombreEstacion(nombre, maximoCaracteres = 18) {
+            const palabras = nombre
+                .replace(/-/g, '- ')
+                .trim()
+                .split(/\s+/)
+                .flatMap(palabra => {
+                if (palabra.length <= maximoCaracteres) return [palabra];
+                return palabra.match(new RegExp(`.{1,${maximoCaracteres}}`, 'g')) || [palabra];
+            });
+            const lineas = [];
+            let lineaActual = '';
+            palabras.forEach(palabra => {
+                const candidata = lineaActual ? `${lineaActual} ${palabra}` : palabra;
+                if (candidata.length > maximoCaracteres && lineaActual) {
+                    lineas.push(lineaActual);
+                    lineaActual = palabra;
+                } else {
+                    lineaActual = candidata;
+                }
+            });
+            if (lineaActual) lineas.push(lineaActual);
+            return lineas;
+        }
+
+        function anchoEtiqueta(lineas) {
+            return Math.max(...lineas.map(linea => linea.length), 1) * 6.5;
+        }
+
+        function renderDetalleLinea(linea, estaciones) {
+            const data = mapaLineas[linea];
+            const svg = document.getElementById('mapaLineaSvg');
+            const separacion = 128;
+            const etiquetas = estaciones.map(estacion => partirNombreEstacion(estacion.nombre || 'Estación'));
+            const margenIzquierdo = Math.max(82, Math.ceil(anchoEtiqueta(etiquetas[0] || ['']) / 2 + 18));
+            const margenDerecho = Math.max(82, Math.ceil(anchoEtiqueta(etiquetas[etiquetas.length - 1] || ['']) / 2 + 18));
+            const ancho = Math.max(760, margenIzquierdo + margenDerecho + Math.max(0, estaciones.length - 1) * separacion);
+            const yLinea = 150;
+            const puntos = estaciones.map((_, indice) => `${margenIzquierdo + indice * separacion},${yLinea}`).join(' ');
+            const estacionesSvg = estaciones.map((estacion, indice) => {
+                const x = margenIzquierdo + indice * separacion;
+                const nombre = estacion.nombre || 'Estación';
+                const lineas = etiquetas[indice];
+                const arriba = indice % 2 === 1;
+                const yTexto = arriba ? yLinea - 30 - (lineas.length - 1) * 13 : yLinea + 30;
+                const tspans = lineas.map((texto, indiceLinea) =>
+                    `<tspan x="${x}" dy="${indiceLinea === 0 ? 0 : 13}">${escaparHtml(texto)}</tspan>`
+                ).join('');
+                return `<g class="detail-station" style="--line-color:${data.color}" data-estacion="${escaparHtml(nombre)}" role="button" tabindex="0" aria-label="Consultar llegadas en ${escaparHtml(nombre)}"><circle cx="${x}" cy="${yLinea}" r="6"></circle><text x="${x}" y="${yTexto}" text-anchor="middle">${tspans}</text></g>`;
+            }).join('');
+
+            svg.setAttribute('viewBox', `0 0 ${ancho} 300`);
+            svg.setAttribute('width', ancho);
+            svg.setAttribute('height', '300');
+            svg.style.width = `${ancho}px`;
+            svg.style.height = '300px';
+            svg.style.maxWidth = 'none';
+            svg.innerHTML = `<polyline points="${puntos}" fill="none" stroke="${data.color}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></polyline>${estacionesSvg}`;
+            svg.querySelectorAll('.detail-station').forEach(estacionSvg => {
+                const consultar = () => seleccionarEstacionYConsultar(estacionSvg.dataset.estacion);
+                estacionSvg.addEventListener('click', consultar);
+                estacionSvg.addEventListener('keydown', evento => {
+                    if (evento.key === 'Enter' || evento.key === ' ') {
+                        evento.preventDefault();
+                        consultar();
+                    }
+                });
+            });
+        }
+
+        function volverMapaGeneral() {
+            mapaSolicitudActual++;
+            document.getElementById('mapaVistaLinea').classList.add('hidden');
+            document.getElementById('mapaVistaGeneral').classList.remove('hidden');
+        }
+
         function extraeHora(fechaIso) {
             if (!fechaIso) return '--:--';
             return fechaIso.includes('T') ? fechaIso.split('T')[1].substring(0, 5) : fechaIso.substring(0, 5);
@@ -515,6 +796,10 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             setCriterio('tiempo');
+            const tabSolicitada = new URLSearchParams(window.location.search).get('tab');
+            if (['rutas', 'llegadas', 'estaciones', 'mapa'].includes(tabSolicitada)) {
+                cambiarPestana(tabSolicitada);
+            }
         });
     </script>
 </body>

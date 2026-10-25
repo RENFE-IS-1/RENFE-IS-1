@@ -7,8 +7,6 @@ route_id,route_short_name,route_long_name,route_type,route_color,route_text_colo
 10T0006C2  ,C2  ,Chamartín - Clara Campoamor             -Guadalajara                             ,2,00943D,FFFFFF                                    
 10T0007C3  ,C3  ,Chamartín - Clara Campoamor             -Aranjuez                                ,2,952585,FFFFFF                                    
 10T0008C3  ,C3  ,Aranjuez                                -Chamartín - Clara Campoamor             ,2,952585,FFFFFF                                    
-10T0009C8a ,C8a ,Chamartín - Clara Campoamor             -El Escorial                             ,2,868584,FFFFFF                                    
-10T0010C8a ,C8a ,El Escorial                             -Chamartín - Clara Campoamor             ,2,868584,FFFFFF                                    
 10T0011C4  ,C4  ,Chamartín - Clara Campoamor             -Parla                                   ,2,2C2A86,FFFFFF                                    
 10T0012C4  ,C4  ,Parla                                   -Chamartín - Clara Campoamor             ,2,2C2A86,FFFFFF                                    
 10T0013C4a ,C4a ,Alcobendas-S.Sebast. de los Reyes       -Parla                                   ,2,2C2A86,FFFFFF                                    
@@ -17,120 +15,40 @@ route_id,route_short_name,route_long_name,route_type,route_color,route_text_colo
 10T0016C4b ,C4b ,Parla                                   -Colmenar Viejo                          ,2,2C2A86,FFFFFF                                    
 10T0017C5  ,C5  ,Mostoles el Soto                        -Humanes                                 ,2,FECB00,FFFFFF                                    
 10T0018C5  ,C5  ,Humanes                                 -Mostoles el Soto                        ,2,FECB00,FFFFFF                                    
-10T0019C2  ,C2  ,Alcala de Henares                       -Principe Pio                            ,2,00943D,FFFFFF                                    
-10T0020C2  ,C2  ,Principe Pio                            -Alcala de Henares                       ,2,00943D,FFFFFF                                    
-10T0021C8b ,C8b ,Atocha                                  -Cercedilla                              ,2,868584,FFFFFF                                    
-10T0022C8b ,C8b ,Cercedilla                              -Atocha                                  ,2,868584,FFFFFF                                    
-10T0023C8a ,C8a ,Atocha                                  -El Escorial                             ,2,868584,FFFFFF                                    
-10T0024C8a ,C8a ,El Escorial                             -Atocha                                  ,2,868584,FFFFFF                                    
 10T0025C9  ,C9  ,Cercedilla                              -Cotos                                   ,2,915419,FFFFFF                                    
 10T0026C9  ,C9  ,Cotos                                   -Cercedilla                              ,2,915419,FFFFFF                                    
 10T0027C8a ,C8a ,Atocha                                  -El Escorial                             ,2,868584,FFFFFF                                    
-10T0028C8a ,C8a ,El Escorial                             -Atocha                                  ,2,868584,FFFFFF                                    
-10T0029C3  ,C3  ,Aranjuez                                -                                        ,2,952585,FFFFFF                                    
-10T0030C3  ,C3  ,                                        -Aranjuez                                ,2,952585,FFFFFF                                    
-10T0031C2  ,C2  ,Guadalajara                             -                                        ,2,00943D,FFFFFF                                    
-10T0032C2  ,C2  ,                                        -Guadalajara                             ,2,00943D,FFFFFF                                    
-10T0033C3  ,C3  ,                                        -                                        ,2,952585,FFFFFF                                    
-10T0034C3  ,C3  ,                                        -                                        ,2,952585,FFFFFF                                    
 10T0035C5  ,C5  ,                                        -Fuenlabrada                             ,2,FECB00,FFFFFF                                    
-10T0036C5  ,C5  ,Fuenlabrada                             -                                        ,2,FECB00,FFFFFF                                    
-10T0037C2  ,C2  ,Alcala de Henares                       -Nuevos Ministerios                      ,2,00943D,FFFFFF                                    
-10T0038C2  ,C2  ,Nuevos Ministerios                      -Alcala de Henares                       ,2,00943D,FFFFFF                                    
-10T0039C8  ,C8  ,Principe Pio                            -                                        ,2,868584,FFFFFF                                    
-10T0040C8  ,C8  ,                                        -Principe Pio                            ,2,868584,FFFFFF                                    
-10T0041C8  ,C8  ,Principe Pio                            -                                        ,2,868584,FFFFFF                                    
-10T0042C8  ,C8  ,                                        -Principe Pio                            ,2,868584,FFFFFF                                    
-10T0043C8  ,C8  ,Principe Pio                            -                                        ,2,868584,FFFFFF                                    
-10T0044C8  ,C8  ,                                        -Principe Pio                            ,2,868584,FFFFFF                                    
-10T0045C8  ,C8  ,Principe Pio                            -                                        ,2,868584,FFFFFF                                    
-10T0046C8  ,C8  ,                                        -Principe Pio                            ,2,868584,FFFFFF                                    
 10T0047C5  ,C5  ,Atocha                                  -Fuenlabrada                             ,2,FECB00,FFFFFF                                    
 10T0048C5  ,C5  ,Fuenlabrada                             -Atocha                                  ,2,FECB00,FFFFFF                                    
-10T0049C2  ,C2  ,Guadalajara                             -Atocha                                  ,2,00943D,FFFFFF                                    
-10T0050C2  ,C2  ,Atocha                                  -Guadalajara                             ,2,00943D,FFFFFF                                    
 10T0051C7  ,C7  ,Principe Pio                            -Chamartín - Clara Campoamor             ,2,E5202A,FFFFFF                                    
 10T0052C7  ,C7  ,Chamartín - Clara Campoamor             -Principe Pio                            ,2,E5202A,FFFFFF                                    
 10T0053C7  ,C7  ,Principe Pio                            -Atocha                                  ,2,E5202A,FFFFFF                                    
 10T0054C7  ,C7  ,Atocha                                  -Principe Pio                            ,2,E5202A,FFFFFF                                    
-10T0057C7  ,C7  ,Principe Pio                            -Pinar de las Rozas                      ,2,E5202A,FFFFFF                                    
-10T0058C7  ,C7  ,Pinar de las Rozas                      -Principe Pio                            ,2,E5202A,FFFFFF                                    
 10T0059C7  ,C7  ,Chamartín - Clara Campoamor             -Alcala de Henares                       ,2,E5202A,FFFFFF                                    
-10T0060C7  ,C7  ,Alcala de Henares                       -Chamartín - Clara Campoamor             ,2,E5202A,FFFFFF                                    
 10T0061C8a ,C8a ,El Escorial                             -Chamartín - Clara Campoamor             ,2,868584,FFFFFF                                    
 10T0062C8a ,C8a ,Chamartín - Clara Campoamor             -El Escorial                             ,2,868584,FFFFFF                                    
-10T0063C10 ,C10 ,El Escorial                             -Principe Pio                            ,2,BCCF00,FFFFFF                                    
 10T0064C10 ,C10 ,Principe Pio                            -El Escorial                             ,2,BCCF00,FFFFFF                                    
-10T0065C1  ,C1  ,Atocha                                  -Chamartín - Clara Campoamor             ,2,75B6E0,FFFFFF                                    
-10T0066C1  ,C1  ,Chamartín - Clara Campoamor             -Atocha                                  ,2,75B6E0,FFFFFF                                    
-10T0067C4  ,C4  ,Atocha                                  -Villaverde Alto                         ,2,2C2A86,FFFFFF                                    
-10T0068C4  ,C4  ,Villaverde Alto                         -Atocha                                  ,2,2C2A86,FFFFFF                                    
-10T0069C8  ,C8  ,Las Matas                               -Villalba                                ,2,868584,FFFFFF                                    
-10T0070C8  ,C8  ,Villalba                                -Las Matas                               ,2,868584,FFFFFF                                    
 10T0071C10 ,C10 ,Pozuelo                                 -Pitis                                   ,2,BCCF00,FFFFFF                                    
-10T0072C10 ,C10 ,Pitis                                   -Pozuelo                                 ,2,BCCF00,FFFFFF                                    
-10T0073C7  ,C7  ,Guadalajara                             -Pozuelo                                 ,2,E5202A,FFFFFF                                    
-10T0074C7  ,C7  ,Pozuelo                                 -Guadalajara                             ,2,E5202A,FFFFFF                                    
 10T0075C10 ,C10 ,Torrelodones                            -Chamartín - Clara Campoamor             ,2,BCCF00,FFFFFF                                    
 10T0076C10 ,C10 ,Chamartín - Clara Campoamor             -Torrelodones                            ,2,BCCF00,FFFFFF                                    
-10T0077C10 ,C10 ,Las Matas                               -Atocha                                  ,2,BCCF00,FFFFFF                                    
-10T0078C10 ,C10 ,Atocha                                  -Las Matas                               ,2,BCCF00,FFFFFF                                    
-10T0079C7  ,C7  ,Pitis                                   -Nuevos Ministerios                      ,2,E5202A,FFFFFF                                    
-10T0080C7  ,C7  ,Nuevos Ministerios                      -Pitis                                   ,2,E5202A,FFFFFF                                    
-10T0081C2  ,C2  ,Guadalajara                             -                                        ,2,00943D,FFFFFF                                    
-10T0082C2  ,C2  ,                                        -Guadalajara                             ,2,00943D,FFFFFF                                    
-10T0083C2  ,C2  ,Guadalajara                             -                                        ,2,00943D,FFFFFF                                    
-10T0084C2  ,C2  ,                                        -Guadalajara                             ,2,00943D,FFFFFF                                    
 10T0085C8a ,C8a ,                                        -El Escorial                             ,2,868584,FFFFFF                                    
-10T0086C8a ,C8a ,El Escorial                             -                                        ,2,868584,FFFFFF                                    
 10T0087C8b ,C8b ,Chamartín - Clara Campoamor             -Cercedilla                              ,2,868584,FFFFFF                                    
 10T0088C8b ,C8b ,Cercedilla                              -Chamartín - Clara Campoamor             ,2,868584,FFFFFF                                    
-10T0089C8  ,C8  ,Chamartín - Clara Campoamor             -Cercedilla                              ,2,868584,FFFFFF                                    
-10T0090C8  ,C8  ,Cercedilla                              -Chamartín - Clara Campoamor             ,2,868584,FFFFFF                                    
-10T0091C8b ,C8b ,Chamartín - Clara Campoamor             -Cercedilla                              ,2,868584,FFFFFF                                    
-10T0092C8b ,C8b ,Cercedilla                              -Chamartín - Clara Campoamor             ,2,868584,FFFFFF                                    
-10T0093C10 ,C10 ,Pinar de las Rozas                      -Nuevos Ministerios                      ,2,BCCF00,FFFFFF                                    
-10T0094C10 ,C10 ,Nuevos Ministerios                      -Pinar de las Rozas                      ,2,BCCF00,FFFFFF                                    
-10T0095C4  ,C4  ,                                        -Tres Cantos                             ,2,2C2A86,FFFFFF                                    
-10T0096C4  ,C4  ,Tres Cantos                             -                                        ,2,2C2A86,FFFFFF                                    
 10T0097C8b ,C8b ,                                        -Cercedilla                              ,2,868584,FFFFFF                                    
 10T0098C8b ,C8b ,Cercedilla                              -                                        ,2,868584,FFFFFF                                    
-10T0099C3  ,C3  ,Villaverde Bajo                         -Getafe Industrial                       ,2,952585,FFFFFF                                    
-10T0100C3  ,C3  ,Getafe Industrial                       -Villaverde Bajo                         ,2,952585,FFFFFF                                    
-10T0101C5  ,C5  ,Mendez Alvaro PV                        -Villaverde Alto                         ,2,FECB00,FFFFFF                                    
-10T0102C5  ,C5  ,Villaverde Alto                         -Mendez Alvaro PV                        ,2,FECB00,FFFFFF                                    
-10T0103C8b ,C8b ,Los Molinos                             -Atocha                                  ,2,868584,FFFFFF                                    
-10T0104C8b ,C8b ,Atocha                                  -Los Molinos                             ,2,868584,FFFFFF                                    
-10T0105C2c ,C2c ,Guadalajara                             -Chamartín - Clara Campoamor             ,2,00943D,FFFFFF                                    
-10T0106C2c ,C2c ,Chamartín - Clara Campoamor             -Guadalajara                             ,2,00943D,FFFFFF                                    
-10T0107ER04,ER04,                                        -Guadalajara                             ,3,FFFFFF,FFFFFF                                    
-10T0108ER08,ER08,                                        -Guadalajara                             ,3,FFFFFF,FFFFFF                                    
-10T0109C8b ,C8b ,Villalba                                -Cercedilla                              ,3,868584,FFFFFF                                    
-10T0110C8b ,C8b ,Los Molinos                             -Cercedilla                              ,3,868584,FFFFFF                                    
-10T0111C8b ,C8b ,Cercedilla                              -Villalba                                ,3,868584,FFFFFF                                    
-10T0112C8b ,C8b ,Cercedilla                              -Los Molinos                             ,3,868584,FFFFFF                                    
-10T0113C9  ,C9  ,Cercedilla                              -Cotos                                   ,3,915419,FFFFFF                                    
-10T0114C9  ,C9  ,Cercedilla                              -Cotos                                   ,3,915419,FFFFFF                                    
-10T0115C9  ,C9  ,Cotos                                   -Cercedilla                              ,3,915419,FFFFFF                                    
-10T0116C9  ,C9  ,Cotos                                   -Cercedilla                              ,3,915419,FFFFFF                                    
-10T0117C8b ,C8b ,                                        -Cercedilla                              ,3,868584,FFFFFF                                    
-10T0118C8b ,C8b ,                                        -Cercedilla                              ,3,868584,FFFFFF                                    
-10T0119ER04,ER04,                                        -Guadalajara                             ,3,FFFFFF,FFFFFF                                    
-10T0120ER08,ER08,                                        -Guadalajara                             ,3,FFFFFF,FFFFFF                                    
+10T0111C9  ,C9  ,Cercedilla                              -Cotos                                   ,3,915419,FFFFFF                                    
+10T0112C9  ,C9  ,Cotos                                   -Cercedilla                              ,3,915419,FFFFFF                                    
 20T0001C1  ,C1  ,Gijon (Sanz Crespo)                     -Puente L.Fierros                        ,2,EC3541,FFFFFF                                    
 20T0002C1  ,C1  ,Puente L.Fierros                        -Gijon (Sanz Crespo)                     ,2,EC3541,FFFFFF                                    
 20T0003C2  ,C2  ,Oviedo                                  -El Entrego                              ,2,009746,FFFFFF                                    
 20T0004C2  ,C2  ,El Entrego                              -Oviedo                                  ,2,009746,FFFFFF                                    
 20T0005C3  ,C3  ,Llamaquique                             -San Juan de Nieva                       ,2,0060C4,FFFFFF                                    
 20T0006C3  ,C3  ,San Juan de Nieva                       -Llamaquique                             ,2,0060C4,FFFFFF                                    
-20T0007C2  ,C2  ,Gijon (Sanz Crespo)                     -                                        ,2,009746,FFFFFF                                    
-20T0008C2  ,C2  ,                                        -Gijon (Sanz Crespo)                     ,2,009746,FFFFFF                                    
 20T0009C4  ,C4  ,Gijon (Sanz Crespo)                     -Cudillero                               ,2,E93CAC,FFFFFF                                    
 20T0010C4  ,C4  ,Cudillero                               -Gijon (Sanz Crespo)                     ,2,E93CAC,FFFFFF                                    
 20T0011C5  ,C5  ,Gijon (Sanz Crespo)                     -La Pola De Llaviana/Pola De Laviana     ,2,C4D600,FFFFFF                                    
 20T0012C5  ,C5  ,La Pola De Llaviana/Pola De Laviana     -Gijon (Sanz Crespo)                     ,2,C4D600,FFFFFF                                    
-20T0013C5a ,C5a ,El Berrón                               -Oviedo                                  ,2,C4D600,FFFFFF                                    
-20T0014C5a ,C5a ,Oviedo                                  -El Berrón                               ,2,C4D600,FFFFFF                                    
 20T0015C6  ,C6  ,Oviedo                                  -L'infiestu Apd                          ,2,579BE2,FFFFFF                                    
 20T0016C6  ,C6  ,L'infiestu Apd                          -Oviedo                                  ,2,579BE2,FFFFFF                                    
 20T0017C7  ,C7  ,Gijon (Sanz Crespo)                     -San Esteban                             ,2,ED7D31,FFFFFF                                    
@@ -140,104 +58,17 @@ route_id,route_short_name,route_long_name,route_type,route_color,route_text_colo
 20T0021C7  ,C7  ,Oviedo                                  -Trubia                                  ,2,ED7D31,FFFFFF                                    
 20T0022C7  ,C7  ,Trubia                                  -Oviedo                                  ,2,ED7D31,FFFFFF                                    
 20T0023C4  ,C4  ,Candás                                  -Aviles                                  ,2,E93CAC,FFFFFF                                    
-20T0024C4  ,C4  ,Aviles                                  -Candás                                  ,2,E93CAC,FFFFFF                                    
 20T0025C6  ,C6  ,Nava                                    -El Berrón                               ,2,579BE2,FFFFFF                                    
 20T0026C6  ,C6  ,El Berrón                               -Nava                                    ,2,579BE2,FFFFFF                                    
 20T0027C8  ,C8  ,Figareo                                 -Morea/Moreda                            ,2,FDC02C,FFFFFF                                    
 20T0028C8  ,C8  ,Morea/Moreda                            -Figareo                                 ,2,FDC02C,FFFFFF                                    
-20T0029C5  ,C5  ,El Berrón                               -Noreña                                  ,2,C4D600,FFFFFF                                    
-20T0030C5  ,C5  ,Noreña                                  -El Berrón                               ,2,C4D600,FFFFFF                                    
-20T0031C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-20T0032C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-20T0033C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-20T0034C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-20T0035C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-20T0036C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-20T0037C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-20T0038C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-20T0039C5  ,C5  ,                                        -                                        ,2,C4D600,FFFFFF                                    
-20T0040C5  ,C5  ,                                        -                                        ,2,C4D600,FFFFFF                                    
-20T0041C7  ,C7  ,                                        -                                        ,2,ED7D31,FFFFFF                                    
-20T0042C7  ,C7  ,                                        -                                        ,2,ED7D31,FFFFFF                                    
-20T0043C7  ,C7  ,                                        -                                        ,2,ED7D31,FFFFFF                                    
-20T0044C7  ,C7  ,                                        -                                        ,2,ED7D31,FFFFFF                                    
-20T0045C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0046C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0047C7  ,C7  ,                                        -                                        ,2,ED7D31,FFFFFF                                    
-20T0048C7  ,C7  ,                                        -                                        ,2,ED7D31,FFFFFF                                    
-20T0049C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0050C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0051C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0052C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0053C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0054C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0055C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0056C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0057C8  ,C8  ,                                        -                                        ,2,FDC02C,FFFFFF                                    
-20T0058C8  ,C8  ,                                        -                                        ,2,FDC02C,FFFFFF                                    
-20T0059C8  ,C8  ,                                        -                                        ,2,FDC02C,FFFFFF                                    
-20T0060C8  ,C8  ,                                        -                                        ,2,FDC02C,FFFFFF                                    
-20T0061C8  ,C8  ,                                        -                                        ,2,FDC02C,FFFFFF                                    
-20T0062C8  ,C8  ,                                        -                                        ,2,FDC02C,FFFFFF                                    
-20T0063C8  ,C8  ,                                        -                                        ,2,FDC02C,FFFFFF                                    
-20T0064C8  ,C8  ,                                        -                                        ,2,FDC02C,FFFFFF                                    
-20T0065C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0066C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0067C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-20T0068C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-20T0069C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-20T0070C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-20T0071C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-20T0072C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-20T0073C5  ,C5  ,                                        -                                        ,2,C4D600,FFFFFF                                    
-20T0074C5  ,C5  ,                                        -                                        ,2,C4D600,FFFFFF                                    
-20T0075C7  ,C7  ,                                        -                                        ,2,ED7D31,FFFFFF                                    
-20T0076C7  ,C7  ,                                        -                                        ,2,ED7D31,FFFFFF                                    
-20T0077C7  ,C7  ,                                        -                                        ,2,ED7D31,FFFFFF                                    
-20T0078C7  ,C7  ,                                        -                                        ,2,ED7D31,FFFFFF                                    
-20T0079C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0080C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0081C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0082C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0083C8  ,C8  ,                                        -                                        ,2,FDC02C,FFFFFF                                    
-20T0084C8  ,C8  ,                                        -                                        ,2,FDC02C,FFFFFF                                    
-20T0085C8  ,C8  ,                                        -                                        ,2,FDC02C,FFFFFF                                    
-20T0086C8  ,C8  ,                                        -                                        ,2,FDC02C,FFFFFF                                    
-20T0087C8  ,C8  ,                                        -                                        ,2,FDC02C,FFFFFF                                    
-20T0088C8  ,C8  ,                                        -                                        ,2,FDC02C,FFFFFF                                    
-20T0089C7  ,C7  ,                                        -                                        ,2,ED7D31,FFFFFF                                    
-20T0090C7  ,C7  ,                                        -                                        ,2,ED7D31,FFFFFF                                    
-20T0091C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0092C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0093C5  ,C5  ,                                        -                                        ,2,C4D600,FFFFFF                                    
-20T0094C5  ,C5  ,                                        -                                        ,2,C4D600,FFFFFF                                    
-20T0095C6  ,C6  ,Gijon (Sanz Crespo)                     -La Pola Siero                           ,2,579BE2,FFFFFF                                    
-20T0096C6  ,C6  ,La Pola Siero                           -Gijon (Sanz Crespo)                     ,2,579BE2,FFFFFF                                    
-20T0097C1  ,C1  ,Mieres-Puente                           -Oviedo                                  ,2,EC3541,FFFFFF                                    
-20T0098C1  ,C1  ,Oviedo                                  -Mieres-Puente                           ,2,EC3541,FFFFFF                                    
-20T0099C1  ,C1  ,Llamaquique                             -Lugo de LLanera                         ,2,EC3541,FFFFFF                                    
-20T0100C1  ,C1  ,Lugo de LLanera                         -Llamaquique                             ,2,EC3541,FFFFFF                                    
-20T0101C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0102C6  ,C6  ,                                        -                                        ,2,579BE2,FFFFFF                                    
-20T0103C7  ,C7  ,                                        -                                        ,2,BCCF00,FFFFFF                                    
-20T0104C7  ,C7  ,                                        -                                        ,2,BCCF00,FFFFFF                                    
 20T0105C5a ,C5a ,Gijon (Sanz Crespo)                     -Oviedo                                  ,2,C4D600,FFFFFF                                    
 20T0106C5a ,C5a ,Oviedo                                  -Gijon (Sanz Crespo)                     ,2,C4D600,FFFFFF                                    
-20T0107C2  ,C2  ,                                        -                                        ,2,009746,FFFFFF                                    
-20T0108C2  ,C2  ,                                        -                                        ,2,009746,FFFFFF                                    
 20T0109C6  ,C6  ,El Berrón                               -L'infiestu Apd                          ,2,579BE2,FFFFFF                                    
 20T0110C6  ,C6  ,L'infiestu Apd                          -El Berrón                               ,2,579BE2,FFFFFF                                    
-20T0111C4  ,C4  ,El Regueral                             -Pravia                                  ,2,E93CAC,FFFFFF                                    
-20T0112C4  ,C4  ,Pravia                                  -El Regueral                             ,2,E93CAC,FFFFFF                                    
 20T0113C6  ,C6  ,El Berrón                               -Nava                                    ,3,579BE2,FFFFFF                                    
-20T0114C6  ,C6  ,El Berrón                               -Nava                                    ,3,579BE2,FFFFFF                                    
 20T0115C6  ,C6  ,El Berrón                               -L'infiestu Apd                          ,3,579BE2,FFFFFF                                    
-20T0116C6  ,C6  ,El Berrón                               -L'infiestu Apd                          ,3,579BE2,FFFFFF                                    
-20T0117C6  ,C6  ,Nava                                    -L'infiestu Apd                          ,3,579BE2,FFFFFF                                    
-20T0118C6  ,C6  ,Nava                                    -L'infiestu Apd                          ,3,579BE2,FFFFFF                                    
 20T0119C6  ,C6  ,L'infiestu Apd                          -El Berrón                               ,3,579BE2,FFFFFF                                    
-20T0120C6  ,C6  ,L'infiestu Apd                          -El Berrón                               ,3,579BE2,FFFFFF                                    
-20T0121NR26,NR26,                                        -                                        ,3,FFFFFF,FFFFFF                                    
 30T0001C1  ,C1  ,Lora del Rio                            -Lebrija                                 ,2,78B4E1,FFFFFF                                    
 30T0002C1  ,C1  ,Lebrija                                 -Lora del Rio                            ,2,78B4E1,FFFFFF                                    
 30T0003C2  ,C2  ,Santa Justa                             -Cartuja                                 ,2,067B34,FFFFFF                                    
@@ -247,47 +78,12 @@ route_id,route_short_name,route_long_name,route_type,route_color,route_text_colo
 30T0007C4  ,C4  ,Santa Justa                             -Santa Justa                             ,2,8E2182,FFFFFF                                    
 30T0009C5  ,C5  ,Jardines de Hercules                    -Benacazon                               ,2,073588,FFFFFF                                    
 30T0010C5  ,C5  ,Benacazon                               -Jardines de Hercules                    ,2,073588,FFFFFF                                    
-30T0011C3  ,C3  ,Santa Justa                             -Cazalla-Constantina                     ,2,E4242D,FFFFFF                                    
-30T0012C3  ,C3  ,Cazalla-Constantina                     -Santa Justa                             ,2,E4242D,FFFFFF                                    
-30T0013C1  ,C1  ,Utrera                                  -                                        ,2,78B4E1,FFFFFF                                    
-30T0014C1  ,C1  ,                                        -Utrera                                  ,2,78B4E1,FFFFFF                                    
-30T0015C1  ,C1  ,Utrera                                  -                                        ,2,78B4E1,FFFFFF                                    
-30T0016C1  ,C1  ,                                        -Utrera                                  ,2,78B4E1,FFFFFF                                    
-30T0017C3  ,C3  ,                                        -                                        ,2,E4242D,FFFFFF                                    
-30T0018C3  ,C3  ,                                        -                                        ,2,E4242D,FFFFFF                                    
-30T0019C5  ,C5  ,Valencina-Santiponce                    -Santa Justa                             ,2,073588,FFFFFF                                    
-30T0020C5  ,C5  ,Santa Justa                             -Valencina-Santiponce                    ,2,073588,FFFFFF                                    
-30T0021C3  ,C3  ,Los Rosales                             -Pedroso                                 ,2,E4242D,FFFFFF                                    
-30T0022C3  ,C3  ,Pedroso                                 -Los Rosales                             ,2,E4242D,FFFFFF                                    
-30T0023C5  ,C5  ,Dos Hermanas                            -                                        ,2,073588,FFFFFF                                    
-30T0024C5  ,C5  ,                                        -Dos Hermanas                            ,2,073588,FFFFFF                                    
-30T0025C3  ,C3  ,Cazalla-Constantina                     -Los Rosales                             ,2,E4242D,FFFFFF                                    
-30T0026C3  ,C3  ,Los Rosales                             -Cazalla-Constantina                     ,2,E4242D,FFFFFF                                    
-30T0027C3  ,C3  ,Villanueva del Rio y Minas              -Los Rosales                             ,2,E4242D,FFFFFF                                    
-30T0028C3  ,C3  ,Los Rosales                             -Villanueva del Rio y Minas              ,2,E4242D,FFFFFF                                    
 30T0029C5  ,C5  ,Santa Justa                             -Benacazon                               ,2,073588,FFFFFF                                    
 30T0030C5  ,C5  ,Benacazon                               -Santa Justa                             ,2,073588,FFFFFF                                    
-30T0031CR20,CR20,                                        -                                        ,3,FFFFFF,FFFFFF                                    
-30T0032CR20,CR20,                                        -                                        ,3,FFFFFF,FFFFFF                                    
-30T0033CR20,CR20,                                        -Santa Justa                             ,3,FFFFFF,FFFFFF                                    
-30T0034C3  ,C3  ,                                        -Santa Justa                             ,3,E4242D,FFFFFF                                    
-30T0035CR20,CR20,                                        -Santa Justa                             ,3,FFFFFF,FFFFFF                                    
-30T0036CR20,CR20,                                        -Santa Justa                             ,3,FFFFFF,FFFFFF                                    
-30T0037C3  ,C3  ,                                        -Santa Justa                             ,3,E4242D,FFFFFF                                    
-30T0038C3  ,C3  ,                                        -Santa Justa                             ,3,E4242D,FFFFFF                                    
-30T0039C3  ,C3  ,Cazalla-Constantina                     -Los Rosales                             ,3,E4242D,FFFFFF                                    
-30T0040C3  ,C3  ,Cazalla-Constantina                     -Los Rosales                             ,3,E4242D,FFFFFF                                    
-30T0041C3  ,C3  ,Los Rosales                             -Cazalla-Constantina                     ,3,E4242D,FFFFFF                                    
-30T0042C3  ,C3  ,Los Rosales                             -Cazalla-Constantina                     ,3,E4242D,FFFFFF                                    
-30T0043CR20,CR20,Santa Justa                             -                                        ,3,FFFFFF,FFFFFF                                    
+30T0036C3  ,C3  ,                                        -Santa Justa                             ,3,E4242D,FFFFFF                                    
+30T0037C3  ,C3  ,Cazalla-Constantina                     -Los Rosales                             ,3,E4242D,FFFFFF                                    
+30T0038C3  ,C3  ,Los Rosales                             -Cazalla-Constantina                     ,3,E4242D,FFFFFF                                    
 30T0044C3  ,C3  ,Santa Justa                             -                                        ,3,E4242D,FFFFFF                                    
-30T0045C3  ,C3  ,Santa Justa                             -                                        ,3,E4242D,FFFFFF                                    
-30T0046CR20,CR20,Santa Justa                             -                                        ,3,FFFFFF,FFFFFF                                    
-30T0047CR20,CR20,Santa Justa                             -                                        ,3,FFFFFF,FFFFFF                                    
-30T0048C3  ,C3  ,Santa Justa                             -                                        ,3,E4242D,FFFFFF                                    
-30T0049C3  ,C3  ,Santa Justa                             -                                        ,3,E4242D,FFFFFF                                    
-30T0050C3  ,C3  ,Santa Justa                             -                                        ,3,E4242D,FFFFFF                                    
-30T0051C3  ,C3  ,Santa Justa                             -                                        ,3,E4242D,FFFFFF                                    
 31T0001C1  ,C1  ,Cádiz                                   -Aeropuerto de Jerez                     ,2,D7001E,FFFFFF                                    
 31T0002C1  ,C1  ,Aeropuerto de Jerez                     -Cádiz                                   ,2,D7001E,FFFFFF                                    
 31T0003C1a ,C1a ,Las Aletas                              -Universidad                             ,2,D7001E,FFFFFF                                    
@@ -296,28 +92,10 @@ route_id,route_short_name,route_long_name,route_type,route_color,route_text_colo
 31T0006T1  ,T1  ,Pelagatos                               -Cádiz                                   ,2,C4D600,FFFFFF                                    
 31T0007C1  ,C1  ,Jerez de la Frontera                    -Las Aletas                              ,2,D7001E,FFFFFF                                    
 31T0008C1  ,C1  ,Las Aletas                              -Jerez de la Frontera                    ,2,D7001E,FFFFFF                                    
-31T0009T1  ,T1  ,Río Arillo                              -Alameda Solano                          ,2,C4D600,FFFFFF                                    
-31T0010T1  ,T1  ,Alameda Solano                          -Río Arillo                              ,2,C4D600,FFFFFF                                    
-31T0011T1  ,T1  ,Ntra. Sra. de los Remedios              -Ardila                                  ,2,C4D600,FFFFFF                                    
-31T0012T1  ,T1  ,Ardila                                  -Ntra. Sra. de los Remedios              ,2,C4D600,FFFFFF                                    
 32T0001C1  ,C1  ,Málaga-Centro Alameda                   -Fuengirola                              ,2,4a8ccc,FFFFFF                                    
 32T0002C1  ,C1  ,Fuengirola                              -Málaga-Centro Alameda                   ,2,4a8ccc,FFFFFF                                    
 32T0003C2  ,C2  ,Málaga-Centro Alameda                   -Álora                                   ,2,0fcf34,FFFFFF                                    
 32T0004C2  ,C2  ,Álora                                   -Málaga-Centro Alameda                   ,2,0fcf34,FFFFFF                                    
-32T0005C2  ,C2  ,                                        -                                        ,2,0fcf34,FFFFFF                                    
-32T0006C2  ,C2  ,                                        -                                        ,2,0fcf34,FFFFFF                                    
-32T0007C2  ,C2  ,Álora                                   -                                        ,2,0fcf34,FFFFFF                                    
-32T0008C2  ,C2  ,                                        -Álora                                   ,2,0fcf34,FFFFFF                                    
-32T0009C2  ,C2  ,Álora                                   -Cártama                                 ,2,0fcf34,FFFFFF                                    
-32T0010C2  ,C2  ,Cártama                                 -Álora                                   ,2,0fcf34,FFFFFF                                    
-32T0011C2  ,C2  ,Pizarra                                 -Cártama                                 ,2,0fcf34,FFFFFF                                    
-32T0012C2  ,C2  ,Cártama                                 -Pizarra                                 ,2,0fcf34,FFFFFF                                    
-32T0013C2  ,C2  ,Málaga-Centro Alameda                   -Cártama                                 ,2,0fcf34,FFFFFF                                    
-32T0014C2  ,C2  ,Cártama                                 -Málaga-Centro Alameda                   ,2,0fcf34,FFFFFF                                    
-32T0015C2  ,C2  ,Cártama                                 -Álora                                   ,2,0fcf34,FFFFFF                                    
-32T0016C2  ,C2  ,Álora                                   -Cártama                                 ,2,0fcf34,FFFFFF                                    
-32T0017C2  ,C2  ,                                        -Cártama                                 ,2,0fcf34,FFFFFF                                    
-32T0018C2  ,C2  ,Cártama                                 -                                        ,2,0fcf34,FFFFFF                                    
 32T0019C2  ,C2  ,Álora                                   -                                        ,2,0fcf34,FFFFFF                                    
 32T0020C2  ,C2  ,                                        -Álora                                   ,2,0fcf34,FFFFFF                                    
 40T0001C1  ,C1  ,Valencia Nord                           -Platja i Grau de Gandia                 ,2,7AB3DE,FFFFFF                                    
@@ -326,8 +104,6 @@ route_id,route_short_name,route_long_name,route_type,route_color,route_text_colo
 40T0006C2  ,C2  ,Moixent                                 -Valencia Nord                           ,2,F79529,FFFFFF                                    
 40T0007C3  ,C3  ,Valencia Nord                           -Utiel                                   ,2,7A2780,FFFFFF                                    
 40T0008C3  ,C3  ,Utiel                                   -Valencia Nord                           ,2,7A2780,FFFFFF                                    
-40T0009C4  ,C4  ,Valencia - Sant Isidre                  -Xirivella - L'Alter                     ,2,D4021D,FFFFFF                                    
-40T0010C4  ,C4  ,Xirivella - L'Alter                     -Valencia - Sant Isidre                  ,2,D4021D,FFFFFF                                    
 40T0011C5  ,C5  ,Valencia Nord                           -Caudiel                                 ,2,018A27,FFFFFF                                    
 40T0012C5  ,C5  ,Caudiel                                 -Valencia Nord                           ,2,018A27,FFFFFF                                    
 40T0013C6  ,C6  ,Valencia Nord                           -Castello de la Plana                    ,2,0D3386,FFFFFF                                    
@@ -335,134 +111,66 @@ route_id,route_short_name,route_long_name,route_type,route_color,route_text_colo
 40T0015C6  ,C6  ,Valencia Nord                           -Castello de la Plana                    ,2,0D3386,FFFFFF                                    
 40T0016C6  ,C6  ,Castello de la Plana                    -Valencia Nord                           ,2,0D3386,FFFFFF                                    
 40T0017C3  ,C3  ,Valencia Nord                           -Utiel                                   ,2,7A2780,FFFFFF                                    
-40T0018C3  ,C3  ,Utiel                                   -Valencia Nord                           ,2,7A2780,FFFFFF                                    
 40T0019C5  ,C5  ,Valencia Nord                           -Caudiel                                 ,2,018A27,FFFFFF                                    
 40T0020C5  ,C5  ,Caudiel                                 -Valencia Nord                           ,2,018A27,FFFFFF                                    
 40T0021C6  ,C6  ,Valencia Nord                           -Castello de la Plana                    ,2,0D3386,FFFFFF                                    
 40T0022C6  ,C6  ,Castello de la Plana                    -Valencia Nord                           ,2,0D3386,FFFFFF                                    
-40T0023C2  ,C2  ,Xativa                                  -                                        ,2,F79529,FFFFFF                                    
-40T0024C2  ,C2  ,                                        -Xativa                                  ,2,F79529,FFFFFF                                    
 40T0025C3  ,C3  ,Buñol                                   -Valencia - Sant Isidre                  ,2,7A2780,FFFFFF                                    
 40T0026C3  ,C3  ,Valencia - Sant Isidre                  -Buñol                                   ,2,7A2780,FFFFFF                                    
-40T0027C1  ,C1  ,Gandia                                  -Sollana                                 ,2,7AB3DE,FFFFFF                                    
-40T0028C1  ,C1  ,Sollana                                 -Gandia                                  ,2,7AB3DE,FFFFFF                                    
 40T0029C2  ,C2  ,Benifaio - Almussafes                   -Xativa                                  ,2,F79529,FFFFFF                                    
 40T0030C2  ,C2  ,Xativa                                  -Benifaio - Almussafes                   ,2,F79529,FFFFFF                                    
-40T0031C5  ,C5  ,                                        -                                        ,2,018A27,FFFFFF                                    
-40T0032C5  ,C5  ,                                        -                                        ,2,018A27,FFFFFF                                    
-40T0033C3  ,C3  ,Valencia - F.S.L.                       -Aldaia                                  ,2,7A2780,FFFFFF                                    
-40T0034C3  ,C3  ,Aldaia                                  -Valencia - F.S.L.                       ,2,7A2780,FFFFFF                                    
-40T0035C2  ,C2  ,Moixent                                 -L'Alcudia de Crespins                   ,2,F79529,FFFFFF                                    
-40T0036C2  ,C2  ,L'Alcudia de Crespins                   -Moixent                                 ,2,F79529,FFFFFF                                    
-40T0037C2  ,C2  ,Moixent                                 -Xativa                                  ,2,F79529,FFFFFF                                    
-40T0038C2  ,C2  ,Xativa                                  -Moixent                                 ,2,F79529,FFFFFF                                    
-40T0039C6  ,C6  ,Valencia - Cabanyal                     -Sagunt                                  ,2,0D3386,FFFFFF                                    
-40T0040C6  ,C6  ,Sagunt                                  -Valencia - Cabanyal                     ,2,0D3386,FFFFFF                                    
-40T0041C3  ,C3  ,Utiel                                   -Buñol                                   ,2,7A2780,FFFFFF                                    
-40T0042C3  ,C3  ,Buñol                                   -Utiel                                   ,2,7A2780,FFFFFF                                    
 40T0043C3  ,C3  ,Valencia Nord                           -Buñol                                   ,2,7A2780,FFFFFF                                    
 40T0044C3  ,C3  ,Buñol                                   -Valencia Nord                           ,2,7A2780,FFFFFF                                    
 40T0045C3  ,C3  ,Valencia - F.S.L.                       -Buñol                                   ,2,7A2780,FFFFFF                                    
 40T0046C3  ,C3  ,Buñol                                   -Valencia - F.S.L.                       ,2,7A2780,FFFFFF                                    
-40T0047C5  ,C5  ,PuÇol                                   -Caudiel                                 ,2,018A27,FFFFFF                                    
-40T0048C5  ,C5  ,Caudiel                                 -PuÇol                                   ,2,018A27,FFFFFF                                    
 40T0049C2  ,C2  ,Moixent                                 -L'Alcudia de Crespins                   ,3,F79529,FFFFFF                                    
-40T0050C2  ,C2  ,Moixent                                 -L'Alcudia de Crespins                   ,3,F79529,FFFFFF                                    
-40T0051C2  ,C2  ,Moixent                                 -Xativa                                  ,3,F79529,FFFFFF                                    
-40T0052C2  ,C2  ,Moixent                                 -Xativa                                  ,3,F79529,FFFFFF                                    
-40T0053C2  ,C2  ,L'Alcudia de Crespins                   -Moixent                                 ,3,F79529,FFFFFF                                    
-40T0054C2  ,C2  ,L'Alcudia de Crespins                   -Moixent                                 ,3,F79529,FFFFFF                                    
-40T0055C2  ,C2  ,Xativa                                  -Moixent                                 ,3,F79529,FFFFFF                                    
-40T0056C2  ,C2  ,Xativa                                  -Moixent                                 ,3,F79529,FFFFFF                                    
-40T0057C5  ,C5  ,PuÇol                                   -Caudiel                                 ,3,018A27,FFFFFF                                    
-40T0058C5  ,C5  ,PuÇol                                   -Caudiel                                 ,3,018A27,FFFFFF                                    
-40T0059C3  ,C3  ,Utiel                                   -Buñol                                   ,3,7A2780,FFFFFF                                    
-40T0060C3  ,C3  ,Utiel                                   -Buñol                                   ,3,7A2780,FFFFFF                                    
-40T0061C3  ,C3  ,Buñol                                   -Utiel                                   ,3,7A2780,FFFFFF                                    
-40T0062C3  ,C3  ,Buñol                                   -Utiel                                   ,3,7A2780,FFFFFF                                    
-40T0063C5  ,C5  ,Caudiel                                 -PuÇol                                   ,3,018A27,FFFFFF                                    
-40T0064C5  ,C5  ,Caudiel                                 -PuÇol                                   ,3,018A27,FFFFFF                                    
-40T0065ER24,ER24,                                        -Xativa                                  ,3,FFFFFF,FFFFFF                                    
-40T0066ER24,ER24,                                        -Xativa                                  ,3,FFFFFF,FFFFFF                                    
+40T0050C2  ,C2  ,Moixent                                 -Xativa                                  ,3,F79529,FFFFFF                                    
+40T0051C2  ,C2  ,L'Alcudia de Crespins                   -Moixent                                 ,3,F79529,FFFFFF                                    
+40T0052C2  ,C2  ,Xativa                                  -Moixent                                 ,3,F79529,FFFFFF                                    
+40T0053C5  ,C5  ,PuÇol                                   -Caudiel                                 ,3,018A27,FFFFFF                                    
+40T0054C3  ,C3  ,Utiel                                   -Buñol                                   ,3,7A2780,FFFFFF                                    
+40T0055C3  ,C3  ,Buñol                                   -Utiel                                   ,3,7A2780,FFFFFF                                    
+40T0056C5  ,C5  ,Caudiel                                 -PuÇol                                   ,3,018A27,FFFFFF                                    
+40T0057ER24,ER24,                                        -Xativa                                  ,3,FFFFFF,FFFFFF                                    
 41T0001C1  ,C1  ,Murcia del Carmen                       -Alacant Terminal                        ,2,73B6E0,FFFFFF                                    
 41T0002C1  ,C1  ,Alacant Terminal                        -Murcia del Carmen                       ,2,73B6E0,FFFFFF                                    
-41T0003C2  ,C2  ,Murcia del Carmen                       -Aguilas                                 ,2,108C2C,FFFFFF                                    
-41T0004C2  ,C2  ,Aguilas                                 -Murcia del Carmen                       ,2,108C2C,FFFFFF                                    
 41T0005C3  ,C3  ,Sant Vicent Centre                      -Alacant Terminal                        ,2,7D2486,FFFFFF                                    
 41T0006C3  ,C3  ,Alacant Terminal                        -Sant Vicent Centre                      ,2,7D2486,FFFFFF                                    
-41T0007C2  ,C2  ,Murcia del Carmen                       -Aguilas                                 ,2,108C2C,FFFFFF                                    
-41T0008C2  ,C2  ,Aguilas                                 -Murcia del Carmen                       ,2,108C2C,FFFFFF                                    
-41T0009C2  ,C2  ,Murcia del Carmen                       -Orihuela Miguel Hernández               ,2,108C2C,FFFFFF                                    
-41T0010C2  ,C2  ,Orihuela Miguel Hernández               -Murcia del Carmen                       ,2,108C2C,FFFFFF                                    
 41T0011C3  ,C3  ,                                        -Sant Vicent Centre                      ,2,706D75,FFFFFF                                    
-41T0012C3  ,C3  ,Sant Vicent Centre                      -                                        ,2,706D75,FFFFFF                                    
 41T0013C1  ,C1  ,Alacant Terminal                        -Alacant Terminal                        ,2,73B6E0,FFFFFF                                    
-41T0014C1  ,C1  ,Alacant Terminal                        -Alacant Terminal                        ,2,73B6E0,FFFFFF                                    
-41T0015C1  ,C1  ,Callosa de Segura                       -Torrellano                              ,2,73B6E0,FFFFFF                                    
-41T0016C1  ,C1  ,Torrellano                              -Callosa de Segura                       ,2,73B6E0,FFFFFF                                    
-41T0017C1  ,C1  ,                                        -Murcia del Carmen                       ,2,73B6E0,FFFFFF                                    
-41T0018C1  ,C1  ,Murcia del Carmen                       -                                        ,2,73B6E0,FFFFFF                                    
-41T0019C2  ,C2  ,Murcia del Carmen                       -Lorca-Sutullena                         ,2,E93CAC,FFFFFF                                    
-41T0020C2  ,C2  ,Lorca-Sutullena                         -Murcia del Carmen                       ,2,E93CAC,FFFFFF                                    
-41T0021C2  ,C2  ,Lorca-Sutullena                         -Murcia del Carmen                       ,2,108C2C,FFFFFF                                    
-41T0022C2  ,C2  ,Murcia del Carmen                       -Lorca-Sutullena                         ,2,108C2C,FFFFFF                                    
 41T0023C2  ,C2  ,Lorca-Sutullena                         -Murcia del Carmen                       ,3,E93CAC,FFFFFF                                    
-41T0024C2  ,C2  ,Lorca-Sutullena                         -Murcia del Carmen                       ,3,E93CAC,FFFFFF                                    
 41T0025C2  ,C2  ,Aguilas                                 -Lorca-Sutullena                         ,3,E93CAC,FFFFFF                                    
-41T0026C2  ,C2  ,Aguilas                                 -Lorca-Sutullena                         ,3,E93CAC,FFFFFF                                    
-41T0027C2  ,C2  ,Aguilas                                 -Murcia del Carmen                       ,3,E93CAC,FFFFFF                                    
-41T0028C2  ,C2  ,Aguilas                                 -Murcia del Carmen                       ,3,E93CAC,FFFFFF                                    
 41T0029C1  ,C1  ,Alacant Terminal                        -Callosa de Segura                       ,3,73B6E0,FFFFFF                                    
 41T0030C1  ,C1  ,Alacant Terminal                        -Crevillent                              ,3,73B6E0,FFFFFF                                    
 41T0031C2  ,C2  ,Murcia del Carmen                       -Lorca-Sutullena                         ,3,E93CAC,FFFFFF                                    
-41T0032C2  ,C2  ,Murcia del Carmen                       -Lorca-Sutullena                         ,3,E93CAC,FFFFFF                                    
-41T0033C2  ,C2  ,Murcia del Carmen                       -Aguilas                                 ,3,E93CAC,FFFFFF                                    
-41T0034C2  ,C2  ,Murcia del Carmen                       -Aguilas                                 ,3,E93CAC,FFFFFF                                    
 41T0035C1  ,C1  ,Callosa de Segura                       -Alacant Terminal                        ,3,73B6E0,FFFFFF                                    
 41T0036C1  ,C1  ,Crevillent                              -Alacant Terminal                        ,3,73B6E0,FFFFFF                                    
 45T0001C1  ,C1  ,Cartagena                               -Los Nietos                              ,2,D7001E,FFFFFF                                    
 45T0002C1  ,C1  ,Los Nietos                              -Cartagena                               ,2,D7001E,FFFFFF                                    
 46T0001C1  ,C1  ,Ferrol                                  -Ortigueira                              ,2,D7001E,FFFFFF                                    
 46T0002C1  ,C1  ,Ortigueira                              -Ferrol                                  ,2,D7001E,FFFFFF                                    
-46T0003C1  ,C1  ,                                        -                                        ,2,D7001E,FFFFFF                                    
-46T0004C1  ,C1  ,                                        -                                        ,2,D7001E,FFFFFF                                    
 47T0001C1  ,C1  ,Asunción-Universidad                    -Cistierna                               ,2,D7001E,FFFFFF                                    
 47T0002C1  ,C1  ,Cistierna                               -Asunción-Universidad                    ,2,D7001E,FFFFFF                                    
-47T0003C1  ,C1  ,León                                    -Asunción-Universidad                    ,2,D7001E,FFFFFF                                    
-47T0004C1  ,C1  ,Asunción-Universidad                    -León                                    ,2,D7001E,FFFFFF                                    
-47T0005BUS ,BUS ,León                                    -Asunción-Universidad                    ,2,D7001E,FFFFFF                                    
-47T0006BUS ,BUS ,Asunción-Universidad                    -León                                    ,2,D7001E,FFFFFF                                    
-47T0007C1  ,C1  ,                                        -                                        ,2,D7001E,FFFFFF                                    
-47T0008C1  ,C1  ,                                        -                                        ,2,D7001E,FFFFFF                                    
 47T0009BUS ,BUS ,León                                    -Asunción-Universidad                    ,3,D7001E,FFFFFF                                    
 47T0010BUS ,BUS ,Asunción-Universidad                    -León                                    ,3,D7001E,FFFFFF                                    
 51T0001R1  ,R1  ,Molins de Rei                           -Maçanet-Massanes                        ,2,7DBCEC,FFFFFF                                    
 51T0002R1  ,R1  ,Maçanet-Massanes                        -Molins de Rei                           ,2,7DBCEC,FFFFFF                                    
 51T0003R2N ,R2N ,Aeroport                                -Maçanet-Massanes                        ,2,D0DF00,FFFFFF                                    
 51T0004R2N ,R2N ,Maçanet-Massanes                        -Aeroport                                ,2,D0DF00,FFFFFF                                    
-51T0005R4  ,R4  ,Sant Vicenc de Calders                  -Manresa                                 ,2,F7A30D,FFFFFF                                    
-51T0006R4  ,R4  ,Manresa                                 -Sant Vicenc de Calders                  ,2,F7A30D,FFFFFF                                    
 51T0007R2S ,R2S ,Sant Vicenc de Calders                  -Barcelona-Estació de França             ,2,146520,FFFFFF                                    
 51T0008R2S ,R2S ,Barcelona-Estació de França             -Sant Vicenc de Calders                  ,2,146520,FFFFFF                                    
-51T0009R2S ,R2S ,Sant Vicenc de Calders                  -Barcelona-Estació de França             ,2,146520,FFFFFF                                    
-51T0010R2S ,R2S ,Barcelona-Estació de França             -Sant Vicenc de Calders                  ,2,146520,FFFFFF                                    
 51T0011R2S ,R2S ,Sant Vicenc de Calders                  -Barcelona-Estació de França             ,2,146520,FFFFFF                                    
 51T0012R2S ,R2S ,Barcelona-Estació de França             -Sant Vicenc de Calders                  ,2,146520,FFFFFF                                    
 51T0013R2  ,R2  ,Sant Vicenc de Calders                  -Maçanet-Massanes                        ,2,26A741,FFFFFF                                    
 51T0014R2  ,R2  ,Maçanet-Massanes                        -Sant Vicenc de Calders                  ,2,26A741,FFFFFF                                    
 51T0015R3  ,R3  ,L'Hospitalet de Llobregat               -Puigcerdà                               ,2,E54A3C,FFFFFF                                    
 51T0016R3  ,R3  ,Puigcerdà                               -L'Hospitalet de Llobregat               ,2,E54A3C,FFFFFF                                    
-51T0017R3a ,R3a ,Vic                                     -La Tor de Querol-Enveig                 ,2,E54A3C,FFFFFF                                    
-51T0018R3a ,R3a ,La Tor de Querol-Enveig                 -Vic                                     ,2,E54A3C,FFFFFF                                    
 51T0019R4  ,R4  ,Sant Vicenc de Calders                  -Manresa                                 ,2,F7A30D,FFFFFF                                    
 51T0020R4  ,R4  ,Manresa                                 -Sant Vicenc de Calders                  ,2,F7A30D,FFFFFF                                    
-51T0021R7  ,R7  ,Martorell Central                       -L'Hospitalet de Llobregat               ,2,B57CBB,FFFFFF                                    
-51T0022R7  ,R7  ,L'Hospitalet de Llobregat               -Martorell Central                       ,2,B57CBB,FFFFFF                                    
 51T0023R8  ,R8  ,Martorell Central                       -Granollers Centre                       ,2,88016A,FFFFFF                                    
 51T0024R8  ,R8  ,Granollers Centre                       -Martorell Central                       ,2,88016A,FFFFFF                                    
 51T0025R2  ,R2  ,Sant Vicenc de Calders                  -Castelldefels                           ,2,26A741,FFFFFF                                    
 51T0026R2  ,R2  ,Castelldefels                           -Sant Vicenc de Calders                  ,2,26A741,FFFFFF                                    
-51T0027R2  ,R2  ,Sant Celoni                             -Barcelona-Sants                         ,2,26A741,FFFFFF                                    
 51T0028R2  ,R2  ,Barcelona-Sants                         -Sant Celoni                             ,2,26A741,FFFFFF                                    
 51T0029R7  ,R7  ,Barcelona-Fabra i Puig                  -Cerdanyola-Universitat                  ,2,24A842,FFFFFF                                    
 51T0030R7  ,R7  ,Cerdanyola-Universitat                  -Barcelona-Fabra i Puig                  ,2,24A842,FFFFFF                                    
@@ -470,68 +178,14 @@ route_id,route_short_name,route_long_name,route_type,route_color,route_text_colo
 51T0032R4  ,R4  ,Castellbisbal                           -Terrassa Estació del Nord               ,2,F7A30D,FFFFFF                                    
 51T0033R3  ,R3  ,Figaró                                  -La Tor de Querol-Enveig                 ,2,E54A3C,FFFFFF                                    
 51T0034R3  ,R3  ,La Tor de Querol-Enveig                 -Figaró                                  ,2,E54A3C,FFFFFF                                    
-51T0035R8  ,R8  ,Castellbisbal                           -Cerdanyola-Universitat                  ,2,88016A,FFFFFF                                    
-51T0036R8  ,R8  ,Cerdanyola-Universitat                  -Castellbisbal                           ,2,88016A,FFFFFF                                    
-51T0037R7  ,R7  ,Molins de Rei                           -Montcada Bifurcació                     ,2,B57CBB,FFFFFF                                    
-51T0038R7  ,R7  ,Montcada Bifurcació                     -Molins de Rei                           ,2,B57CBB,FFFFFF                                    
 51T0039R3  ,R3  ,Vic                                     -Montcada Ripollet                       ,2,E54A3C,FFFFFF                                    
 51T0040R3  ,R3  ,Montcada Ripollet                       -Vic                                     ,2,E54A3C,FFFFFF                                    
-51T0041R4  ,R4  ,Molins de Rei                           -Montcada Bifurcació                     ,2,F7A30D,FFFFFF                                    
-51T0042R4  ,R4  ,Montcada Bifurcació                     -Molins de Rei                           ,2,F7A30D,FFFFFF                                    
-51T0043R1  ,R1  ,Canet de Mar                            -Blanes                                  ,2,7DBCEC,FFFFFF                                    
-51T0044R1  ,R1  ,Blanes                                  -Canet de Mar                            ,2,7DBCEC,FFFFFF                                    
 51T0045R3  ,R3  ,La Molina                               -Ribes de Freser                         ,2,E54A3C,FFFFFF                                    
 51T0046R3  ,R3  ,Ribes de Freser                         -La Molina                               ,2,E54A3C,FFFFFF                                    
 51T0047RL4 ,RL4 ,Terrassa Estació del Nord               -Lleida                                  ,2,F7A30D,FFFFFF                                    
 51T0048RL4 ,RL4 ,Lleida                                  -Terrassa Estació del Nord               ,2,F7A30D,FFFFFF                                    
-51T0049R1  ,R1  ,Mataró                                  -Badalona                                ,2,7DBCEC,FFFFFF                                    
-51T0050R1  ,R1  ,Badalona                                -Mataró                                  ,2,7DBCEC,FFFFFF                                    
-51T0051R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0052R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0053R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0054R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0055R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0056R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0057R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0058R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0059R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0060R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0061R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0062R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0063R1  ,R1  ,                                        -                                        ,2,7DBCEC,FFFFFF                                    
-51T0064R1  ,R1  ,                                        -                                        ,2,7DBCEC,FFFFFF                                    
-51T0065R1  ,R1  ,                                        -                                        ,2,7DBCEC,FFFFFF                                    
-51T0066R1  ,R1  ,                                        -                                        ,2,7DBCEC,FFFFFF                                    
-51T0067R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0068R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0069R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0070R2  ,R2  ,                                        -                                        ,2,26A741,FFFFFF                                    
-51T0071R4  ,R4  ,                                        -                                        ,2,F7A30D,FFFFFF                                    
-51T0072R4  ,R4  ,                                        -                                        ,2,F7A30D,FFFFFF                                    
-51T0073R4  ,R4  ,                                        -                                        ,2,F7A30D,FFFFFF                                    
-51T0074R4  ,R4  ,                                        -                                        ,2,F7A30D,FFFFFF                                    
-51T0075R4  ,R4  ,                                        -                                        ,2,F7A30D,FFFFFF                                    
-51T0076R4  ,R4  ,                                        -                                        ,2,F7A30D,FFFFFF                                    
-51T0077R4  ,R4  ,                                        -                                        ,2,F7A30D,FFFFFF                                    
-51T0078R4  ,R4  ,                                        -                                        ,2,F7A30D,FFFFFF                                    
-51T0079R4  ,R4  ,                                        -                                        ,2,F7A30D,FFFFFF                                    
-51T0080R4  ,R4  ,                                        -                                        ,2,F7A30D,FFFFFF                                    
-51T0081R7  ,R7  ,                                        -                                        ,2,B57CBB,FFFFFF                                    
-51T0082R7  ,R7  ,                                        -                                        ,2,B57CBB,FFFFFF                                    
-51T0083R7  ,R7  ,                                        -                                        ,2,B57CBB,FFFFFF                                    
-51T0084R7  ,R7  ,                                        -                                        ,2,B57CBB,FFFFFF                                    
-51T0085R3  ,R3  ,                                        -                                        ,2,E54A3C,FFFFFF                                    
-51T0086R3  ,R3  ,                                        -                                        ,2,E54A3C,FFFFFF                                    
-51T0087R3  ,R3  ,                                        -                                        ,2,E54A3C,FFFFFF                                    
-51T0088R3  ,R3  ,                                        -                                        ,2,E54A3C,FFFFFF                                    
-51T0089R8  ,R8  ,                                        -                                        ,2,88016A,FFFFFF                                    
-51T0090R8  ,R8  ,                                        -                                        ,2,88016A,FFFFFF                                    
-51T0091R8  ,R8  ,                                        -                                        ,2,88016A,FFFFFF                                    
-51T0092R8  ,R8  ,                                        -                                        ,2,88016A,FFFFFF                                    
 51T0093R11 ,R11 ,Figueres                                -Barcelona-Sants                         ,2,0069AA,FFFFFF                                    
 51T0094R11 ,R11 ,Barcelona-Sants                         -Figueres                                ,2,0069AA,FFFFFF                                    
-51T0095R2  ,R2  ,El Prat de Llobregat                    -Barcelona-Sant Andreu                   ,2,26A741,FFFFFF                                    
-51T0096R2  ,R2  ,Barcelona-Sant Andreu                   -El Prat de Llobregat                    ,2,26A741,FFFFFF                                    
 51T0097R15 ,R15 ,Riba-roja d'Ebre                        -Caspe                                   ,2,978571,FFFFFF                                    
 51T0098R15 ,R15 ,Caspe                                   -Riba-roja d'Ebre                        ,2,978571,FFFFFF                                    
 51T0099RL3 ,RL3 ,Lleida                                  -Cervera                                 ,2,B6AE33,FFFFFF                                    
@@ -550,140 +204,40 @@ route_id,route_short_name,route_long_name,route_type,route_color,route_text_colo
 51T0112RG1 ,RG1 ,Figueres                                -Maçanet-Massanes                        ,2,409EF5,FFFFFF                                    
 51T0113R15 ,R15 ,Cunit                                   -Riba-roja d'Ebre                        ,2,978571,FFFFFF                                    
 51T0114R15 ,R15 ,Riba-roja d'Ebre                        -Cunit                                   ,2,978571,FFFFFF                                    
-51T0115R14 ,R14 ,Lleida                                  -Cunit                                   ,2,6C60A8,FFFFFF                                    
-51T0116R14 ,R14 ,Cunit                                   -Lleida                                  ,2,6C60A8,FFFFFF                                    
-51T0117R4  ,R4  ,Sabadell Sud                            -El Vendrell                             ,2,F7A30D,FFFFFF                                    
-51T0118R4  ,R4  ,El Vendrell                             -Sabadell Sud                            ,2,F7A30D,FFFFFF                                    
-51T0119R11 ,R11 ,Barcelona-Sant Andreu                   -Girona                                  ,2,0069AA,FFFFFF                                    
 51T0120R11 ,R11 ,Girona                                  -Barcelona-Sant Andreu                   ,2,0069AA,FFFFFF                                    
-51T0121R16 ,R16 ,                                        -Ulldecona-Alcanar-La Sénia              ,2,B52B46,FFFFFF                                    
-51T0122R16 ,R16 ,Ulldecona-Alcanar-La Sénia              -                                        ,2,B52B46,FFFFFF                                    
 51T0123R15 ,R15 ,Reus                                    -Torredembarra                           ,2,978571,FFFFFF                                    
 51T0124R15 ,R15 ,Torredembarra                           -Reus                                    ,2,978571,FFFFFF                                    
-51T0125R16 ,R16 ,Tarragona                               -Torredembarra                           ,2,B52B46,FFFFFF                                    
-51T0126R16 ,R16 ,Torredembarra                           -Tarragona                               ,2,B52B46,FFFFFF                                    
 51T0127R3  ,R3  ,Ripoll                                  -La Garriga                              ,2,E54A3C,FFFFFF                                    
 51T0128R3  ,R3  ,La Garriga                              -Ripoll                                  ,2,E54A3C,FFFFFF                                    
-51T0129R3  ,R3  ,Barcelona-Fabra i Puig                  -Granollers-Canovelles                   ,2,E54A3C,FFFFFF                                    
-51T0130R3  ,R3  ,Granollers-Canovelles                   -Barcelona-Fabra i Puig                  ,2,E54A3C,FFFFFF                                    
-51T0131R3  ,R3  ,Barcelona-Fabra i Puig                  -Vic                                     ,2,E54A3C,FFFFFF                                    
-51T0132R3  ,R3  ,Vic                                     -Barcelona-Fabra i Puig                  ,2,E54A3C,FFFFFF                                    
-51T0133R3  ,R3  ,Barcelona-Fabra i Puig                  -Centelles                               ,2,E54A3C,FFFFFF                                    
-51T0134R3  ,R3  ,Centelles                               -Barcelona-Fabra i Puig                  ,2,E54A3C,FFFFFF                                    
-51T0135R3  ,R3  ,Barcelona-Fabra i Puig                  -La Garriga                              ,2,E54A3C,FFFFFF                                    
-51T0136R3  ,R3  ,La Garriga                              -Barcelona-Fabra i Puig                  ,2,E54A3C,FFFFFF                                    
 51T0137RT1 ,RT1 ,La Plana-Picamoixons                    -Tarragona                               ,2,39D4CC,FFFFFF                                    
 51T0138RT1 ,RT1 ,Tarragona                               -La Plana-Picamoixons                    ,2,39D4CC,FFFFFF                                    
 51T0139R13 ,R13 ,Lleida                                  -Vinaixa                                 ,2,146520,FFFFFF                                    
 51T0140R13 ,R13 ,Vinaixa                                 -Lleida                                  ,2,146520,FFFFFF                                    
-51T0141R1  ,R1  ,Lleida                                  -                                        ,2,094188,FFFFFF                                    
-51T0142R1  ,R1  ,                                        -Lleida                                  ,2,094188,FFFFFF                                    
-51T0143R1  ,R1  ,Riba-roja d'Ebre                        -                                        ,2,094188,FFFFFF                                    
-51T0144R1  ,R1  ,                                        -Riba-roja d'Ebre                        ,2,094188,FFFFFF                                    
-51T0145R1  ,R1  ,                                        -                                        ,2,094188,FFFFFF                                    
-51T0146R1  ,R1  ,                                        -                                        ,2,094188,FFFFFF                                    
-51T0147R1  ,R1  ,                                        -                                        ,2,094188,FFFFFF                                    
-51T0148R1  ,R1  ,                                        -                                        ,2,094188,FFFFFF                                    
-51T0149R1  ,R1  ,Binefar                                 -                                        ,2,094188,FFFFFF                                    
-51T0150R1  ,R1  ,                                        -Binefar                                 ,2,094188,FFFFFF                                    
-51T0151R1  ,R1  ,                                        -                                        ,2,094188,FFFFFF                                    
-51T0152R1  ,R1  ,                                        -                                        ,2,094188,FFFFFF                                    
-51T0153R1  ,R1  ,                                        -                                        ,2,094188,FFFFFF                                    
-51T0154R1  ,R1  ,                                        -                                        ,2,094188,FFFFFF                                    
-51T0155R1  ,R1  ,                                        -                                        ,2,094188,FFFFFF                                    
-51T0156R1  ,R1  ,                                        -                                        ,2,094188,FFFFFF                                    
-51T0157R1  ,R1  ,                                        -                                        ,2,094188,FFFFFF                                    
-51T0158R1  ,R1  ,                                        -                                        ,2,094188,FFFFFF                                    
-51T0159R1  ,R1  ,                                        -                                        ,2,094188,FFFFFF                                    
-51T0160R1  ,R1  ,                                        -                                        ,2,094188,FFFFFF                                    
-51T0161R1  ,R1  ,Riba-roja d'Ebre                        -                                        ,2,094188,FFFFFF                                    
-51T0162R1  ,R1  ,                                        -Riba-roja d'Ebre                        ,2,094188,FFFFFF                                    
 51T0163R15 ,R15 ,                                        -Mora la Nova                            ,2,978571,FFFFFF                                    
 51T0164R15 ,R15 ,Mora la Nova                            -                                        ,2,978571,FFFFFF                                    
-51T0165R17 ,R17 ,Sant Vicenc de Calders                  -Tarragona                               ,2,F3B12E,FFFFFF                                    
-51T0166R17 ,R17 ,Tarragona                               -Sant Vicenc de Calders                  ,2,F3B12E,FFFFFF                                    
-51T0167R1  ,R1  ,Sant Vicenc de Calders                  -Tarragona                               ,2,094188,FFFFFF                                    
-51T0168R1  ,R1  ,Tarragona                               -Sant Vicenc de Calders                  ,2,094188,FFFFFF                                    
-51T0169R15 ,R15 ,Mora la Nova                            -                                        ,2,978571,FFFFFF                                    
-51T0170R15 ,R15 ,                                        -Mora la Nova                            ,2,978571,FFFFFF                                    
-51T0171R15 ,R15 ,Sant Vicenc de Calders                  -El Prat de Llobregat                    ,2,978571,FFFFFF                                    
-51T0172R15 ,R15 ,El Prat de Llobregat                    -Sant Vicenc de Calders                  ,2,978571,FFFFFF                                    
-51T0173R16 ,R16 ,El Prat de Llobregat                    -Sant Vicenc de Calders                  ,2,B52B46,FFFFFF                                    
-51T0174R16 ,R16 ,Sant Vicenc de Calders                  -El Prat de Llobregat                    ,2,B52B46,FFFFFF                                    
 51T0175R13 ,R13 ,La Plana-Picamoixons                    -Sant Vicenc de Calders                  ,2,146520,FFFFFF                                    
 51T0176R13 ,R13 ,Sant Vicenc de Calders                  -La Plana-Picamoixons                    ,2,146520,FFFFFF                                    
-51T0177R13 ,R13 ,Valls                                   -Barcelona-Sants                         ,2,146520,FFFFFF                                    
-51T0178R13 ,R13 ,Barcelona-Sants                         -Valls                                   ,2,146520,FFFFFF                                    
-51T0179R8  ,R8  ,Martorell Central                       -Rubí Can Vallhonrat                     ,2,88016A,FFFFFF                                    
-51T0180R8  ,R8  ,Rubí Can Vallhonrat                     -Martorell Central                       ,2,88016A,FFFFFF                                    
-51T0181RG1 ,RG1 ,PORTBOU                                 -Maçanet-Massanes                        ,2,409EF5,FFFFFF                                    
-51T0182RG1 ,RG1 ,Maçanet-Massanes                        -PORTBOU                                 ,2,409EF5,FFFFFF                                    
-51T0183R4  ,R4  ,Martorell Central                       -Molins de Rei                           ,3,F7A30D,FFFFFF                                    
-51T0184R8  ,R8  ,Martorell Central                       -Rubí Can Vallhonrat                     ,3,88016A,FFFFFF                                    
-51T0185R4  ,R4  ,Molins de Rei                           -Martorell Central                       ,3,F7A30D,FFFFFF                                    
-51T0186R8  ,R8  ,Rubí Can Vallhonrat                     -Martorell Central                       ,3,88016A,FFFFFF                                    
-51T0187R13 ,R13 ,La Plana-Picamoixons                    -Lleida                                  ,3,146520,FFFFFF                                    
-51T0188R13 ,R13 ,La Plana-Picamoixons                    -Lleida                                  ,3,146520,FFFFFF                                    
-51T0189R3  ,R3  ,Granollers-Canovelles                   -Barcelona-Fabra i Puig                  ,3,E54A3C,FFFFFF                                    
-51T0190R3  ,R3  ,Granollers-Canovelles                   -Barcelona-Fabra i Puig                  ,3,E54A3C,FFFFFF                                    
-51T0191R3  ,R3  ,La Garriga                              -Vic                                     ,3,E54A3C,FFFFFF                                    
-51T0192R3  ,R3  ,La Garriga                              -Vic                                     ,3,E54A3C,FFFFFF                                    
-51T0193R3  ,R3  ,La Garriga                              -Ripoll                                  ,3,E54A3C,FFFFFF                                    
-51T0194R3  ,R3  ,La Garriga                              -Ripoll                                  ,3,E54A3C,FFFFFF                                    
-51T0195R3  ,R3  ,La Garriga                              -Barcelona-Fabra i Puig                  ,3,E54A3C,FFFFFF                                    
-51T0196R3  ,R3  ,La Garriga                              -Barcelona-Fabra i Puig                  ,3,E54A3C,FFFFFF                                    
-51T0197R3  ,R3  ,Centelles                               -Vic                                     ,3,E54A3C,FFFFFF                                    
-51T0198R3  ,R3  ,Centelles                               -Vic                                     ,3,E54A3C,FFFFFF                                    
-51T0199R3  ,R3  ,Centelles                               -Barcelona-Fabra i Puig                  ,3,E54A3C,FFFFFF                                    
-51T0200R3  ,R3  ,Centelles                               -Barcelona-Fabra i Puig                  ,3,E54A3C,FFFFFF                                    
-51T0201R3  ,R3  ,Vic                                     -La Garriga                              ,3,E54A3C,FFFFFF                                    
-51T0202R3  ,R3  ,Vic                                     -La Garriga                              ,3,E54A3C,FFFFFF                                    
-51T0203R3  ,R3  ,Vic                                     -Centelles                               ,3,E54A3C,FFFFFF                                    
-51T0204R3  ,R3  ,Vic                                     -Centelles                               ,3,E54A3C,FFFFFF                                    
-51T0205R3  ,R3  ,Vic                                     -Ripoll                                  ,3,E54A3C,FFFFFF                                    
-51T0206R3  ,R3  ,Vic                                     -Ripoll                                  ,3,E54A3C,FFFFFF                                    
-51T0207R3  ,R3  ,Vic                                     -Puigcerdà                               ,3,E54A3C,FFFFFF                                    
-51T0208R3  ,R3  ,Vic                                     -Puigcerdà                               ,3,E54A3C,FFFFFF                                    
-51T0209R3  ,R3  ,Vic                                     -La Tor de Querol-Enveig                 ,3,E54A3C,FFFFFF                                    
-51T0210R3  ,R3  ,Vic                                     -La Tor de Querol-Enveig                 ,3,E54A3C,FFFFFF                                    
-51T0211R3  ,R3  ,Vic                                     -Barcelona-Fabra i Puig                  ,3,E54A3C,FFFFFF                                    
-51T0212R3  ,R3  ,Vic                                     -Barcelona-Fabra i Puig                  ,3,E54A3C,FFFFFF                                    
-51T0213R3  ,R3  ,Ripoll                                  -La Garriga                              ,3,E54A3C,FFFFFF                                    
-51T0214R3  ,R3  ,Ripoll                                  -La Garriga                              ,3,E54A3C,FFFFFF                                    
-51T0215R3  ,R3  ,Ripoll                                  -Vic                                     ,3,E54A3C,FFFFFF                                    
-51T0216R3  ,R3  ,Ripoll                                  -Vic                                     ,3,E54A3C,FFFFFF                                    
-51T0217R3  ,R3  ,Ribes de Freser                         -Toses                                   ,3,E54A3C,FFFFFF                                    
-51T0218R3  ,R3  ,Planoles                                -Toses                                   ,3,E54A3C,FFFFFF                                    
-51T0219R3  ,R3  ,Planoles                                -Toses                                   ,3,E54A3C,FFFFFF                                    
-51T0220R3  ,R3  ,Planoles                                -La Molina                               ,3,E54A3C,FFFFFF                                    
-51T0221R3  ,R3  ,Toses                                   -Ribes de Freser                         ,3,E54A3C,FFFFFF                                    
-51T0222R3  ,R3  ,Toses                                   -Planoles                                ,3,E54A3C,FFFFFF                                    
-51T0223R3  ,R3  ,Toses                                   -Planoles                                ,3,E54A3C,FFFFFF                                    
-51T0224R3  ,R3  ,La Molina                               -Planoles                                ,3,E54A3C,FFFFFF                                    
-51T0225R3  ,R3  ,Puigcerdà                               -Vic                                     ,3,E54A3C,FFFFFF                                    
-51T0226R3  ,R3  ,Puigcerdà                               -Vic                                     ,3,E54A3C,FFFFFF                                    
-51T0227R3  ,R3  ,Puigcerdà                               -Ripoll                                  ,3,E54A3C,FFFFFF                                    
-51T0228R3  ,R3  ,Puigcerdà                               -Ripoll                                  ,3,E54A3C,FFFFFF                                    
-51T0229R3  ,R3  ,Puigcerdà                               -La Tor de Querol-Enveig                 ,3,E54A3C,FFFFFF                                    
-51T0230R3  ,R3  ,Puigcerdà                               -La Tor de Querol-Enveig                 ,3,E54A3C,FFFFFF                                    
-51T0231R3  ,R3  ,La Tor de Querol-Enveig                 -Vic                                     ,3,E54A3C,FFFFFF                                    
-51T0232R3  ,R3  ,La Tor de Querol-Enveig                 -Vic                                     ,3,E54A3C,FFFFFF                                    
-51T0233R3  ,R3  ,La Tor de Querol-Enveig                 -Puigcerdà                               ,3,E54A3C,FFFFFF                                    
-51T0234R3  ,R3  ,La Tor de Querol-Enveig                 -Puigcerdà                               ,3,E54A3C,FFFFFF                                    
-51T0235R13 ,R13 ,Lleida                                  -La Plana-Picamoixons                    ,3,146520,FFFFFF                                    
-51T0236R13 ,R13 ,Lleida                                  -La Plana-Picamoixons                    ,3,146520,FFFFFF                                    
-51T0237R3  ,R3  ,Barcelona-Fabra i Puig                  -Granollers-Canovelles                   ,3,E54A3C,FFFFFF                                    
-51T0238R3  ,R3  ,Barcelona-Fabra i Puig                  -Granollers-Canovelles                   ,3,E54A3C,FFFFFF                                    
-51T0239R3  ,R3  ,Barcelona-Fabra i Puig                  -La Garriga                              ,3,E54A3C,FFFFFF                                    
-51T0240R3  ,R3  ,Barcelona-Fabra i Puig                  -La Garriga                              ,3,E54A3C,FFFFFF                                    
-51T0241R3  ,R3  ,Barcelona-Fabra i Puig                  -Centelles                               ,3,E54A3C,FFFFFF                                    
-51T0242R3  ,R3  ,Barcelona-Fabra i Puig                  -Centelles                               ,3,E54A3C,FFFFFF                                    
-51T0243R3  ,R3  ,Barcelona-Fabra i Puig                  -Vic                                     ,3,E54A3C,FFFFFF                                    
-51T0244R3  ,R3  ,Barcelona-Fabra i Puig                  -Vic                                     ,3,E54A3C,FFFFFF                                    
-51T0245R1  ,R1  ,Maçanet-Massanes                        -Blanes                                  ,3,094188,FFFFFF                                    
-51T0246R1  ,R1  ,Maçanet-Massanes                        -Blanes                                  ,3,094188,FFFFFF                                    
-51T0247R1  ,R1  ,Blanes                                  -Maçanet-Massanes                        ,3,094188,FFFFFF                                    
-51T0248R1  ,R1  ,Blanes                                  -Maçanet-Massanes                        ,3,094188,FFFFFF                                    
+51T0183R15 ,R15 ,                                        -Tortosa                                 ,2,978571,FFFFFF                                    
+51T0185R13 ,R13 ,La Plana-Picamoixons                    -Lleida                                  ,3,146520,FFFFFF                                    
+51T0186R3  ,R3  ,Granollers-Canovelles                   -Barcelona-Fabra i Puig                  ,3,E54A3C,FFFFFF                                    
+51T0188R3  ,R3  ,La Garriga                              -Ripoll                                  ,3,E54A3C,FFFFFF                                    
+51T0189R3  ,R3  ,La Garriga                              -Barcelona-Fabra i Puig                  ,3,E54A3C,FFFFFF                                    
+51T0190R3  ,R3  ,Centelles                               -Vic                                     ,3,E54A3C,FFFFFF                                    
+51T0191R3  ,R3  ,Centelles                               -Barcelona-Fabra i Puig                  ,3,E54A3C,FFFFFF                                    
+51T0193R3  ,R3  ,Vic                                     -Centelles                               ,3,E54A3C,FFFFFF                                    
+51T0195R3  ,R3  ,Vic                                     -Puigcerdà                               ,3,E54A3C,FFFFFF                                    
+51T0196R3  ,R3  ,Vic                                     -La Tor de Querol-Enveig                 ,3,E54A3C,FFFFFF                                    
+51T0197R3  ,R3  ,Vic                                     -Barcelona-Fabra i Puig                  ,3,E54A3C,FFFFFF                                    
+51T0198R3  ,R3  ,Ripoll                                  -La Garriga                              ,3,E54A3C,FFFFFF                                    
+51T0200R3  ,R3  ,Planoles                                -La Molina                               ,3,E54A3C,FFFFFF                                    
+51T0202R3  ,R3  ,La Molina                               -Planoles                                ,3,E54A3C,FFFFFF                                    
+51T0203R3  ,R3  ,Puigcerdà                               -Vic                                     ,3,E54A3C,FFFFFF                                    
+51T0206R3  ,R3  ,La Tor de Querol-Enveig                 -Vic                                     ,3,E54A3C,FFFFFF                                    
+51T0208R13 ,R13 ,Lleida                                  -La Plana-Picamoixons                    ,3,146520,FFFFFF                                    
+51T0209R3  ,R3  ,Barcelona-Fabra i Puig                  -Granollers-Canovelles                   ,3,E54A3C,FFFFFF                                    
+51T0210R3  ,R3  ,Barcelona-Fabra i Puig                  -La Garriga                              ,3,E54A3C,FFFFFF                                    
+51T0211R3  ,R3  ,Barcelona-Fabra i Puig                  -Centelles                               ,3,E54A3C,FFFFFF                                    
+51T0212R3  ,R3  ,Barcelona-Fabra i Puig                  -Vic                                     ,3,E54A3C,FFFFFF                                    
 60T0001C1  ,C1  ,Abando                                  -Santurtzi                               ,2,D7001E,FFFFFF                                    
 60T0002C1  ,C1  ,Santurtzi                               -Abando                                  ,2,D7001E,FFFFFF                                    
 60T0003C2  ,C2  ,Abando                                  -Muskiz                                  ,2,0F8C2D,FFFFFF                                    
@@ -692,138 +246,29 @@ route_id,route_short_name,route_long_name,route_type,route_color,route_text_colo
 60T0006C3  ,C3  ,Orduña                                  -Abando                                  ,2,78B4E1,FFFFFF                                    
 60T0007C4  ,C4  ,Bilbao La Concordia                     -La Calzada                              ,2,E93CAC,FFFFFF                                    
 60T0008C4  ,C4  ,La Calzada                              -Bilbao La Concordia                     ,2,E93CAC,FFFFFF                                    
-60T0009C4  ,C4  ,Sodupe                                  -Balmaseda                               ,2,E93CAC,FFFFFF                                    
-60T0010C4  ,C4  ,Balmaseda                               -Sodupe                                  ,2,E93CAC,FFFFFF                                    
-60T0011C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-60T0012C4  ,C4  ,                                        -                                        ,2,E93CAC,FFFFFF                                    
-60T0013C4A ,C4A ,Bilbao La Concordia                     -Karranza                                ,2,E93CAC,FFFFFF                                    
-60T0014C4A ,C4A ,Karranza                                -Bilbao La Concordia                     ,2,E93CAC,FFFFFF                                    
-60T0015C4  ,C4  ,                                        -Karranza                                ,2,E93CAC,FFFFFF                                    
-60T0016C4  ,C4  ,Karranza                                -                                        ,2,E93CAC,FFFFFF                                    
 60T0017C5  ,C5  ,Aranguren                               -Karranza                                ,2,2C2A86,FFFFFF                                    
 60T0018C5  ,C5  ,Karranza                                -Aranguren                               ,2,2C2A86,FFFFFF                                    
 60T0019C5  ,C5  ,                                        -Bilbao La Concordia                     ,2,2C2A86,FFFFFF                                    
 60T0020C5  ,C5  ,Bilbao La Concordia                     -                                        ,2,2C2A86,FFFFFF                                    
-60T0021C4  ,C4  ,La Asunción/Universidad                 -Guardo                                  ,2,E93CAC,FFFFFF                                    
-60T0022C4  ,C4  ,Guardo                                  -La Asunción/Universidad                 ,2,E93CAC,FFFFFF                                    
-60T0023C3  ,C3  ,Abando                                  -Arrigorriaga                            ,2,78B4E1,FFFFFF                                    
-60T0024C3  ,C3  ,Arrigorriaga                            -Abando                                  ,2,78B4E1,FFFFFF                                    
 61T0001C1  ,C1  ,Irun                                    -Brincola                                ,2,DA001C,FFFFFF                                    
 61T0002C1  ,C1  ,Brincola                                -Irun                                    ,2,DA001C,FFFFFF                                    
-61T0003C1  ,C1  ,Lezo-Renteria                           -Beasain                                 ,2,DA001C,FFFFFF                                    
-61T0004C1  ,C1  ,Beasain                                 -Lezo-Renteria                           ,2,DA001C,FFFFFF                                    
 61T0005C1  ,C1  ,                                        -Donostia-San Sebastian                  ,2,DA001C,FFFFFF                                    
 61T0006C1  ,C1  ,Donostia-San Sebastian                  -                                        ,2,DA001C,FFFFFF                                    
 61T0007C1  ,C1  ,Zumarraga                               -Hernani                                 ,2,DA001C,FFFFFF                                    
 61T0008C1  ,C1  ,Hernani                                 -Zumarraga                               ,2,DA001C,FFFFFF                                    
-61T0009C1  ,C1  ,Andoain                                 -                                        ,2,DA001C,FFFFFF                                    
-61T0010C1  ,C1  ,                                        -Andoain                                 ,2,DA001C,FFFFFF                                    
-61T0011C1  ,C1  ,Andoain                                 -                                        ,2,DA001C,FFFFFF                                    
-61T0012C1  ,C1  ,                                        -Andoain                                 ,2,DA001C,FFFFFF                                    
-61T0013C1  ,C1  ,Tolosa                                  -Pasaia                                  ,2,DA001C,FFFFFF                                    
-61T0014C1  ,C1  ,Pasaia                                  -Tolosa                                  ,2,DA001C,FFFFFF                                    
 61T0015C1  ,C1  ,                                        -                                        ,2,DA001C,FFFFFF                                    
 61T0016C1  ,C1  ,                                        -                                        ,2,DA001C,FFFFFF                                    
 61T0017C1  ,C1  ,Andoain                                 -                                        ,2,DA001C,FFFFFF                                    
-61T0018C1  ,C1  ,                                        -Andoain                                 ,2,DA001C,FFFFFF                                    
-61T0019C1  ,C1  ,Pasaia                                  -Irun                                    ,2,DA001C,FFFFFF                                    
-61T0020C1  ,C1  ,Irun                                    -Pasaia                                  ,2,DA001C,FFFFFF                                    
-61T0021C1  ,C1  ,Irun                                    -Pasaia                                  ,2,DA001C,FFFFFF                                    
-61T0022C1  ,C1  ,Pasaia                                  -Irun                                    ,2,DA001C,FFFFFF                                    
-61T0023C1  ,C1  ,Irun                                    -Lezo-Renteria                           ,2,DA001C,FFFFFF                                    
-61T0024C1  ,C1  ,Lezo-Renteria                           -Irun                                    ,2,DA001C,FFFFFF                                    
-61T0025C1  ,C1  ,Beasain                                 -Tolosa                                  ,3,DA001C,FFFFFF                                    
-61T0026C1  ,C1  ,Tolosa                                  -Beasain                                 ,3,DA001C,FFFFFF                                    
 61T0027C1  ,C1  ,Hernani                                 -Irun                                    ,3,DA001C,FFFFFF                                    
-61T0028C1  ,C1  ,Hernani                                 -Irun                                    ,3,DA001C,FFFFFF                                    
-61T0029C1  ,C1  ,Donostia-San Sebastian                  -Hernani                                 ,3,DA001C,FFFFFF                                    
-61T0030C1  ,C1  ,Lezo-Renteria                           -Irun                                    ,3,DA001C,FFFFFF                                    
-61T0031C1  ,C1  ,Irun                                    -Hernani                                 ,3,DA001C,FFFFFF                                    
-61T0032C1  ,C1  ,Irun                                    -Hernani                                 ,3,DA001C,FFFFFF                                    
-61T0033C1  ,C1  ,Irun                                    -Lezo-Renteria                           ,3,DA001C,FFFFFF                                    
-61T0034C1  ,C1  ,Irun                                    -Lezo-Renteria                           ,3,DA001C,FFFFFF                                    
+61T0030C1  ,C1  ,Irun                                    -Hernani                                 ,3,DA001C,FFFFFF                                    
+61T0031C1  ,C1  ,Irun                                    -Lezo-Renteria                           ,3,DA001C,FFFFFF                                    
 62T0001C1  ,C1  ,Santander                               -Reinosa                                 ,2,EF3340,FFFFFF                                    
 62T0002C1  ,C1  ,Reinosa                                 -Santander                               ,2,EF3340,FFFFFF                                    
 62T0003C2  ,C2  ,Santander                               -Cabezón De La Sal                       ,2,009645,FFFFFF                                    
 62T0004C2  ,C2  ,Cabezón De La Sal                       -Santander                               ,2,009645,FFFFFF                                    
 62T0005C3  ,C3  ,Santander                               -Liérganes                               ,2,0060A9,FFFFFF                                    
 62T0006C3  ,C3  ,Liérganes                               -Santander                               ,2,0060A9,FFFFFF                                    
-62T0007C1  ,C1  ,Renedo                                  -Los Corrales Buelna                     ,2,EF3340,FFFFFF                                    
-62T0008C1  ,C1  ,Los Corrales Buelna                     -Renedo                                  ,2,EF3340,FFFFFF                                    
-62T0009C1  ,C1  ,Barcena                                 -Torrelavega/Tanos                       ,2,EF3340,FFFFFF                                    
-62T0010C1  ,C1  ,Torrelavega/Tanos                       -Barcena                                 ,2,EF3340,FFFFFF                                    
-62T0011C3  ,C3  ,                                        -                                        ,2,0060A9,FFFFFF                                    
-62T0012C3  ,C3  ,                                        -                                        ,2,0060A9,FFFFFF                                    
-62T0013R3  ,R3  ,Santander                               -                                        ,2,094188,FFFFFF                                    
-62T0014R3  ,R3  ,                                        -Santander                               ,2,094188,FFFFFF                                    
-62T0015C3  ,C3  ,Maliaño La Vidriera                     -Solares                                 ,2,0060A9,FFFFFF                                    
-62T0016C3  ,C3  ,Solares                                 -Maliaño La Vidriera                     ,2,0060A9,FFFFFF                                    
-62T0017C2  ,C2  ,                                        -                                        ,2,009645,FFFFFF                                    
-62T0018C2  ,C2  ,                                        -                                        ,2,009645,FFFFFF                                    
-62T0019C3  ,C3  ,                                        -                                        ,2,0060A9,FFFFFF                                    
-62T0020C3  ,C3  ,                                        -                                        ,2,0060A9,FFFFFF                                    
-62T0021C2  ,C2  ,                                        -                                        ,2,009645,FFFFFF                                    
-62T0022C2  ,C2  ,                                        -                                        ,2,009645,FFFFFF                                    
-62T0023R3  ,R3  ,                                        -                                        ,2,094188,FFFFFF                                    
-62T0024R3  ,R3  ,                                        -                                        ,2,094188,FFFFFF                                    
-62T0025C3  ,C3  ,                                        -                                        ,2,0060A9,FFFFFF                                    
-62T0026C3  ,C3  ,                                        -                                        ,2,0060A9,FFFFFF                                    
-62T0027C3  ,C3  ,                                        -                                        ,2,0060A9,FFFFFF                                    
-62T0028C3  ,C3  ,                                        -                                        ,2,0060A9,FFFFFF                                    
-62T0029R3  ,R3  ,Orejo                                   -Astillero                               ,2,094188,FFFFFF                                    
-62T0030R3  ,R3  ,Astillero                               -Orejo                                   ,2,094188,FFFFFF                                    
-62T0031C2  ,C2  ,                                        -                                        ,2,009645,FFFFFF                                    
-62T0032C2  ,C2  ,                                        -                                        ,2,009645,FFFFFF                                    
-62T0033C3  ,C3  ,Astillero                               -La Cantábrica                           ,2,094188,FFFFFF                                    
-62T0034C3  ,C3  ,La Cantábrica                           -Astillero                               ,2,094188,FFFFFF                                    
-62T0035C3  ,C3  ,Orejo                                   -Marrón                                  ,2,094188,FFFFFF                                    
-62T0036C3  ,C3  ,Marrón                                  -Orejo                                   ,2,094188,FFFFFF                                    
-62T0037C3  ,C3  ,Astillero                               -Santander                               ,2,0060A9,FFFFFF                                    
-62T0038C3  ,C3  ,Santander                               -Astillero                               ,2,0060A9,FFFFFF                                    
-62T0039C3  ,C3  ,Solares                                 -Astillero                               ,2,0060A9,FFFFFF                                    
-62T0040C3  ,C3  ,Astillero                               -Solares                                 ,2,0060A9,FFFFFF                                    
-62T0041C3  ,C3  ,Liérganes                               -Astillero                               ,2,0060A9,FFFFFF                                    
-62T0042C3  ,C3  ,Astillero                               -Liérganes                               ,2,0060A9,FFFFFF                                    
-62T0043C2  ,C2  ,Puente San Miguel                       -Cabezón De La Sal                       ,3,009645,FFFFFF                                    
-62T0044C2  ,C2  ,Cabezón De La Sal                       -Puente San Miguel                       ,3,009645,FFFFFF                                    
-62T0045C2  ,C2  ,Cabezón De La Sal                       -Casar De Periedo                        ,3,009645,FFFFFF                                    
-62T0046C3  ,C3  ,Maliaño La Vidriera                     -La Cantábrica                           ,3,0060A9,FFFFFF                                    
-62T0047C3  ,C3  ,Maliaño La Vidriera                     -Solares                                 ,3,0060A9,FFFFFF                                    
-62T0048C3  ,C3  ,Maliaño La Vidriera                     -Liérganes                               ,3,0060A9,FFFFFF                                    
-62T0049C3  ,C3  ,Astillero                               -La Cantábrica                           ,3,0060A9,FFFFFF                                    
-62T0050C3  ,C3  ,Astillero                               -Solares                                 ,3,0060A9,FFFFFF                                    
-62T0051C3  ,C3  ,Astillero                               -Solares                                 ,3,0060A9,FFFFFF                                    
-62T0052C3  ,C3  ,Astillero                               -Liérganes                               ,3,0060A9,FFFFFF                                    
-62T0053C3  ,C3  ,Astillero                               -Liérganes                               ,3,0060A9,FFFFFF                                    
-62T0054C3  ,C3  ,La Cantábrica                           -Maliaño La Vidriera                     ,3,0060A9,FFFFFF                                    
-62T0055C3  ,C3  ,La Cantábrica                           -Astillero                               ,3,0060A9,FFFFFF                                    
-62T0056C3  ,C3  ,Orejo                                   -Maliaño La Vidriera                     ,3,0060A9,FFFFFF                                    
-62T0057C3  ,C3  ,Solares                                 -Maliaño La Vidriera                     ,3,0060A9,FFFFFF                                    
-62T0058C3  ,C3  ,Solares                                 -Astillero                               ,3,0060A9,FFFFFF                                    
-62T0059C3  ,C3  ,Solares                                 -Astillero                               ,3,0060A9,FFFFFF                                    
-62T0060C3  ,C3  ,Liérganes                               -Maliaño La Vidriera                     ,3,0060A9,FFFFFF                                    
-62T0061C3  ,C3  ,Liérganes                               -Astillero                               ,3,0060A9,FFFFFF                                    
-62T0062C3  ,C3  ,Liérganes                               -Astillero                               ,3,0060A9,FFFFFF                                    
-62T0063C1  ,C1  ,Reinosa                                 -Maliaño                                 ,3,EF3340,FFFFFF                                    
-62T0064C1  ,C1  ,Barcena                                 -Maliaño                                 ,3,EF3340,FFFFFF                                    
-62T0065C1  ,C1  ,Los Corrales Buelna                     -Maliaño                                 ,3,EF3340,FFFFFF                                    
-62T0066C1  ,C1  ,Renedo                                  -Maliaño                                 ,3,EF3340,FFFFFF                                    
-62T0067C1  ,C1  ,Maliaño                                 -Reinosa                                 ,3,EF3340,FFFFFF                                    
-62T0068C1  ,C1  ,Maliaño                                 -Barcena                                 ,3,EF3340,FFFFFF                                    
-62T0069C1  ,C1  ,Maliaño                                 -Los Corrales Buelna                     ,3,EF3340,FFFFFF                                    
-62T0070C1  ,C1  ,Maliaño                                 -Renedo                                  ,3,EF3340,FFFFFF                                    
 70T0001C1  ,C1  ,Casetas                                 -Miraflores                              ,2,D90724,FFFFFF                                    
 70T0002C1  ,C1  ,Miraflores                              -Casetas                                 ,2,D90724,FFFFFF                                    
-70T0003C1  ,C1  ,Casetas                                 -Miraflores                              ,2,D90724,FFFFFF                                    
-70T0004C1  ,C1  ,Miraflores                              -Casetas                                 ,2,D90724,FFFFFF                                    
 70T0005C1  ,C1  ,Zaragoza Delicias                       -                                        ,2,D90724,FFFFFF                                    
 70T0006C1  ,C1  ,                                        -Zaragoza Delicias                       ,2,D90724,FFFFFF                                    
-70T0007C1  ,C1  ,                                        -Zaragoza Delicias                       ,2,D90724,FFFFFF                                    
-70T0008C1  ,C1  ,Zaragoza Delicias                       -                                        ,2,D90724,FFFFFF                                    
-70T0009C1  ,C1  ,                                        -                                        ,2,D90724,FFFFFF                                    
-70T0010C1  ,C1  ,                                        -                                        ,2,D90724,FFFFFF                                    
-70T0011C1  ,C1  ,                                        -                                        ,2,D90724,FFFFFF                                    
-70T0012C1  ,C1  ,                                        -                                        ,2,D90724,FFFFFF                                    
-70T0013C1  ,C1  ,                                        -                                        ,2,D90724,FFFFFF                                    
-70T0014C1  ,C1  ,                                        -                                        ,2,D90724,FFFFFF                                    
-90T0025C9  ,C9  ,Cercedilla                              -Cotos                                   ,2,F3972A,FFFFFF                                    
