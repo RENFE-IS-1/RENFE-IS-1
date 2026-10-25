@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -182,6 +183,38 @@ public class RedTransporte {
 
     public List<ParadaHorario> getRutaDeViaje(String tripId) {
         return paradasPorViaje.getOrDefault(tripId, new ArrayList<>());
+    }
+
+    /**
+     * Devuelve las estaciones de un recorrido representativo de una línea.
+     * Si una línea tiene varios recorridos GTFS, se elige el viaje con más
+     * paradas para incluir el recorrido completo disponible en la red.
+     */
+    public List<Estacion> getEstacionesDeLinea(String shortName) {
+        if (shortName == null || shortName.isBlank()) return new ArrayList<>();
+
+        Set<String> routeIds = new HashSet<>();
+        for (Linea linea : lineasById.values()) {
+            if (shortName.equalsIgnoreCase(linea.getShortName())) {
+                routeIds.add(linea.getId());
+            }
+        }
+
+        List<ParadaHorario> mejorRecorrido = new ArrayList<>();
+        for (Viaje viaje : viajesById.values()) {
+            if (!routeIds.contains(viaje.getRouteId())) continue;
+
+            List<ParadaHorario> recorrido = new ArrayList<>(getRutaDeViaje(viaje.getId()));
+            recorrido.sort((a, b) -> Integer.compare(a.getStopSequence(), b.getStopSequence()));
+            if (recorrido.size() > mejorRecorrido.size()) mejorRecorrido = recorrido;
+        }
+
+        Map<String, Estacion> estaciones = new LinkedHashMap<>();
+        for (ParadaHorario parada : mejorRecorrido) {
+            Estacion estacion = estacionesById.get(parada.getStopId());
+            if (estacion != null) estaciones.putIfAbsent(estacion.getId(), estacion);
+        }
+        return new ArrayList<>(estaciones.values());
     }
 
     /** Indica si los viajes con este service_id circulan en la fecha dada. */
