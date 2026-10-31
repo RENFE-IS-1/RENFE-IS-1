@@ -45,4 +45,5 @@ Las clases de `modelo`, `consultas`, `servicio`, etc. están copiadas en `files/
 * Rodrigo Antequera Díaz
 * Diego Bañares Díez
 * Pedro Vicente Polo
-* Sergio Alcalá-Zamora
+* Sergio Vazquez Fernandez
+  
