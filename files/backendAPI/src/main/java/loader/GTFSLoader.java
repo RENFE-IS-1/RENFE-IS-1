@@ -10,27 +10,32 @@ import repositorio.RedTransporte;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GTFSLoader {
     
     public void cargarDesdeDirectorio(String basePath, RedTransporte red) {
-        loadStops(basePath + "stops.txt", red);
-        loadRoutes(basePath + "routes.txt", red);
-        loadTrips(basePath + "trips.txt", red);
-        loadTransfers(basePath + "transfers.txt", red);
-        loadStopTimes(basePath + "stop_times.txt", red);
-        loadCalendar(basePath + "calendar.txt", red);
-        loadCalendarDates(basePath + "calendar_dates.txt", red);
+        loadStops(ruta(basePath, "stops.txt"), red);
+        loadRoutes(ruta(basePath, "routes.txt"), red);
+        loadTrips(ruta(basePath, "trips.txt"), red);
+        loadTransfers(ruta(basePath, "transfers.txt"), red);
+        loadStopTimes(ruta(basePath, "stop_times.txt"), red);
+        loadCalendar(ruta(basePath, "calendar.txt"), red);
+        loadCalendarDates(ruta(basePath, "calendar_dates.txt"), red);
 
-        File stopTimes = new File(basePath + "stop_times.txt");
+        File stopTimes = new File(ruta(basePath, "stop_times.txt"));
         if (stopTimes.exists()) red.setFechaDatos(Instant.ofEpochMilli(stopTimes.lastModified()));
         
         red.aplicarAliasComerciales();
@@ -39,11 +44,11 @@ public class GTFSLoader {
     }
 
     private void loadStops(String path, RedTransporte red) {
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        try (BufferedReader br = Files.newBufferedReader(Path.of(path), StandardCharsets.UTF_8)) {
             String line;
             br.readLine();
             while ((line = br.readLine()) != null) {
-                String[] p = line.split(",", -1);
+                String[] p = parseCsv(line);
                 if (p.length >= 4) {
                     // Cargamos todas inicialmente; las que sobren se purgarán al final
                     red.addEstacion(new Estacion(p[0].trim(), p[1].trim(), Double.parseDouble(p[2].trim()), Double.parseDouble(p[3].trim())));
@@ -53,29 +58,31 @@ public class GTFSLoader {
     }
     
     private void loadRoutes(String path, RedTransporte red) {
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        try (BufferedReader br = Files.newBufferedReader(Path.of(path), StandardCharsets.UTF_8)) {
+            Map<String, Integer> col = indiceColumnas(br.readLine());
             String line;
-            br.readLine();
             while ((line = br.readLine()) != null) {
-                String[] p = line.split(",", -1);
-                if (p.length >= 6) {
-                    String id = p[0].trim();
+                String[] p = parseCsv(line);
+                try {
+                    String id = campo(p, col, "route_id");
                     // FILTRO ESTRUCTURAL: Solo procesar rutas de Cercanías Madrid
-                    if (id.startsWith("10")) { 
-                        String color = p.length > 4 ? p[4].trim() : "FFFFFF";
-                        red.addLinea(new Linea(id, p[1].trim(), p[2].trim(), color));
+                    if (id.startsWith("10")) {
+                        String color = campoOpcional(p, col, "route_color", "FFFFFF");
+                        red.addLinea(new Linea(id, campo(p, col, "route_short_name"),
+                                campo(p, col, "route_long_name"), color));
                     }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.err.println("Línea de routes.txt ignorada: " + line.trim());
                 }
             }
         } catch (IOException e) { System.err.println("Error routes.txt: " + e.getMessage()); }
     }
-
     private void loadTrips(String path, RedTransporte red) {
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        try (BufferedReader br = Files.newBufferedReader(Path.of(path), StandardCharsets.UTF_8)) {
             String line;
             br.readLine();
             while ((line = br.readLine()) != null) {
-                String[] p = line.split(",", -1);
+                String[] p = parseCsv(line);
                 if (p.length >= 3) {
                     String routeId = p[0].trim();
                     // FILTRO EN CASCADA: Solo guardar el viaje si su ruta es de Madrid
@@ -88,11 +95,11 @@ public class GTFSLoader {
     }
 
     private void loadTransfers(String path, RedTransporte red) {
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        try (BufferedReader br = Files.newBufferedReader(Path.of(path), StandardCharsets.UTF_8)) {
             String line;
             br.readLine();
             while ((line = br.readLine()) != null) {
-                String[] p = line.split(",", -1);
+                String[] p = parseCsv(line);
                 if (p.length >= 8) {
                     String fromStop = p[0].trim();
                     String toStop = p[1].trim();
@@ -105,11 +112,11 @@ public class GTFSLoader {
     }
 
     private void loadStopTimes(String path, RedTransporte red) {
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        try (BufferedReader br = Files.newBufferedReader(Path.of(path), StandardCharsets.UTF_8)) {
             String line;
             br.readLine();
             while ((line = br.readLine()) != null) {
-                String[] p = line.split(",", -1);
+                String[] p = parseCsv(line);
                 if (p.length >= 5) {
                     String tripId = p[0].trim();
                     // FILTRO EN CASCADA: Solo procesar el horario si el viaje físico es de Madrid
@@ -127,12 +134,12 @@ public class GTFSLoader {
 
     /** Lee calendar.txt. Las columnas se localizan por la cabecera. */
     private void loadCalendar(String path, RedTransporte red) {
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        try (BufferedReader br = Files.newBufferedReader(Path.of(path), StandardCharsets.UTF_8)) {
             Map<String, Integer> col = indiceColumnas(br.readLine());
             String[] diasCol = {"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"};
             String line;
             while ((line = br.readLine()) != null) {
-                String[] p = line.split(",", -1);
+                String[] p = parseCsv(line);
                 try {
                     boolean[] dias = new boolean[7];
                     for (int i = 0; i < 7; i++) dias[i] = campo(p, col, diasCol[i]).equals("1");
@@ -150,11 +157,11 @@ public class GTFSLoader {
     /** Lee calendar_dates.txt (opcional en GTFS: si no existe, no se considera un error). */
     private void loadCalendarDates(String path, RedTransporte red) {
         if (!new File(path).exists()) return;
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        try (BufferedReader br = Files.newBufferedReader(Path.of(path), StandardCharsets.UTF_8)) {
             Map<String, Integer> col = indiceColumnas(br.readLine());
             String line;
             while ((line = br.readLine()) != null) {
-                String[] p = line.split(",", -1);
+                String[] p = parseCsv(line);
                 try {
                     red.addExcepcionCalendario(
                         campo(p, col, "service_id"),
@@ -170,7 +177,7 @@ public class GTFSLoader {
     private Map<String, Integer> indiceColumnas(String cabecera) {
         Map<String, Integer> col = new HashMap<>();
         if (cabecera == null) return col;
-        String[] nombres = cabecera.replace("\uFEFF", "").split(",", -1);
+        String[] nombres = parseCsv(cabecera.replace("\uFEFF", ""));
         for (int i = 0; i < nombres.length; i++) col.put(nombres[i].trim(), i);
         return col;
     }
@@ -181,6 +188,43 @@ public class GTFSLoader {
         return p[i].trim();
     }
 
+    /** Une directorio y nombre de archivo sin exigir que el directorio termine en separador. */
+    private String campoOpcional(String[] p, Map<String, Integer> col, String nombre, String valorPorDefecto) {
+        Integer i = col.get(nombre);
+        return i == null || i >= p.length || p[i].isBlank() ? valorPorDefecto : p[i].trim();
+    }
+    private static String ruta(String directorio, String archivo) {
+        return new File(directorio, archivo).getPath();
+    }
+
+    /**
+     * Divide una fila CSV respetando comas entrecomilladas y comillas dobles escapadas, como
+     * permite GTFS. Se procesa una línea cada vez porque los archivos GTFS usados no incluyen
+     * saltos de línea dentro de un campo.
+     */
+    private static String[] parseCsv(String line) {
+        List<String> campos = new ArrayList<>();
+        StringBuilder campo = new StringBuilder();
+        boolean entreComillas = false;
+        for (int i = 0; i < line.length(); i++) {
+            char actual = line.charAt(i);
+            if (actual == '"') {
+                if (entreComillas && i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                    campo.append('"');
+                    i++;
+                } else {
+                    entreComillas = !entreComillas;
+                }
+            } else if (actual == ',' && !entreComillas) {
+                campos.add(campo.toString());
+                campo.setLength(0);
+            } else {
+                campo.append(actual);
+            }
+        }
+        campos.add(campo.toString());
+        return campos.toArray(new String[0]);
+    }
     private int timeToSeconds(String time) {
         if (time == null || time.isEmpty()) return 0;
         String[] p = time.split(":");

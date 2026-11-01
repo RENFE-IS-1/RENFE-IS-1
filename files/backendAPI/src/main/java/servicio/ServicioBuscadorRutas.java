@@ -525,7 +525,8 @@ public class ServicioBuscadorRutas {
      * estación -> recorridos que salen de ella. La línea se identifica por su nombre comercial
      * porque en el GTFS de Renfe cada sentido de una línea tiene un route_id distinto.
      */
-    private void construirRecorridos() {
+    // El servicio es singleton: el bloqueo publica ambos índices completos antes de otra búsqueda.
+    private synchronized void construirRecorridos() {
         if (recorridos != null) return;
         Map<String, Recorrido> porClave = new LinkedHashMap<>();
         for (Viaje v : red.getAllViajes()) {
