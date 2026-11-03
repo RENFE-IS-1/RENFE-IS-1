@@ -1,0 +1,393 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1615 1377" width="1615" height="1377" font-family="Arial, Helvetica, sans-serif">
+<title>Cercanías Madrid: esquema de la red</title>
+<rect width="1615" height="1377" fill="#ffffff"/>
+<g data-linea="C3" stroke="#952585" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<title>Línea C3</title>
+<polyline points="802.0,1176.0 802.0,1220.0"/>
+<polyline points="802.0,1132.0 802.0,1176.0"/>
+<polyline points="802.0,1264.0 802.0,1308.0"/>
+<polyline points="802.0,1044.0 802.0,1088.0"/>
+<polyline points="806.0,802.0 806.0,934.0"/>
+<polyline points="762.0,736.0 762.0,756.3 804.8,799.2"/>
+<polyline points="802.0,1220.0 802.0,1264.0"/>
+<polyline points="802.0,1088.0 802.0,1132.0"/>
+<polyline points="754.0,736.0 754.0,712.3 799.2,667.2"/>
+<polyline points="802.0,1000.0 802.0,1044.0"/>
+<polyline points="818.0,604.0 818.0,670.0"/>
+<polyline points="802.0,934.0 802.0,1000.0"/>
+</g>
+<g data-linea="C4" stroke="#2C2A86" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<title>Línea C4</title>
+<polyline points="798.0,802.0 798.0,934.0"/>
+<polyline points="754.0,736.0 754.0,759.7 799.2,804.8"/>
+<polyline points="762.0,736.0 762.0,715.7 804.8,672.8"/>
+<polyline points="810.0,604.0 810.0,670.0"/>
+<polyline points="736.0,1088.0 736.0,1132.0"/>
+<polyline points="736.0,1132.0 736.0,1176.0"/>
+<polyline points="736.0,1044.0 736.0,1088.0"/>
+<polyline points="978.0,428.0 1022.0,384.0"/>
+<polyline points="846.0,560.0 890.0,516.0"/>
+<polyline points="802.0,604.0 846.0,560.0"/>
+<polyline points="934.0,472.0 978.0,428.0"/>
+<polyline points="890.0,516.0 934.0,472.0"/>
+<polyline points="890.0,428.0 890.0,472.0"/>
+<polyline points="890.0,472.0 890.0,516.0"/>
+<polyline points="736.0,1176.0 736.0,1220.0"/>
+<polyline points="890.0,384.0 890.0,428.0"/>
+<polyline points="736.0,1044.0 802.0,978.0 802.0,934.0"/>
+</g>
+<g data-linea="C10" stroke="#BCCF00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<title>Línea C10</title>
+<polyline points="802.0,604.0 802.0,670.0"/>
+<polyline points="538.0,802.0 582.0,846.0 648.0,846.0"/>
+<polyline points="542.0,626.0 542.0,670.0"/>
+<polyline points="807.7,664.3 854.0,710.7 854.0,736.0"/>
+<polyline points="542.0,758.0 542.0,802.0"/>
+<polyline points="455.7,444.3 499.7,488.3"/>
+<polyline points="542.0,582.0 542.0,626.0"/>
+<polyline points="755.2,843.2 799.2,799.2"/>
+<polyline points="796.3,796.3 838.0,754.7 838.0,736.0"/>
+<polyline points="542.0,714.0 542.0,758.0"/>
+<polyline points="499.7,488.3 543.7,532.3"/>
+<polyline points="367.7,356.3 411.7,400.3"/>
+<polyline points="648.0,846.0 703.0,846.0"/>
+<polyline points="703.0,846.0 758.0,846.0"/>
+<polyline points="538.0,538.0 538.0,582.0"/>
+<polyline points="542.0,670.0 542.0,714.0"/>
+<polyline points="411.7,400.3 455.7,444.3"/>
+</g>
+<g data-linea="C7" stroke="#C0272D" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<title>Línea C7</title>
+<polyline points="794.0,604.0 794.0,670.0"/>
+<polyline points="534.0,626.0 534.0,670.0"/>
+<polyline points="802.0,670.0 846.0,714.0 846.0,736.0"/>
+<polyline points="534.0,758.0 534.0,802.0"/>
+<polyline points="534.0,582.0 534.0,626.0"/>
+<polyline points="802.0,802.0 846.0,758.0 846.0,736.0"/>
+<polyline points="534.0,714.0 534.0,758.0"/>
+<polyline points="534.0,670.0 534.0,714.0"/>
+<polyline points="1228.2,623.2 1272.2,579.2"/>
+<polyline points="703.0,530.0 758.0,530.0"/>
+<polyline points="956.0,842.0 1011.0,842.0"/>
+<polyline points="1096.2,755.2 1140.2,711.2"/>
+<polyline points="763.7,532.3 810.0,578.7 810.0,604.0"/>
+<polyline points="1008.2,843.2 1052.2,799.2"/>
+<polyline points="538.0,582.0 604.0,582.0 648.0,538.0"/>
+<polyline points="648.0,530.0 703.0,530.0"/>
+<polyline points="804.8,799.2 848.8,843.2"/>
+<polyline points="901.0,842.0 956.0,842.0"/>
+<polyline points="1140.2,711.2 1184.2,667.2"/>
+<polyline points="1272.2,579.2 1316.2,535.2"/>
+<polyline points="846.0,842.0 901.0,842.0"/>
+<polyline points="1184.2,667.2 1228.2,623.2"/>
+<polyline points="1052.2,799.2 1096.2,755.2"/>
+</g>
+<g data-linea="C2" stroke="#00943D" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<title>Línea C2</title>
+<polyline points="786.0,604.0 786.0,670.0"/>
+<polyline points="796.3,675.7 838.0,717.3 838.0,736.0"/>
+<polyline points="807.7,807.7 854.0,761.3 854.0,736.0"/>
+<polyline points="1233.8,628.8 1277.8,584.8"/>
+<polyline points="956.0,850.0 1011.0,850.0"/>
+<polyline points="1101.8,760.8 1145.8,716.8"/>
+<polyline points="1013.8,848.8 1057.8,804.8"/>
+<polyline points="799.2,804.8 843.2,848.8"/>
+<polyline points="901.0,850.0 956.0,850.0"/>
+<polyline points="1145.8,716.8 1189.8,672.8"/>
+<polyline points="1277.8,584.8 1321.8,540.8"/>
+<polyline points="846.0,850.0 901.0,850.0"/>
+<polyline points="1189.8,672.8 1233.8,628.8"/>
+<polyline points="1057.8,804.8 1101.8,760.8"/>
+<polyline points="1451.0,406.0 1495.0,362.0"/>
+<polyline points="1319.0,538.0 1363.0,494.0"/>
+<polyline points="1363.0,494.0 1407.0,450.0"/>
+<polyline points="802.0,600.0 868.0,600.0"/>
+<polyline points="1407.0,450.0 1451.0,406.0"/>
+<polyline points="868.0,604.0 978.0,714.0 1143.0,714.0"/>
+</g>
+<g data-linea="C5" stroke="#ECA328" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<title>Línea C5</title>
+<polyline points="760.8,848.8 804.8,804.8"/>
+<polyline points="582.0,1132.0 582.0,1176.0"/>
+<polyline points="736.0,912.0 736.0,868.0 758.0,846.0"/>
+<polyline points="582.0,1088.0 582.0,1132.0"/>
+<polyline points="626.0,1044.0 681.0,1044.0"/>
+<polyline points="736.0,956.0 736.0,1000.0"/>
+<polyline points="428.0,1110.0 428.0,1154.0"/>
+<polyline points="582.0,1176.0 582.0,1220.0"/>
+<polyline points="428.0,1022.0 461.0,989.0"/>
+<polyline points="582.0,1088.0 626.0,1044.0"/>
+<polyline points="461.0,989.0 494.0,956.0"/>
+<polyline points="428.0,1154.0 428.0,1198.0"/>
+<polyline points="736.0,912.0 736.0,956.0"/>
+<polyline points="560.0,890.0 648.0,802.0 747.0,802.0"/>
+<polyline points="681.0,1044.0 736.0,1044.0"/>
+<polyline points="747.0,802.0 802.0,802.0"/>
+<polyline points="428.0,1198.0 428.0,1242.0"/>
+<polyline points="428.0,1066.0 428.0,1110.0"/>
+<polyline points="428.0,1022.0 428.0,1066.0"/>
+<polyline points="527.0,923.0 560.0,890.0"/>
+<polyline points="736.0,1000.0 736.0,1044.0"/>
+<polyline points="494.0,956.0 527.0,923.0"/>
+</g>
+<g data-linea="C8a" stroke="#868584" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<title>Línea C8a</title>
+<polyline points="450.0,450.0 494.0,494.0"/>
+<polyline points="494.0,494.0 538.0,538.0"/>
+<polyline points="362.0,362.0 406.0,406.0"/>
+<polyline points="406.0,406.0 450.0,450.0"/>
+<polyline points="703.0,538.0 758.0,538.0"/>
+<polyline points="758.0,538.0 802.0,582.0 802.0,604.0"/>
+<polyline points="648.0,538.0 703.0,538.0"/>
+<polyline points="538.0,534.0 648.0,534.0"/>
+<polyline points="230.0,494.0 230.0,538.0"/>
+<polyline points="274.0,450.0 318.0,406.0"/>
+<polyline points="230.0,538.0 230.0,582.0"/>
+<polyline points="230.0,582.0 230.0,626.0"/>
+<polyline points="230.0,494.0 274.0,450.0"/>
+<polyline points="318.0,406.0 362.0,362.0"/>
+</g>
+<g data-linea="C8b" stroke="#868584" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<title>Línea C8b</title>
+<polyline points="444.3,455.7 488.3,499.7"/>
+<polyline points="488.3,499.7 532.3,543.7"/>
+<polyline points="356.3,367.7 400.3,411.7"/>
+<polyline points="400.3,411.7 444.3,455.7"/>
+<polyline points="703.0,546.0 758.0,546.0"/>
+<polyline points="752.3,543.7 794.0,585.3 794.0,604.0"/>
+<polyline points="648.0,546.0 703.0,546.0"/>
+<polyline points="538.0,542.0 648.0,542.0"/>
+<polyline points="362.0,318.0 362.0,362.0"/>
+<polyline points="362.0,230.0 362.0,274.0"/>
+<polyline points="362.0,186.0 362.0,230.0"/>
+<polyline points="362.0,142.0 362.0,186.0"/>
+<polyline points="362.0,274.0 362.0,318.0"/>
+</g>
+<g data-linea="C1" stroke="#75B6E0" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<title>Línea C1</title>
+<polyline points="802.0,608.0 868.0,608.0"/>
+<polyline points="923.0,604.0 978.0,604.0"/>
+<polyline points="868.0,604.0 923.0,604.0"/>
+</g>
+<g data-linea="C9" stroke="#915419" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<title>Línea C9</title>
+<polyline points="285.0,120.0 340.0,120.0 362.0,142.0"/>
+<polyline points="230.0,120.0 285.0,120.0"/>
+</g>
+<g class="estaciones">
+<rect data-estacion="17000" data-lineas="C3 C4 C10 C7 C2 C8a C8b C1" x="-5.0" y="-22.0" width="10.0" height="44.0" rx="5.0" transform="translate(802.0 604.0) rotate(90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Madrid-Chamartín-Clara Campoamor</title></rect>
+<rect data-estacion="18002" data-lineas="C3 C4 C10 C7 C2" x="-5.0" y="-22.0" width="10.0" height="44.0" rx="5.0" transform="translate(802.0 670.0) rotate(-90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Madrid-Nuevos Ministerios</title></rect>
+<rect data-estacion="18001" data-lineas="C10 C7 C2" x="-5.0" y="-14.0" width="10.0" height="28.0" rx="5.0" transform="translate(846.0 736.0) rotate(-90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Madrid-Recoletos</title></rect>
+<rect data-estacion="18101" data-lineas="C3 C4" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(758.0 736.0) rotate(90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Sol</title></rect>
+<rect data-estacion="18000" data-lineas="C3 C4 C10 C7 C2 C5" x="-5.0" y="-14.0" width="10.0" height="28.0" rx="5.0" transform="translate(802.0 802.0) rotate(-45.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Madrid-Atocha Cercanías</title></rect>
+<rect data-estacion="18003" data-lineas="C10 C5" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(758.0 846.0) rotate(-45.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Méndez Álvaro P.V.</title></rect>
+<rect data-estacion="18004" data-lineas="C10" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(703.0 846.0) rotate(270.0)" fill="#fff"><title>Delicias</title></rect>
+<rect data-estacion="18005" data-lineas="C10" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(648.0 846.0) rotate(270.0)" fill="#fff"><title>Pirámides</title></rect>
+<rect data-estacion="10000" data-lineas="C10 C7" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(538.0 802.0) rotate(-90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Madrid-Príncipe Pío</title></rect>
+<rect data-estacion="10001" data-lineas="C10 C7" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(538.0 758.0) rotate(90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Aravaca</title></rect>
+<rect data-estacion="10002" data-lineas="C10 C7" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(538.0 714.0) rotate(90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Pozuelo</title></rect>
+<rect data-estacion="10010" data-lineas="C10 C7" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(538.0 670.0) rotate(-90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>El Barrial-Centro Comercial Pozuelo</title></rect>
+<rect data-estacion="10007" data-lineas="C10 C7" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(538.0 626.0) rotate(90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Majadahonda</title></rect>
+<rect data-estacion="10005" data-lineas="C10 C7" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(538.0 582.0) rotate(90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Las Rozas</title></rect>
+<rect data-estacion="10100" data-lineas="C10 C8a C8b" x="-5.0" y="-14.0" width="10.0" height="28.0" rx="5.0" transform="translate(538.0 538.0) rotate(-135.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Pinar de las Rozas</title></rect>
+<rect data-estacion="97100" data-lineas="C7 C8a C8b" x="-5.0" y="-14.0" width="10.0" height="28.0" rx="5.0" transform="translate(648.0 538.0) rotate(0.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Pitis</title></rect>
+<rect data-estacion="97200" data-lineas="C7 C8a C8b" x="-5.0" y="-14.0" width="10.0" height="28.0" rx="5.0" transform="translate(703.0 538.0) rotate(0.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Mirasierra-Paco de Lucía</title></rect>
+<rect data-estacion="97201" data-lineas="C7 C8a C8b" x="-5.0" y="-14.0" width="10.0" height="28.0" rx="5.0" transform="translate(758.0 538.0) rotate(180.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Madrid-Ramón y Cajal</title></rect>
+<rect data-estacion="35609" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(747.0 802.0) rotate(270.0)" fill="#fff"><title>Embajadores</title></rect>
+<rect data-estacion="35608" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(560.0 890.0) rotate(45.0)" fill="#fff"><title>Laguna</title></rect>
+<rect data-estacion="35600" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(527.0 923.0) rotate(45.0)" fill="#fff"><title>Aluche</title></rect>
+<rect data-estacion="35601" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(494.0 956.0) rotate(225.0)" fill="#fff"><title>Maestra Justa Freire-Polidep. Aluche</title></rect>
+<rect data-estacion="35602" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(461.0 989.0) rotate(225.0)" fill="#fff"><title>Las Águilas</title></rect>
+<rect data-estacion="35603" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(428.0 1022.0) rotate(45.0)" fill="#fff"><title>Cuatro Vientos</title></rect>
+<rect data-estacion="35604" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(428.0 1066.0) rotate(180.0)" fill="#fff"><title>San José de Valderas</title></rect>
+<rect data-estacion="35605" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(428.0 1110.0) rotate(180.0)" fill="#fff"><title>Alcorcón</title></rect>
+<rect data-estacion="35610" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(428.0 1154.0) rotate(0.0)" fill="#fff"><title>Las Retamas</title></rect>
+<rect data-estacion="35606" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(428.0 1198.0) rotate(0.0)" fill="#fff"><title>Móstoles</title></rect>
+<rect data-estacion="35607" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(428.0 1242.0) rotate(0.0)" fill="#fff"><title>Móstoles-El Soto</title></rect>
+<rect data-estacion="35702" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(736.0 912.0) rotate(0.0)" fill="#fff"><title>Doce de Octubre</title></rect>
+<rect data-estacion="35703" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(736.0 956.0) rotate(180.0)" fill="#fff"><title>Orcasitas</title></rect>
+<rect data-estacion="35704" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(736.0 1000.0) rotate(0.0)" fill="#fff"><title>Puente Alcocer</title></rect>
+<rect data-estacion="37001" data-lineas="C4 C5" x="-5.0" y="-6.0" width="10.0" height="12.0" rx="5.0" transform="translate(736.0 1044.0) rotate(90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Madrid-Villaverde Alto</title></rect>
+<rect data-estacion="35009" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(681.0 1044.0) rotate(270.0)" fill="#fff"><title>Zarzaquemada</title></rect>
+<rect data-estacion="35001" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(626.0 1044.0) rotate(90.0)" fill="#fff"><title>Leganés</title></rect>
+<rect data-estacion="35011" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(582.0 1088.0) rotate(180.0)" fill="#fff"><title>Parque Polvoranca</title></rect>
+<rect data-estacion="35010" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(582.0 1132.0) rotate(180.0)" fill="#fff"><title>La Serna-Fuenlabrada</title></rect>
+<rect data-estacion="35002" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(582.0 1176.0) rotate(0.0)" fill="#fff"><title>Fuenlabrada</title></rect>
+<rect data-estacion="35012" data-lineas="C5" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(582.0 1220.0) rotate(0.0)" fill="#fff"><title>Humanes</title></rect>
+<rect data-estacion="60100" data-lineas="C3 C4" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(802.0 934.0) rotate(-90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Madrid-Villaverde Bajo</title></rect>
+<rect data-estacion="37010" data-lineas="C4" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(736.0 1088.0) rotate(180.0)" fill="#fff"><title>Las Margaritas</title></rect>
+<rect data-estacion="37002" data-lineas="C4" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(736.0 1132.0) rotate(0.0)" fill="#fff"><title>Getafe-Centro</title></rect>
+<rect data-estacion="37011" data-lineas="C4" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(736.0 1176.0) rotate(0.0)" fill="#fff"><title>Getafe-Sector 3</title></rect>
+<rect data-estacion="37012" data-lineas="C4" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(736.0 1220.0) rotate(0.0)" fill="#fff"><title>Parla</title></rect>
+<rect data-estacion="60107" data-lineas="C3" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(802.0 1000.0) rotate(180.0)" fill="#fff"><title>San Cristóbal de los Ángeles</title></rect>
+<rect data-estacion="60101" data-lineas="C3" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(802.0 1044.0) rotate(180.0)" fill="#fff"><title>San Cristóbal Industrial</title></rect>
+<rect data-estacion="60109" data-lineas="C3" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(802.0 1088.0) rotate(0.0)" fill="#fff"><title>El Casar</title></rect>
+<rect data-estacion="60102" data-lineas="C3" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(802.0 1132.0) rotate(180.0)" fill="#fff"><title>Getafe-Industrial</title></rect>
+<rect data-estacion="60103" data-lineas="C3" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(802.0 1176.0) rotate(180.0)" fill="#fff"><title>Pinto</title></rect>
+<rect data-estacion="60104" data-lineas="C3" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(802.0 1220.0) rotate(0.0)" fill="#fff"><title>Valdemoro</title></rect>
+<rect data-estacion="60105" data-lineas="C3" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(802.0 1264.0) rotate(180.0)" fill="#fff"><title>Ciempozuelos</title></rect>
+<rect data-estacion="60200" data-lineas="C3" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(802.0 1308.0) rotate(0.0)" fill="#fff"><title>Aranjuez</title></rect>
+<rect data-estacion="70002" data-lineas="C7 C2" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(846.0 846.0) rotate(-135.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Asamblea de Madrid-Entrevías</title></rect>
+<rect data-estacion="70003" data-lineas="C7 C2" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(901.0 846.0) rotate(0.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>El Pozo</title></rect>
+<rect data-estacion="70001" data-lineas="C7 C2" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(956.0 846.0) rotate(0.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Vallecas</title></rect>
+<rect data-estacion="70109" data-lineas="C7 C2" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(1011.0 846.0) rotate(180.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Santa Eugenia</title></rect>
+<rect data-estacion="70100" data-lineas="C7 C2" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(1055.0 802.0) rotate(135.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Vicálvaro</title></rect>
+<rect data-estacion="70108" data-lineas="C7 C2" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(1099.0 758.0) rotate(-45.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Coslada</title></rect>
+<rect data-estacion="70101" data-lineas="C7 C2" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(1143.0 714.0) rotate(135.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>San Fernando de Henares</title></rect>
+<rect data-estacion="70102" data-lineas="C7 C2" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(1187.0 670.0) rotate(135.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Torrejón de Ardoz</title></rect>
+<rect data-estacion="70112" data-lineas="C7 C2" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(1231.0 626.0) rotate(-45.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Soto del Henares</title></rect>
+<rect data-estacion="70111" data-lineas="C7 C2" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(1275.0 582.0) rotate(135.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>La Garena</title></rect>
+<rect data-estacion="70103" data-lineas="C7 C2" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(1319.0 538.0) rotate(135.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Alcalá de Henares</title></rect>
+<rect data-estacion="70107" data-lineas="C2" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(1363.0 494.0) rotate(225.0)" fill="#fff"><title>Alcalá de Henares-Universidad</title></rect>
+<rect data-estacion="70104" data-lineas="C2" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(1407.0 450.0) rotate(225.0)" fill="#fff"><title>Meco</title></rect>
+<rect data-estacion="70105" data-lineas="C2" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(1451.0 406.0) rotate(45.0)" fill="#fff"><title>Azuqueca</title></rect>
+<rect data-estacion="70200" data-lineas="C2" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(1495.0 362.0) rotate(225.0)" fill="#fff"><title>Guadalajara</title></rect>
+<rect data-estacion="98003" data-lineas="C2 C1" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(868.0 604.0) rotate(180.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Fuente de la Mora</title></rect>
+<rect data-estacion="98304" data-lineas="C1" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(923.0 604.0) rotate(90.0)" fill="#fff"><title>Valdebebas</title></rect>
+<rect data-estacion="98305" data-lineas="C1" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(978.0 604.0) rotate(270.0)" fill="#fff"><title>Madrid-Aeropuerto T4</title></rect>
+<rect data-estacion="17001" data-lineas="C4" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(846.0 560.0) rotate(45.0)" fill="#fff"><title>Fuencarral</title></rect>
+<rect data-estacion="17009" data-lineas="C4" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(890.0 516.0) rotate(225.0)" fill="#fff"><title>Universidad-Cantoblanco</title></rect>
+<rect data-estacion="17003" data-lineas="C4" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(890.0 472.0) rotate(0.0)" fill="#fff"><title>El Goloso</title></rect>
+<rect data-estacion="17004" data-lineas="C4" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(890.0 428.0) rotate(180.0)" fill="#fff"><title>Tres Cantos</title></rect>
+<rect data-estacion="17005" data-lineas="C4" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(890.0 384.0) rotate(180.0)" fill="#fff"><title>Colmenar Viejo</title></rect>
+<rect data-estacion="19001" data-lineas="C4" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(934.0 472.0) rotate(45.0)" fill="#fff"><title>Universidad Pontificia de Comillas</title></rect>
+<rect data-estacion="19002" data-lineas="C4" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(978.0 428.0) rotate(45.0)" fill="#fff"><title>Valdelasfuentes</title></rect>
+<rect data-estacion="19003" data-lineas="C4" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(1022.0 384.0) rotate(225.0)" fill="#fff"><title>Alcobendas-San Sebastián de los Reyes</title></rect>
+<rect data-estacion="10101" data-lineas="C10 C8a C8b" x="-5.0" y="-14.0" width="10.0" height="28.0" rx="5.0" transform="translate(494.0 494.0) rotate(-135.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Las Matas</title></rect>
+<rect data-estacion="10103" data-lineas="C10 C8a C8b" x="-5.0" y="-14.0" width="10.0" height="28.0" rx="5.0" transform="translate(450.0 450.0) rotate(45.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Torrelodones</title></rect>
+<rect data-estacion="10104" data-lineas="C10 C8a C8b" x="-5.0" y="-14.0" width="10.0" height="28.0" rx="5.0" transform="translate(406.0 406.0) rotate(-135.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Galapagar-La Navata</title></rect>
+<rect data-estacion="10200" data-lineas="C10 C8a C8b" x="-5.0" y="-14.0" width="10.0" height="28.0" rx="5.0" transform="translate(362.0 362.0) rotate(45.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Villalba de Guadarrama</title></rect>
+<rect data-estacion="12001" data-lineas="C8b" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(362.0 318.0) rotate(180.0)" fill="#fff"><title>Los Negrales</title></rect>
+<rect data-estacion="12002" data-lineas="C8b" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(362.0 274.0) rotate(0.0)" fill="#fff"><title>Alpedrete</title></rect>
+<rect data-estacion="12004" data-lineas="C8b" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(362.0 230.0) rotate(180.0)" fill="#fff"><title>Collado Mediano</title></rect>
+<rect data-estacion="12005" data-lineas="C8b" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(362.0 186.0) rotate(180.0)" fill="#fff"><title>Los Molinos-Guadarrama</title></rect>
+<rect data-estacion="12006" data-lineas="C8b C9" x="-5.0" y="-6.0" width="10.0" height="12.0" rx="5.0" transform="translate(362.0 142.0) rotate(90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Cercedilla</title></rect>
+<rect data-estacion="12020" data-lineas="C9" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(285.0 120.0) rotate(90.0)" fill="#fff"><title>Puerto de Navacerrada</title></rect>
+<rect data-estacion="12023" data-lineas="C9" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(230.0 120.0) rotate(90.0)" fill="#fff"><title>Los Cotos</title></rect>
+<rect data-estacion="10201" data-lineas="C8a" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(318.0 406.0) rotate(225.0)" fill="#fff"><title>San Yago</title></rect>
+<rect data-estacion="10202" data-lineas="C8a" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(274.0 450.0) rotate(45.0)" fill="#fff"><title>Las Zorreras-Navalquejigo</title></rect>
+<rect data-estacion="10203" data-lineas="C8a" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(230.0 494.0) rotate(180.0)" fill="#fff"><title>El Escorial</title></rect>
+<rect data-estacion="10204" data-lineas="C8a" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(230.0 538.0) rotate(0.0)" fill="#fff"><title>Zarzalejo</title></rect>
+<rect data-estacion="10205" data-lineas="C8a" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(230.0 582.0) rotate(0.0)" fill="#fff"><title>Robledo de Chavela</title></rect>
+<rect data-estacion="10206" data-lineas="C8a" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(230.0 626.0) rotate(0.0)" fill="#fff"><title>Santa María de la Alameda-Peguerinos</title></rect>
+<g data-linea-terminal="C3"><rect x="785.0" y="1320.3" width="34" height="17" rx="8.5" fill="#952585"/><text x="802.0" y="1332.7" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C3</text></g>
+<g data-linea-terminal="C4"><rect x="1025.4" y="358.0" width="34" height="17" rx="8.5" fill="#2C2A86"/><text x="1042.4" y="370.4" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C4</text></g>
+<g data-linea-terminal="C4"><rect x="719.0" y="1232.3" width="34" height="17" rx="8.5" fill="#2C2A86"/><text x="736.0" y="1244.7" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C4</text></g>
+<g data-linea-terminal="C4"><rect x="873.0" y="354.7" width="34" height="17" rx="8.5" fill="#2C2A86"/><text x="890.0" y="367.1" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C4</text></g>
+<g data-linea-terminal="C2"><rect x="1498.4" y="336.0" width="34" height="17" rx="8.5" fill="#00943D"/><text x="1515.4" y="348.4" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C2</text></g>
+<g data-linea-terminal="C5"><rect x="565.0" y="1232.3" width="34" height="17" rx="8.5" fill="#ECA328"/><text x="582.0" y="1244.7" text-anchor="middle" font-size="11" font-weight="700" fill="#111">C5</text></g>
+<g data-linea-terminal="C5"><rect x="411.0" y="1254.3" width="34" height="17" rx="8.5" fill="#ECA328"/><text x="428.0" y="1266.7" text-anchor="middle" font-size="11" font-weight="700" fill="#111">C5</text></g>
+<g data-linea-terminal="C8a"><rect x="213.0" y="638.3" width="34" height="17" rx="8.5" fill="#868584"/><text x="230.0" y="650.7" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C8a</text></g>
+<g data-linea-terminal="C1"><rect x="990.3" y="595.5" width="34" height="17" rx="8.5" fill="#75B6E0"/><text x="1007.3" y="607.9" text-anchor="middle" font-size="11" font-weight="700" fill="#111">C1</text></g>
+<g data-linea-terminal="C9"><rect x="183.7" y="111.5" width="34" height="17" rx="8.5" fill="#915419"/><text x="200.7" y="123.9" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C9</text></g>
+</g><g class="nombres" font-size="11.5" fill="#1f2937" stroke="#fff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+<text data-estacion="17000" text-anchor="end" font-weight="700"><tspan x="776.5" y="601.1">Chamartín-Clara</tspan><tspan x="776.5" y="614.4">Campoamor</tspan></text>
+<text data-estacion="18000" text-anchor="start" font-weight="700"><tspan x="819.5" y="805.7">Atocha Cercanías</tspan></text>
+<text data-estacion="18002" text-anchor="end" font-weight="700"><tspan x="776.5" y="673.7">Nuevos Ministerios</tspan></text>
+<text data-estacion="18001" text-anchor="start" font-weight="700"><tspan x="863.5" y="739.7">Recoletos</tspan></text>
+<text data-estacion="10100" text-anchor="end" font-weight="700"><tspan x="524.9" y="561.5">Pinar de las Rozas</tspan></text>
+<text data-estacion="97100" text-anchor="middle" font-weight="700"><tspan x="648.0" y="517.6">Pitis</tspan></text>
+<text data-estacion="97200" text-anchor="middle" font-weight="700"><tspan x="703.0" y="565.9">Mirasierra-</tspan><tspan x="703.0" y="579.1">Paco de Lucía</tspan></text>
+<text data-estacion="97201" text-anchor="middle" font-weight="700"><tspan x="758.0" y="517.6">Ramón y Cajal</tspan></text>
+<text data-estacion="10101" text-anchor="start" font-weight="700"><tspan x="507.1" y="478.0">Las Matas</tspan></text>
+<text data-estacion="10103" text-anchor="start" font-weight="700"><tspan x="463.1" y="434.0">Torrelodones</tspan></text>
+<text data-estacion="10104" text-anchor="start" font-weight="700"><tspan x="419.1" y="390.0">Galapagar-La Navata</tspan></text>
+<text data-estacion="10200" text-anchor="end" font-weight="700"><tspan x="344.5" y="365.7">Villalba de Guadarrama</tspan></text>
+<text data-estacion="18101" text-anchor="start" font-weight="700"><tspan x="771.5" y="739.7">Sol</tspan></text>
+<text data-estacion="18003" text-anchor="end" font-weight="700"><tspan x="747.9" y="833.0">Méndez Álvaro P.V.</tspan></text>
+<text data-estacion="10000" text-anchor="end" font-weight="700"><tspan x="524.5" y="805.7">Príncipe Pío</tspan></text>
+<text data-estacion="10001" text-anchor="start" font-weight="700"><tspan x="551.5" y="761.7">Aravaca</tspan></text>
+<text data-estacion="10002" text-anchor="start" font-weight="700"><tspan x="551.5" y="717.7">Pozuelo</tspan></text>
+<text data-estacion="10010" text-anchor="end" font-weight="700"><tspan x="524.5" y="667.1">El Barrial-Centro</tspan><tspan x="524.5" y="680.4">Comercial Pozuelo</tspan></text>
+<text data-estacion="10007" text-anchor="start" font-weight="700"><tspan x="551.5" y="629.7">Majadahonda</tspan></text>
+<text data-estacion="10005" text-anchor="end" font-weight="700"><tspan x="524.5" y="585.7">Las Rozas</tspan></text>
+<text data-estacion="37001" text-anchor="end" font-weight="700"><tspan x="728.9" y="1061.5">Villaverde Alto</tspan></text>
+<text data-estacion="60100" text-anchor="start" font-weight="700"><tspan x="815.5" y="937.7">Villaverde Bajo</tspan></text>
+<text data-estacion="70002" text-anchor="start" font-weight="700"><tspan x="856.1" y="866.5">Asamblea de</tspan><tspan x="856.1" y="879.7">Madrid-Entrevías</tspan></text>
+<text data-estacion="70003" text-anchor="middle" font-weight="700"><tspan x="901.0" y="829.6">El Pozo</tspan></text>
+<text data-estacion="70001" text-anchor="middle" font-weight="700"><tspan x="956.0" y="829.6">Vallecas</tspan></text>
+<text data-estacion="70109" text-anchor="middle" font-weight="700"><tspan x="1011.0" y="869.9">Santa Eugenia</tspan></text>
+<text data-estacion="70100" text-anchor="start" font-weight="700"><tspan x="1065.1" y="822.5">Vicálvaro</tspan></text>
+<text data-estacion="70108" text-anchor="start" font-weight="700"><tspan x="1109.1" y="778.5">Coslada</tspan></text>
+<text data-estacion="70101" text-anchor="start" font-weight="700"><tspan x="1153.1" y="734.5">San Fernando</tspan><tspan x="1153.1" y="747.7">de Henares</tspan></text>
+<text data-estacion="70102" text-anchor="start" font-weight="700"><tspan x="1197.1" y="690.5">Torrejón de Ardoz</tspan></text>
+<text data-estacion="70112" text-anchor="start" font-weight="700"><tspan x="1241.1" y="646.5">Soto del Henares</tspan></text>
+<text data-estacion="70111" text-anchor="start" font-weight="700"><tspan x="1285.1" y="602.5">La Garena</tspan></text>
+<text data-estacion="70103" text-anchor="start" font-weight="700"><tspan x="1332.5" y="541.7">Alcalá de Henares</tspan></text>
+<text data-estacion="98003" text-anchor="start" font-weight="700"><tspan x="878.1" y="591.0">Fuente de la Mora</tspan></text>
+<text data-estacion="12006" text-anchor="start" font-weight="700"><tspan x="371.5" y="145.7">Cercedilla</tspan></text>
+<text data-estacion="18004" text-anchor="middle"><tspan x="703.0" y="865.9">Delicias</tspan></text>
+<text data-estacion="18005" text-anchor="middle"><tspan x="648.0" y="865.9">Pirámides</tspan></text>
+<text data-estacion="35609" text-anchor="end"><tspan x="739.9" y="792.0">Embajadores</tspan></text>
+<text data-estacion="35608" text-anchor="start"><tspan x="567.1" y="907.5">Laguna</tspan></text>
+<text data-estacion="35600" text-anchor="start"><tspan x="534.1" y="940.5">Aluche</tspan></text>
+<text data-estacion="35601" text-anchor="start"><tspan x="501.1" y="973.5">Maestra Justa Freire-</tspan><tspan x="501.1" y="986.7">Polidep. Aluche</tspan></text>
+<text data-estacion="35602" text-anchor="start"><tspan x="468.1" y="1006.5">Las Águilas</tspan></text>
+<text data-estacion="35603" text-anchor="end"><tspan x="418.5" y="1025.7">Cuatro Vientos</tspan></text>
+<text data-estacion="35604" text-anchor="start"><tspan x="437.5" y="1069.7">San José de Valderas</tspan></text>
+<text data-estacion="35605" text-anchor="start"><tspan x="437.5" y="1113.7">Alcorcón</tspan></text>
+<text data-estacion="35610" text-anchor="start"><tspan x="437.5" y="1157.7">Las Retamas</tspan></text>
+<text data-estacion="35606" text-anchor="start"><tspan x="437.5" y="1201.7">Móstoles</tspan></text>
+<text data-estacion="35607" text-anchor="start" font-weight="700"><tspan x="437.5" y="1245.7">Móstoles-El Soto</tspan></text>
+<text data-estacion="35702" text-anchor="end"><tspan x="726.5" y="915.7">Doce de Octubre</tspan></text>
+<text data-estacion="35703" text-anchor="end"><tspan x="726.5" y="959.7">Orcasitas</tspan></text>
+<text data-estacion="35704" text-anchor="end"><tspan x="726.5" y="1003.7">Puente Alcocer</tspan></text>
+<text data-estacion="35009" text-anchor="middle"><tspan x="681.0" y="1031.6">Zarzaquemada</tspan></text>
+<text data-estacion="35001" text-anchor="end"><tspan x="618.9" y="1034.0">Leganés</tspan></text>
+<text data-estacion="35011" text-anchor="end"><tspan x="572.5" y="1091.7">Parque Polvoranca</tspan></text>
+<text data-estacion="35010" text-anchor="start"><tspan x="591.5" y="1135.7">La Serna-Fuenlabrada</tspan></text>
+<text data-estacion="35002" text-anchor="start"><tspan x="591.5" y="1179.7">Fuenlabrada</tspan></text>
+<text data-estacion="35012" text-anchor="start" font-weight="700"><tspan x="591.5" y="1223.7">Humanes</tspan></text>
+<text data-estacion="37010" text-anchor="end"><tspan x="726.5" y="1091.7">Las Margaritas</tspan></text>
+<text data-estacion="37002" text-anchor="end"><tspan x="728.9" y="1122.0">Getafe-Centro</tspan></text>
+<text data-estacion="37011" text-anchor="end"><tspan x="728.9" y="1166.0">Getafe-Sector 3</tspan></text>
+<text data-estacion="37012" text-anchor="start" font-weight="700"><tspan x="745.5" y="1223.7">Parla</tspan></text>
+<text data-estacion="60107" text-anchor="start"><tspan x="811.5" y="997.1">San Cristóbal</tspan><tspan x="811.5" y="1010.4">de los Ángeles</tspan></text>
+<text data-estacion="60101" text-anchor="start"><tspan x="811.5" y="1041.1">San Cristóbal</tspan><tspan x="811.5" y="1054.3">Industrial</tspan></text>
+<text data-estacion="60109" text-anchor="start"><tspan x="811.5" y="1091.7">El Casar</tspan></text>
+<text data-estacion="60102" text-anchor="start"><tspan x="811.5" y="1135.7">Getafe-Industrial</tspan></text>
+<text data-estacion="60103" text-anchor="start"><tspan x="811.5" y="1179.7">Pinto</tspan></text>
+<text data-estacion="60104" text-anchor="start"><tspan x="811.5" y="1223.7">Valdemoro</tspan></text>
+<text data-estacion="60105" text-anchor="start"><tspan x="811.5" y="1267.7">Ciempozuelos</tspan></text>
+<text data-estacion="60200" text-anchor="start" font-weight="700"><tspan x="811.5" y="1311.7">Aranjuez</tspan></text>
+<text data-estacion="70107" text-anchor="start"><tspan x="1370.1" y="511.5">Alcalá de Henares-</tspan><tspan x="1370.1" y="524.7">Universidad</tspan></text>
+<text data-estacion="70104" text-anchor="start"><tspan x="1414.1" y="467.5">Meco</tspan></text>
+<text data-estacion="70105" text-anchor="start"><tspan x="1458.1" y="423.5">Azuqueca</tspan></text>
+<text data-estacion="70200" text-anchor="start" font-weight="700"><tspan x="1504.5" y="365.7">Guadalajara</tspan></text>
+<text data-estacion="98304" text-anchor="middle"><tspan x="923.0" y="623.9">Valdebebas</tspan></text>
+<text data-estacion="98305" text-anchor="start" font-weight="700"><tspan x="985.1" y="621.5">Aeropuerto T4</tspan></text>
+<text data-estacion="17001" text-anchor="start"><tspan x="853.1" y="577.5">Fuencarral</tspan></text>
+<text data-estacion="17009" text-anchor="start"><tspan x="897.1" y="533.5">Universidad-</tspan><tspan x="897.1" y="546.7">Cantoblanco</tspan></text>
+<text data-estacion="17003" text-anchor="end"><tspan x="880.5" y="475.7">El Goloso</tspan></text>
+<text data-estacion="17004" text-anchor="end"><tspan x="880.5" y="431.7">Tres Cantos</tspan></text>
+<text data-estacion="17005" text-anchor="start" font-weight="700"><tspan x="899.5" y="387.7">Colmenar Viejo</tspan></text>
+<text data-estacion="19001" text-anchor="start"><tspan x="941.1" y="489.5">Universidad Pontificia</tspan><tspan x="941.1" y="502.7">de Comillas</tspan></text>
+<text data-estacion="19002" text-anchor="start"><tspan x="985.1" y="445.5">Valdelasfuentes</tspan></text>
+<text data-estacion="19003" text-anchor="start" font-weight="700"><tspan x="1029.1" y="401.5">Alcobendas-San</tspan><tspan x="1029.1" y="414.7">Sebastián de los Reyes</tspan></text>
+<text data-estacion="12001" text-anchor="start"><tspan x="371.5" y="321.7">Los Negrales</tspan></text>
+<text data-estacion="12002" text-anchor="start"><tspan x="371.5" y="277.7">Alpedrete</tspan></text>
+<text data-estacion="12004" text-anchor="start"><tspan x="371.5" y="233.7">Collado Mediano</tspan></text>
+<text data-estacion="12005" text-anchor="start"><tspan x="371.5" y="189.7">Los Molinos-Guadarrama</tspan></text>
+<text data-estacion="12020" text-anchor="middle"><tspan x="285.0" y="107.6">Puerto de Navacerrada</tspan></text>
+<text data-estacion="12023" text-anchor="middle" font-weight="700"><tspan x="230.0" y="139.8">Los Cotos</tspan></text>
+<text data-estacion="10201" text-anchor="start"><tspan x="325.1" y="423.5">San Yago</tspan></text>
+<text data-estacion="10202" text-anchor="start"><tspan x="281.1" y="467.5">Las Zorreras-</tspan><tspan x="281.1" y="480.7">Navalquejigo</tspan></text>
+<text data-estacion="10203" text-anchor="end"><tspan x="220.5" y="497.7">El Escorial</tspan></text>
+<text data-estacion="10204" text-anchor="start"><tspan x="239.5" y="541.7">Zarzalejo</tspan></text>
+<text data-estacion="10205" text-anchor="start"><tspan x="239.5" y="585.7">Robledo de Chavela</tspan></text>
+<text data-estacion="10206" text-anchor="start" font-weight="700"><tspan x="237.1" y="602.8">Santa María de la</tspan><tspan x="237.1" y="616.0">Alameda-Peguerinos</tspan></text>
+</g>
+<g class="leyenda"><text x="956" y="989.0" font-size="22" font-weight="700" fill="#111">Cercanías Madrid</text>
+<text x="956" y="1009.0" font-size="11.5" fill="#4b5563">Esquema de la red según el GTFS de Renfe (horarios del 23/10 al 21/11/2026)</text>
+<g data-linea-leyenda="C1"><rect x="956" y="1024.0" width="38" height="18" rx="9" fill="#75B6E0"/><text x="975" y="1037.0" text-anchor="middle" font-size="11" font-weight="700" fill="#111">C1</text><text x="1004" y="1037.0" font-size="12" fill="#1f2937">Chamartín – Aeropuerto T4</text></g>
+<g data-linea-leyenda="C2"><rect x="956" y="1048.0" width="38" height="18" rx="9" fill="#00943D"/><text x="975" y="1061.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C2</text><text x="1004" y="1061.0" font-size="12" fill="#1f2937">Guadalajara – Atocha – Chamartín</text></g>
+<g data-linea-leyenda="C3"><rect x="956" y="1072.0" width="38" height="18" rx="9" fill="#952585"/><text x="975" y="1085.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C3</text><text x="1004" y="1085.0" font-size="12" fill="#1f2937">Aranjuez – Sol – Chamartín</text></g>
+<g data-linea-leyenda="C4"><rect x="956" y="1096.0" width="38" height="18" rx="9" fill="#2C2A86"/><text x="975" y="1109.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C4</text><text x="1004" y="1109.0" font-size="12" fill="#1f2937">Parla – Sol – Alcobendas / Colmenar Viejo</text></g>
+<g data-linea-leyenda="C5"><rect x="956" y="1120.0" width="38" height="18" rx="9" fill="#ECA328"/><text x="975" y="1133.0" text-anchor="middle" font-size="11" font-weight="700" fill="#111">C5</text><text x="1004" y="1133.0" font-size="12" fill="#1f2937">Móstoles-El Soto – Atocha – Humanes</text></g>
+<g data-linea-leyenda="C7"><rect x="956" y="1144.0" width="38" height="18" rx="9" fill="#C0272D"/><text x="975" y="1157.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C7</text><text x="1004" y="1157.0" font-size="12" fill="#1f2937">Alcalá de Henares – Atocha – Chamartín – Príncipe Pío</text></g>
+<g data-linea-leyenda="C8a"><rect x="956" y="1168.0" width="38" height="18" rx="9" fill="#868584"/><text x="975" y="1181.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C8a</text><text x="1004" y="1181.0" font-size="12" fill="#1f2937">Chamartín – El Escorial – Santa María de la Alameda</text></g>
+<g data-linea-leyenda="C8b"><rect x="956" y="1192.0" width="38" height="18" rx="9" fill="#868584"/><text x="975" y="1205.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C8b</text><text x="1004" y="1205.0" font-size="12" fill="#1f2937">Chamartín – Villalba – Cercedilla</text></g>
+<g data-linea-leyenda="C9"><rect x="956" y="1216.0" width="38" height="18" rx="9" fill="#915419"/><text x="975" y="1229.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C9</text><text x="1004" y="1229.0" font-size="12" fill="#1f2937">Cercedilla – Los Cotos</text></g>
+<g data-linea-leyenda="C10"><rect x="956" y="1240.0" width="38" height="18" rx="9" fill="#BCCF00"/><text x="975" y="1253.0" text-anchor="middle" font-size="11" font-weight="700" fill="#111">C10</text><text x="1004" y="1253.0" font-size="12" fill="#1f2937">Chamartín – Atocha – Príncipe Pío – Villalba</text></g>
+<rect x="961" y="1276.0" width="28" height="10" rx="5" fill="#fff" stroke="#1f2937" stroke-width="2"/><text x="1004" y="1285.0" font-size="12" fill="#1f2937">Estación con varias líneas</text></g>
+</svg>
