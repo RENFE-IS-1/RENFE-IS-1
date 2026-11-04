@@ -12,10 +12,6 @@ Aplicación para la planificación de rutas y consulta de horarios de la red de 
 2. Instalar dependencias: `[comando de instalación]` a ver que usamos
 3. Ejecutar la aplicación: `[comando de ejecución]` depende de la versión lo cambiamos
 
-<<<<<<< HEAD
--- OMITIR --
-
-=======
 Luego esto ya lo formateais como querais, tampoco se hasta que punto vosotros os vais a tener que instalar nada.
 
 He añadido pruebas automatizadas para la búsqueda de estaciones en el backend API. En mi equipo se ejecutan correctamente con `mvnw.cmd test` desde `files/backendAPI`.
@@ -28,7 +24,6 @@ Para ejecutarlas desde Eclipse, importad `files/backendAPI` como proyecto Maven 
 
 -- OMITIR --
 
->>>>>>> 8f00c9bab2333c1251d082c746997db49b5940a5
 Ya NO hay que descargar el zip de https://data.renfe.com/dataset/horarios-cercanias y extraer los txt en la carpeta data/horarios_cercanias/ y en src/Java/data/
 Recordad hacer refresh en la carpeta mas exterior al hacer pull para que se cargen los archivos
 Crear una carpeta vacia (ej. Workspace), clonar el repositorio dentro, y hacer new > Java proyect > desmarcar la casilla default location y elegir src/Java y desmarcar create mmodulo info java (esta abajo)

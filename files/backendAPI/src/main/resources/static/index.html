@@ -574,16 +574,16 @@
 
         const URL_MAPA_CERCANIAS = '/mapas/cercanias-madrid.svg';
         const mapaLineas = {
-            C1: { color: '#75B6E0', recorrido: 'Chamartín-Clara Campoamor → Aeropuerto T4' },
-            C2: { color: '#00943D', recorrido: 'Guadalajara → Atocha → Chamartín-Clara Campoamor' },
-            C3: { color: '#952585', recorrido: 'Aranjuez → Sol → Chamartín-Clara Campoamor' },
-            C4: { color: '#2C2A86', recorrido: 'Parla → Chamartín-Clara Campoamor → ramas C4a/C4b' },
-            C5: { color: '#ECA328', recorrido: 'Móstoles-El Soto → Humanes' },
-            C7: { color: '#C0272D', recorrido: 'Príncipe Pío → Alcalá de Henares' },
-            C8a: { color: '#868584', recorrido: 'Chamartín → El Escorial → Santa María de la Alameda' },
-            C8b: { color: '#868584', recorrido: 'Chamartín → Villalba → Cercedilla' },
-            C9: { color: '#915419', recorrido: 'Cercedilla → Los Cotos' },
-            C10: { color: '#BCCF00', recorrido: 'Chamartín → Atocha → Príncipe Pío → Villalba' }
+            C1: { color: '#75B6E0', recorrido: 'Príncipe Pío → Aeropuerto-T4', coloresSvg: ['#2D98BB', '#2C99C0'] },
+            C2: { color: '#00943D', recorrido: 'Guadalajara → Chamartín-Clara Campoamor', coloresSvg: ['#266923', '#27681F'] },
+            C3: { color: '#952585', recorrido: 'Aranjuez → Chamartín-Clara Campoamor', coloresSvg: ['#820081'] },
+            C4: { color: '#2C2A86', recorrido: 'Chamartín-Clara Campoamor → Parla', coloresSvg: ['#1E0C7D'] },
+            C5: { color: '#ECA328', recorrido: 'Móstoles-El Soto → Humanes', coloresSvg: ['#F3CB16'] },
+            C7: { color: '#C0272D', recorrido: 'Príncipe Pío → Alcalá de Henares', coloresSvg: ['#FB0F0C'] },
+            C8a: { color: '#868584', recorrido: 'Atocha Cercanías → El Escorial', coloresSvg: [] },
+            C8b: { color: '#868584', recorrido: 'Atocha Cercanías → Cercedilla', coloresSvg: [] },
+            C9: { color: '#915419', recorrido: 'Cercedilla → Los Cotos', coloresSvg: ['#F46515'] },
+            C10: { color: '#BCCF00', recorrido: 'Villalba → Aeropuerto-T4', coloresSvg: ['#BAC12D'] }
         };
         let mapaSolicitudActual = 0;
 
@@ -644,13 +644,11 @@
 
         function prepararInteraccionesMapa(svg) {
             Object.entries(mapaLineas).forEach(([linea, data]) => {
-                const lineasSvg = linea === 'C4' ? ['C4', 'C4a', 'C4b'] : [linea];
-                const selectores = lineasSvg.flatMap(nombre => [
-                    `[data-linea="${nombre}"]`,
-                    `[data-linea-terminal="${nombre}"]`,
-                    `[data-linea-leyenda="${nombre}"]`
-                ]);
-                svg.querySelectorAll([...new Set(selectores)].join(',')).forEach(elemento => {
+                const colores = data.coloresSvg;
+                if (colores.length === 0) return;
+
+                const selector = colores.flatMap(color => [`[fill="${color}"]`, `[stroke="${color}"]`]).join(',');
+                svg.querySelectorAll(selector).forEach(elemento => {
                     elemento.dataset.mapLine = linea;
                     elemento.setAttribute('aria-label', `Abrir línea ${linea}`);
                     elemento.addEventListener('mouseenter', () => resaltarLineaMapa(linea));
@@ -662,7 +660,7 @@
 
         function resaltarLineaMapa(linea) {
             const svg = document.querySelector('#mapaSvg svg');
-            const tieneTrazoEnMapa = Boolean(svg?.querySelector(`[data-map-line="${linea}"]`));
+            const tieneTrazoEnMapa = mapaLineas[linea]?.coloresSvg.length > 0;
             if (svg && tieneTrazoEnMapa) {
                 svg.classList.add('map-highlight-active');
                 svg.querySelectorAll('[data-map-line]').forEach(elemento => {
@@ -699,23 +697,6 @@
             svg.innerHTML = '<text x="40" y="80" font-size="16" fill="#64748b">Cargando todas las estaciones de la línea...</text>';
 
             try {
-                if (linea === 'C4') {
-                    const [respuestaC4a, respuestaC4b] = await Promise.all([
-                        fetch('/api/lineas/C4a/estaciones'),
-                        fetch('/api/lineas/C4b/estaciones')
-                    ]);
-                    if (!respuestaC4a.ok || !respuestaC4b.ok) {
-                        throw new Error('No se pudieron cargar las ramas C4a y C4b.');
-                    }
-                    const [estacionesC4a, estacionesC4b] = await Promise.all([
-                        respuestaC4a.json(),
-                        respuestaC4b.json()
-                    ]);
-                    if (solicitud !== mapaSolicitudActual) return;
-                    renderDetalleC4(estacionesC4a, estacionesC4b);
-                    return;
-                }
-
                 const res = await fetch(`/api/lineas/${encodeURIComponent(linea)}/estaciones`);
                 if (!res.ok) throw new Error('No se pudo cargar el recorrido de la línea.');
                 const estaciones = await res.json();
@@ -761,103 +742,6 @@
             return Math.max(...lineas.map(linea => linea.length), 1) * 6.5;
         }
 
-        function normalizarClaveEstacion(estacion) {
-            return String(estacion?.nombre ?? estacion?.id ?? '')
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-                .toLowerCase()
-                .trim();
-        }
-
-        function orientarRamalC4(estaciones) {
-            const indiceParla = estaciones.findIndex(estacion =>
-                normalizarClaveEstacion(estacion).includes('parla')
-            );
-            if (indiceParla > estaciones.length / 2) return [...estaciones].reverse();
-            return estaciones;
-        }
-
-        function crearEstacionDetalle(estacion, x, y, textoY, data, posicion = 'middle') {
-            const nombre = estacion.nombre || 'Estación';
-            const lineas = partirNombreEstacion(nombre);
-            const tspans = lineas.map((texto, indiceLinea) =>
-                `<tspan x="${x}" dy="${indiceLinea === 0 ? 0 : 13}">${escaparHtml(texto)}</tspan>`
-            ).join('');
-            const anchor = posicion === 'start' ? 'start' : posicion === 'end' ? 'end' : 'middle';
-            return `<g class="detail-station" style="--line-color:${data.color}" data-estacion="${escaparHtml(nombre)}" role="button" tabindex="0" aria-label="Consultar llegadas en ${escaparHtml(nombre)}"><circle cx="${x}" cy="${y}" r="6"></circle><text x="${x}" y="${textoY}" text-anchor="${anchor}">${tspans}</text></g>`;
-        }
-
-        function enlazarEstacionesDetalle(svg) {
-            svg.querySelectorAll('.detail-station').forEach(estacionSvg => {
-                const consultar = () => seleccionarEstacionYConsultar(estacionSvg.dataset.estacion);
-                estacionSvg.addEventListener('click', consultar);
-                estacionSvg.addEventListener('keydown', evento => {
-                    if (evento.key === 'Enter' || evento.key === ' ') {
-                        evento.preventDefault();
-                        consultar();
-                    }
-                });
-            });
-        }
-
-        function renderDetalleC4(estacionesC4a, estacionesC4b) {
-            const data = mapaLineas.C4;
-            const svg = document.getElementById('mapaLineaSvg');
-            const c4a = orientarRamalC4(estacionesC4a);
-            const c4b = orientarRamalC4(estacionesC4b);
-            const limite = Math.min(c4a.length, c4b.length);
-            let indiceBifurcacion = 0;
-            while (indiceBifurcacion < limite && normalizarClaveEstacion(c4a[indiceBifurcacion]) === normalizarClaveEstacion(c4b[indiceBifurcacion])) {
-                indiceBifurcacion++;
-            }
-
-            if (indiceBifurcacion < 2) {
-                throw new Error('No se pudo identificar el tramo común de C4a y C4b.');
-            }
-
-            const tronco = c4a.slice(0, indiceBifurcacion);
-            const ramaC4a = c4a.slice(indiceBifurcacion - 1);
-            const ramaC4b = c4b.slice(indiceBifurcacion - 1);
-            const separacion = 118;
-            const margen = 90;
-            const yTronco = 180;
-            const yC4a = 82;
-            const yC4b = 278;
-            const maxRama = Math.max(ramaC4a.length, ramaC4b.length);
-            const ancho = Math.max(900, margen * 2 + (tronco.length - 1 + Math.max(0, maxRama - 1)) * separacion);
-            const xBifurcacion = margen + (tronco.length - 1) * separacion;
-            const puntosTronco = tronco.map((_, indice) => `${margen + indice * separacion},${yTronco}`).join(' ');
-            const puntosC4a = ramaC4a.map((_, indice) => `${xBifurcacion + indice * separacion},${indice === 0 ? yTronco : yC4a}`).join(' ');
-            const puntosC4b = ramaC4b.map((_, indice) => `${xBifurcacion + indice * separacion},${indice === 0 ? yTronco : yC4b}`).join(' ');
-
-            const estacionesTronco = tronco.map((estacion, indice) => {
-                const x = margen + indice * separacion;
-                const arriba = indice % 2 === 0;
-                const lineas = partirNombreEstacion(estacion.nombre || 'Estación');
-                const textoY = arriba ? yTronco - 30 - (lineas.length - 1) * 13 : yTronco + 30;
-                return crearEstacionDetalle(estacion, x, yTronco, textoY, data);
-            }).join('');
-            const estacionesRamaC4a = ramaC4a.slice(1).map((estacion, indice) => {
-                const x = xBifurcacion + (indice + 1) * separacion;
-                return crearEstacionDetalle(estacion, x, yC4a, yC4a - 24, data);
-            }).join('');
-            const estacionesRamaC4b = ramaC4b.slice(1).map((estacion, indice) => {
-                const x = xBifurcacion + (indice + 1) * separacion;
-                return crearEstacionDetalle(estacion, x, yC4b, yC4b + 24, data);
-            }).join('');
-            const etiquetaC4a = `<text x="${xBifurcacion + (ramaC4a.length - 1) * separacion}" y="24" text-anchor="middle" font-size="16" font-weight="700" fill="${data.color}">C4a</text>`;
-            const etiquetaC4b = `<text x="${xBifurcacion + (ramaC4b.length - 1) * separacion}" y="358" text-anchor="middle" font-size="16" font-weight="700" fill="${data.color}">C4b</text>`;
-
-            svg.setAttribute('viewBox', `0 0 ${ancho} 380`);
-            svg.setAttribute('width', ancho);
-            svg.setAttribute('height', '380');
-            svg.style.width = `${ancho}px`;
-            svg.style.height = '380px';
-            svg.style.maxWidth = 'none';
-            svg.innerHTML = `<polyline points="${puntosTronco}" fill="none" stroke="${data.color}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></polyline><polyline points="${puntosC4a}" fill="none" stroke="${data.color}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></polyline><polyline points="${puntosC4b}" fill="none" stroke="${data.color}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></polyline>${etiquetaC4a}${etiquetaC4b}${estacionesTronco}${estacionesRamaC4a}${estacionesRamaC4b}`;
-            enlazarEstacionesDetalle(svg);
-        }
-
         function renderDetalleLinea(linea, estaciones) {
             const data = mapaLineas[linea];
             const svg = document.getElementById('mapaLineaSvg');
@@ -887,7 +771,16 @@
             svg.style.height = '300px';
             svg.style.maxWidth = 'none';
             svg.innerHTML = `<polyline points="${puntos}" fill="none" stroke="${data.color}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></polyline>${estacionesSvg}`;
-            enlazarEstacionesDetalle(svg);
+            svg.querySelectorAll('.detail-station').forEach(estacionSvg => {
+                const consultar = () => seleccionarEstacionYConsultar(estacionSvg.dataset.estacion);
+                estacionSvg.addEventListener('click', consultar);
+                estacionSvg.addEventListener('keydown', evento => {
+                    if (evento.key === 'Enter' || evento.key === ' ') {
+                        evento.preventDefault();
+                        consultar();
+                    }
+                });
+            });
         }
 
         function volverMapaGeneral() {

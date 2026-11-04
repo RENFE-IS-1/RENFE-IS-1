@@ -101,11 +101,9 @@
 <polyline points="1451.0,406.0 1495.0,362.0"/>
 <polyline points="1319.0,538.0 1363.0,494.0"/>
 <polyline points="1363.0,494.0 1407.0,450.0"/>
+<polyline points="802.0,600.0 868.0,600.0"/>
 <polyline points="1407.0,450.0 1451.0,406.0"/>
-</g>
-<g data-linea="CIVIS" transform="translate(0,-12)" stroke="#D64A9B" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="10 6" fill="none">
-<title>Servicio CIVIS</title>
-<polyline points="802.0,600.0 868.0,600.0 978.0,714.0 1143.0,714.0 1187.0,670.0 1231.0,626.0 1275.0,582.0 1319.0,538.0 1363.0,494.0 1407.0,450.0 1451.0,406.0 1495.0,362.0"/>
+<polyline points="868.0,604.0 978.0,714.0 1143.0,714.0"/>
 </g>
 <g data-linea="C5" stroke="#ECA328" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
 <title>Línea C5</title>
@@ -177,7 +175,7 @@
 <polyline points="230.0,120.0 285.0,120.0"/>
 </g>
 <g class="estaciones">
-<rect data-estacion="17000" data-lineas="C3 C4 C10 C7 C2 C8a C8b C1 CIVIS" x="-5.0" y="-22.0" width="10.0" height="44.0" rx="5.0" transform="translate(802.0 604.0) rotate(90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Madrid-Chamartín-Clara Campoamor</title></rect>
+<rect data-estacion="17000" data-lineas="C3 C4 C10 C7 C2 C8a C8b C1" x="-5.0" y="-22.0" width="10.0" height="44.0" rx="5.0" transform="translate(802.0 604.0) rotate(90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Madrid-Chamartín-Clara Campoamor</title></rect>
 <rect data-estacion="18002" data-lineas="C3 C4 C10 C7 C2" x="-5.0" y="-22.0" width="10.0" height="44.0" rx="5.0" transform="translate(802.0 670.0) rotate(-90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Madrid-Nuevos Ministerios</title></rect>
 <rect data-estacion="18001" data-lineas="C10 C7 C2" x="-5.0" y="-14.0" width="10.0" height="28.0" rx="5.0" transform="translate(846.0 736.0) rotate(-90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Madrid-Recoletos</title></rect>
 <rect data-estacion="18101" data-lineas="C3 C4" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(758.0 736.0) rotate(90.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Sol</title></rect>
@@ -243,7 +241,7 @@
 <rect data-estacion="70107" data-lineas="C2" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(1363.0 494.0) rotate(225.0)" fill="#fff"><title>Alcalá de Henares-Universidad</title></rect>
 <rect data-estacion="70104" data-lineas="C2" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(1407.0 450.0) rotate(225.0)" fill="#fff"><title>Meco</title></rect>
 <rect data-estacion="70105" data-lineas="C2" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(1451.0 406.0) rotate(45.0)" fill="#fff"><title>Azuqueca</title></rect>
-<rect data-estacion="70200" data-lineas="C2 CIVIS" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(1495.0 362.0) rotate(225.0)" fill="#fff"><title>Guadalajara</title></rect>
+<rect data-estacion="70200" data-lineas="C2" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(1495.0 362.0) rotate(225.0)" fill="#fff"><title>Guadalajara</title></rect>
 <rect data-estacion="98003" data-lineas="C2 C1" x="-5.0" y="-10.0" width="10.0" height="20.0" rx="5.0" transform="translate(868.0 604.0) rotate(180.0)" fill="#fff" stroke="#1f2937" stroke-width="2"><title>Fuente de la Mora</title></rect>
 <rect data-estacion="98304" data-lineas="C1" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(923.0 604.0) rotate(90.0)" fill="#fff"><title>Valdebebas</title></rect>
 <rect data-estacion="98305" data-lineas="C1" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(978.0 604.0) rotate(270.0)" fill="#fff"><title>Madrid-Aeropuerto T4</title></rect>
@@ -273,11 +271,10 @@
 <rect data-estacion="10205" data-lineas="C8a" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(230.0 582.0) rotate(0.0)" fill="#fff"><title>Robledo de Chavela</title></rect>
 <rect data-estacion="10206" data-lineas="C8a" x="-4.5" y="-1.6" width="9" height="3.2" rx="1.6" transform="translate(230.0 626.0) rotate(0.0)" fill="#fff"><title>Santa María de la Alameda-Peguerinos</title></rect>
 <g data-linea-terminal="C3"><rect x="785.0" y="1320.3" width="34" height="17" rx="8.5" fill="#952585"/><text x="802.0" y="1332.7" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C3</text></g>
-<g data-linea-terminal="C4a"><rect x="1025.4" y="358.0" width="34" height="17" rx="8.5" fill="#2C2A86"/><text x="1042.4" y="370.4" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C4a</text></g>
+<g data-linea-terminal="C4"><rect x="1025.4" y="358.0" width="34" height="17" rx="8.5" fill="#2C2A86"/><text x="1042.4" y="370.4" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C4</text></g>
 <g data-linea-terminal="C4"><rect x="719.0" y="1232.3" width="34" height="17" rx="8.5" fill="#2C2A86"/><text x="736.0" y="1244.7" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C4</text></g>
-<g data-linea-terminal="C4b"><rect x="873.0" y="354.7" width="34" height="17" rx="8.5" fill="#2C2A86"/><text x="890.0" y="367.1" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C4b</text></g>
+<g data-linea-terminal="C4"><rect x="873.0" y="354.7" width="34" height="17" rx="8.5" fill="#2C2A86"/><text x="890.0" y="367.1" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C4</text></g>
 <g data-linea-terminal="C2"><rect x="1498.4" y="336.0" width="34" height="17" rx="8.5" fill="#00943D"/><text x="1515.4" y="348.4" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C2</text></g>
-<g data-linea-terminal="CIVIS"><rect x="1540.0" y="336.0" width="50" height="17" rx="8.5" fill="#D64A9B"/><text x="1565.0" y="348.4" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">CIVIS</text></g>
 <g data-linea-terminal="C5"><rect x="565.0" y="1232.3" width="34" height="17" rx="8.5" fill="#ECA328"/><text x="582.0" y="1244.7" text-anchor="middle" font-size="11" font-weight="700" fill="#111">C5</text></g>
 <g data-linea-terminal="C5"><rect x="411.0" y="1254.3" width="34" height="17" rx="8.5" fill="#ECA328"/><text x="428.0" y="1266.7" text-anchor="middle" font-size="11" font-weight="700" fill="#111">C5</text></g>
 <g data-linea-terminal="C8a"><rect x="213.0" y="638.3" width="34" height="17" rx="8.5" fill="#868584"/><text x="230.0" y="650.7" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C8a</text></g>
@@ -381,17 +378,16 @@
 <text data-estacion="10206" text-anchor="start" font-weight="700"><tspan x="237.1" y="602.8">Santa María de la</tspan><tspan x="237.1" y="616.0">Alameda-Peguerinos</tspan></text>
 </g>
 <g class="leyenda"><text x="956" y="989.0" font-size="22" font-weight="700" fill="#111">Cercanías Madrid</text>
+<text x="956" y="1009.0" font-size="11.5" fill="#4b5563">Esquema de la red según el GTFS de Renfe (horarios del 23/10 al 21/11/2026)</text>
 <g data-linea-leyenda="C1"><rect x="956" y="1024.0" width="38" height="18" rx="9" fill="#75B6E0"/><text x="975" y="1037.0" text-anchor="middle" font-size="11" font-weight="700" fill="#111">C1</text><text x="1004" y="1037.0" font-size="12" fill="#1f2937">Chamartín – Aeropuerto T4</text></g>
 <g data-linea-leyenda="C2"><rect x="956" y="1048.0" width="38" height="18" rx="9" fill="#00943D"/><text x="975" y="1061.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C2</text><text x="1004" y="1061.0" font-size="12" fill="#1f2937">Guadalajara – Atocha – Chamartín</text></g>
-<g data-linea-leyenda="CIVIS"><rect x="956" y="1072.0" width="38" height="18" rx="9" fill="#D64A9B"/><text x="975" y="1085.0" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">CIVIS</text><text x="1004" y="1085.0" font-size="12" fill="#1f2937">Guadalajara – Chamartín</text></g>
-<g data-linea-leyenda="C3"><rect x="956" y="1096.0" width="38" height="18" rx="9" fill="#952585"/><text x="975" y="1109.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C3</text><text x="1004" y="1109.0" font-size="12" fill="#1f2937">Aranjuez – Sol – Chamartín</text></g>
-<g data-linea-leyenda="C4a"><rect x="956" y="1120.0" width="38" height="18" rx="9" fill="#2C2A86"/><text x="975" y="1133.0" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">C4a</text><text x="1004" y="1133.0" font-size="12" fill="#1f2937">Parla – Sol – Alcobendas-San Sebastián de los Reyes</text></g>
-<g data-linea-leyenda="C4b"><rect x="956" y="1144.0" width="38" height="18" rx="9" fill="#2C2A86"/><text x="975" y="1157.0" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">C4b</text><text x="1004" y="1157.0" font-size="12" fill="#1f2937">Parla – Sol – Colmenar Viejo</text></g>
-<g data-linea-leyenda="C5"><rect x="956" y="1168.0" width="38" height="18" rx="9" fill="#ECA328"/><text x="975" y="1181.0" text-anchor="middle" font-size="11" font-weight="700" fill="#111">C5</text><text x="1004" y="1181.0" font-size="12" fill="#1f2937">Móstoles-El Soto – Atocha – Humanes</text></g>
-<g data-linea-leyenda="C7"><rect x="956" y="1192.0" width="38" height="18" rx="9" fill="#C0272D"/><text x="975" y="1205.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C7</text><text x="1004" y="1205.0" font-size="12" fill="#1f2937">Alcalá de Henares – Atocha – Chamartín – Príncipe Pío</text></g>
-<g data-linea-leyenda="C8a"><rect x="956" y="1216.0" width="38" height="18" rx="9" fill="#868584"/><text x="975" y="1229.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C8a</text><text x="1004" y="1229.0" font-size="12" fill="#1f2937">Chamartín – El Escorial – Santa María de la Alameda</text></g>
-<g data-linea-leyenda="C8b"><rect x="956" y="1240.0" width="38" height="18" rx="9" fill="#868584"/><text x="975" y="1253.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C8b</text><text x="1004" y="1253.0" font-size="12" fill="#1f2937">Chamartín – Villalba – Cercedilla</text></g>
-<g data-linea-leyenda="C9"><rect x="956" y="1264.0" width="38" height="18" rx="9" fill="#915419"/><text x="975" y="1277.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C9</text><text x="1004" y="1277.0" font-size="12" fill="#1f2937">Cercedilla – Los Cotos</text></g>
-<g data-linea-leyenda="C10"><rect x="956" y="1288.0" width="38" height="18" rx="9" fill="#BCCF00"/><text x="975" y="1301.0" text-anchor="middle" font-size="11" font-weight="700" fill="#111">C10</text><text x="1004" y="1301.0" font-size="12" fill="#1f2937">Chamartín – Atocha – Príncipe Pío – Villalba</text></g>
-<rect x="961" y="1324.0" width="28" height="10" rx="5" fill="#fff" stroke="#1f2937" stroke-width="2"/><text x="1004" y="1333.0" font-size="12" fill="#1f2937">Estación con varias líneas</text></g>
+<g data-linea-leyenda="C3"><rect x="956" y="1072.0" width="38" height="18" rx="9" fill="#952585"/><text x="975" y="1085.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C3</text><text x="1004" y="1085.0" font-size="12" fill="#1f2937">Aranjuez – Sol – Chamartín</text></g>
+<g data-linea-leyenda="C4"><rect x="956" y="1096.0" width="38" height="18" rx="9" fill="#2C2A86"/><text x="975" y="1109.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C4</text><text x="1004" y="1109.0" font-size="12" fill="#1f2937">Parla – Sol – Alcobendas / Colmenar Viejo</text></g>
+<g data-linea-leyenda="C5"><rect x="956" y="1120.0" width="38" height="18" rx="9" fill="#ECA328"/><text x="975" y="1133.0" text-anchor="middle" font-size="11" font-weight="700" fill="#111">C5</text><text x="1004" y="1133.0" font-size="12" fill="#1f2937">Móstoles-El Soto – Atocha – Humanes</text></g>
+<g data-linea-leyenda="C7"><rect x="956" y="1144.0" width="38" height="18" rx="9" fill="#C0272D"/><text x="975" y="1157.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C7</text><text x="1004" y="1157.0" font-size="12" fill="#1f2937">Alcalá de Henares – Atocha – Chamartín – Príncipe Pío</text></g>
+<g data-linea-leyenda="C8a"><rect x="956" y="1168.0" width="38" height="18" rx="9" fill="#868584"/><text x="975" y="1181.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C8a</text><text x="1004" y="1181.0" font-size="12" fill="#1f2937">Chamartín – El Escorial – Santa María de la Alameda</text></g>
+<g data-linea-leyenda="C8b"><rect x="956" y="1192.0" width="38" height="18" rx="9" fill="#868584"/><text x="975" y="1205.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C8b</text><text x="1004" y="1205.0" font-size="12" fill="#1f2937">Chamartín – Villalba – Cercedilla</text></g>
+<g data-linea-leyenda="C9"><rect x="956" y="1216.0" width="38" height="18" rx="9" fill="#915419"/><text x="975" y="1229.0" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">C9</text><text x="1004" y="1229.0" font-size="12" fill="#1f2937">Cercedilla – Los Cotos</text></g>
+<g data-linea-leyenda="C10"><rect x="956" y="1240.0" width="38" height="18" rx="9" fill="#BCCF00"/><text x="975" y="1253.0" text-anchor="middle" font-size="11" font-weight="700" fill="#111">C10</text><text x="1004" y="1253.0" font-size="12" fill="#1f2937">Chamartín – Atocha – Príncipe Pío – Villalba</text></g>
+<rect x="961" y="1276.0" width="28" height="10" rx="5" fill="#fff" stroke="#1f2937" stroke-width="2"/><text x="1004" y="1285.0" font-size="12" fill="#1f2937">Estación con varias líneas</text></g>
 </svg>
