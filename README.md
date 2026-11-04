@@ -22,6 +22,8 @@ Las pruebas usan estaciones de ejemplo creadas dentro del propio test, así que 
 
 Para ejecutarlas desde Eclipse, importad `files/backendAPI` como proyecto Maven y dejad que resuelva las dependencias. Eclipse IDE for Java Developers incluye soporte Maven; en otras ediciones puede hacer falta instalar Maven Integration for Eclipse (m2e). Esta configuración solo afecta a Eclipse, no al código ni a los requisitos de los tests.
 
+Nota: para ejecutar los tests desde Eclipse, hay que abrir el proyecto de forma normal (ver sección de Spring Boot) y en la carpeta `src/test/java` hacer click derecho y hacer `Run as: Maven test`. Tarda un poco, ejecuta Spring Boot y al final saldrá el número de tests realizados y los errores.
+
 -- OMITIR --
 
 Ya NO hay que descargar el zip de https://data.renfe.com/dataset/horarios-cercanias y extraer los txt en la carpeta data/horarios_cercanias/ y en src/Java/data/
