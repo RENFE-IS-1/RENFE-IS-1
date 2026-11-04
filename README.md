@@ -12,8 +12,23 @@ Aplicación para la planificación de rutas y consulta de horarios de la red de 
 2. Instalar dependencias: `[comando de instalación]` a ver que usamos
 3. Ejecutar la aplicación: `[comando de ejecución]` depende de la versión lo cambiamos
 
+<<<<<<< HEAD
 -- OMITIR --
 
+=======
+Luego esto ya lo formateais como querais, tampoco se hasta que punto vosotros os vais a tener que instalar nada.
+
+He añadido pruebas automatizadas para la búsqueda de estaciones en el backend API. En mi equipo se ejecutan correctamente con `mvnw.cmd test` desde `files/backendAPI`.
+
+Para ejecutarlas hace falta un **JDK 17**. No es necesario instalar Maven por separado porque el repositorio incluye Maven Wrapper (`mvnw.cmd`), que descarga y usa la versión de Maven del proyecto. La primera ejecución puede tardar porque descarga Maven y las dependencias.
+
+Las pruebas usan estaciones de ejemplo creadas dentro del propio test, así que no necesitan descargar los horarios reales. Comprueban búsquedas sin distinguir mayúsculas ni tildes, texto vacío y ausencia de coincidencias.
+
+Para ejecutarlas desde Eclipse, importad `files/backendAPI` como proyecto Maven y dejad que resuelva las dependencias. Eclipse IDE for Java Developers incluye soporte Maven; en otras ediciones puede hacer falta instalar Maven Integration for Eclipse (m2e). Esta configuración solo afecta a Eclipse, no al código ni a los requisitos de los tests.
+
+-- OMITIR --
+
+>>>>>>> 8f00c9bab2333c1251d082c746997db49b5940a5
 Ya NO hay que descargar el zip de https://data.renfe.com/dataset/horarios-cercanias y extraer los txt en la carpeta data/horarios_cercanias/ y en src/Java/data/
 Recordad hacer refresh en la carpeta mas exterior al hacer pull para que se cargen los archivos
 Crear una carpeta vacia (ej. Workspace), clonar el repositorio dentro, y hacer new > Java proyect > desmarcar la casilla default location y elegir src/Java y desmarcar create mmodulo info java (esta abajo)
@@ -45,4 +60,5 @@ Las clases de `modelo`, `consultas`, `servicio`, etc. están copiadas en `files/
 * Rodrigo Antequera Díaz
 * Diego Bañares Díez
 * Pedro Vicente Polo
-* Sergio Alcalá-Zamora
+* Sergio Vazquez Fernandez
+  

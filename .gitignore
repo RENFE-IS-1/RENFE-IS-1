@@ -36,4 +36,9 @@ replay_pid*
 bin/"data/"
 
 jcode-windows-x86_64.exe
+<<<<<<< HEAD
 %WIKI_DIR%
+=======
+%WIKI_DIR%
+.metadata/
+>>>>>>> 8f00c9bab2333c1251d082c746997db49b5940a5
