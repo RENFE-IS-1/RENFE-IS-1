@@ -79,16 +79,21 @@ public class GTFSLoader {
     }
     private void loadTrips(String path, RedTransporte red) {
         try (BufferedReader br = Files.newBufferedReader(Path.of(path), StandardCharsets.UTF_8)) {
+            Map<String, Integer> col = indiceColumnas(br.readLine());
             String line;
-            br.readLine();
             while ((line = br.readLine()) != null) {
                 String[] p = parseCsv(line);
-                if (p.length >= 3) {
-                    String routeId = p[0].trim();
+                try {
+                    String routeId = campo(p, col, "route_id");
                     // FILTRO EN CASCADA: Solo guardar el viaje si su ruta es de Madrid
                     if (red.getLinea(routeId) != null) {
-                        red.addViaje(new Viaje(p[2].trim(), routeId, p[1].trim()));
+                        // block_id es opcional: une viajes que hace el mismo tren (por ejemplo, la
+                        // C2 de Guadalajara que en Chamartín sigue como C8a o C8b)
+                        red.addViaje(new Viaje(campo(p, col, "trip_id"), routeId, campo(p, col, "service_id"),
+                                campoOpcional(p, col, "block_id", null)));
                     }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.err.println("Línea de trips.txt ignorada: " + line.trim());
                 }
             }
         } catch (IOException e) { System.err.println("Error trips.txt: " + e.getMessage()); }

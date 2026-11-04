@@ -78,6 +78,12 @@ public class ServicioBuscadorRutas {
     private Map<String, List<int[]>> recorridosPorEstacion;  // estación -> {recorrido, posición}
     /** estación -> línea comercial -> horarios de esa línea en la estación, ordenados por llegada. */
     private final Map<String, Map<String, List<ParadaHorario>>> horariosPorEstacionYLinea = new HashMap<>();
+    /**
+     * block_id -> viajes del bloque ordenados por hora de salida. Dos viajes seguidos del mismo
+     * bloque los hace el mismo tren sin que el viajero se baje: por ejemplo, la C2 que llega de
+     * Guadalajara a Chamartín y sigue como C8b hasta Cercedilla.
+     */
+    private final Map<String, List<String>> viajesPorBloque = new HashMap<>();
 
     /** Secuencia de estaciones de una línea, con los minutos desde la salida de la primera. */
     private static final class Recorrido {
@@ -292,8 +298,16 @@ public class ServicioBuscadorRutas {
     /** Ruta con trenes concretos, más los datos necesarios para ordenarla. */
     private record RutaProgramada(Ruta ruta, LocalDateTime llegada, int tramos, String clave) {}
 
-    /** Tren concreto elegido para un tramo. */
-    private record TrenElegido(LocalDateTime salida, LocalDateTime llegada, Linea linea) {}
+    /**
+     * Tren concreto elegido para un tramo. {@code viaje} y {@code inicioDia} (medianoche del día de
+     * servicio) son null en los tramos a pie.
+     */
+    private record TrenElegido(LocalDateTime salida, LocalDateTime llegada, Linea linea,
+                               String viaje, LocalDateTime inicioDia) {
+        TrenElegido(LocalDateTime salida, LocalDateTime llegada, Linea linea) {
+            this(salida, llegada, linea, null, null);
+        }
+    }
 
     /**
      * Asigna trenes reales a la combinación en dos pasadas:
@@ -328,6 +342,9 @@ public class ServicioBuscadorRutas {
             } else {
                 LocalDateTime listo = yaEnTren ? t.plusMinutes(MINUTOS_TRANSBORDO) : t;
                 ida[i] = siguienteTren(lineaDe(p), p.desde(), p.hasta(), listo);
+                // Si el tren anterior sigue como esta línea (mismo bloque), no hay que bajarse
+                TrenElegido mismo = (i > 0) ? continuacion(ida[i - 1], lineaDe(p), p.desde(), p.hasta()) : null;
+                if (mismo != null && (ida[i] == null || !mismo.llegada().isAfter(ida[i].llegada()))) ida[i] = mismo;
                 if (ida[i] == null) return null;
                 yaEnTren = true;
             }
@@ -342,11 +359,22 @@ public class ServicioBuscadorRutas {
             if (p.recorrido() < 0) {
                 elegidos[i] = new TrenElegido(limite.minusMinutes(p.minutos()), limite, A_PIE);
             } else {
-                TrenElegido tarde = ultimoTren(lineaDe(p), p.desde(), p.hasta(), ida[i].salida(), limite);
-                elegidos[i] = (tarde != null) ? tarde : ida[i]; // el de la ida siempre cumple
+                TrenElegido mismo = (i < n - 1) ? anterior(elegidos[i + 1], lineaDe(p), p.desde(), p.hasta()) : null;
+                if (mismo != null && !mismo.salida().isBefore(ida[i].salida())) {
+                    elegidos[i] = mismo; // el mismo tren que el tramo siguiente
+                } else {
+                    TrenElegido tarde = ultimoTren(lineaDe(p), p.desde(), p.hasta(), ida[i].salida(), limite);
+                    elegidos[i] = (tarde != null) ? tarde : ida[i]; // el de la ida siempre cumple
+                }
             }
             limite = elegidos[i].salida();
-            if (p.recorrido() >= 0 && hayTrenAntes(pasos, i)) limite = limite.minusMinutes(MINUTOS_TRANSBORDO);
+            if (p.recorrido() >= 0 && hayTrenAntes(pasos, i)) {
+                // Sin transbordo si el tramo anterior puede ser el mismo tren (mismo bloque)
+                Paso antes = pasos.get(i - 1);
+                TrenElegido previo = antes.recorrido() < 0 ? null
+                        : anterior(elegidos[i], lineaDe(antes), antes.desde(), antes.hasta());
+                if (previo == null) limite = limite.minusMinutes(MINUTOS_TRANSBORDO);
+            }
         }
 
         for (int i = 1; i < n; i++) {
@@ -368,11 +396,86 @@ public class ServicioBuscadorRutas {
             Paso p = pasos.get(i);
             Estacion desde = red.getEstacion(p.desde());
             Estacion hasta = red.getEstacion(p.hasta());
+            LocalDateTime sal = elegidos[i].salida();
+            Linea linea = elegidos[i].linea();
+            // Tramos seguidos hechos por el mismo tren (mismo bloque): un solo tramo, sin transbordo
+            while (i + 1 < n && pasos.get(i + 1).recorrido() >= 0 && p.recorrido() >= 0
+                    && mismoTren(elegidos[i], elegidos[i + 1])) {
+                linea = lineaComercial(linea, elegidos[i + 1].linea());
+                i++;
+                p = pasos.get(i);
+                hasta = red.getEstacion(p.hasta());
+            }
             double precio = 0;
             if (p.recorrido() >= 0) precio = calcularPrecio(desde.distanciaEnKm(hasta.getLatitud(), hasta.getLongitud()));
-            ruta.agregarTramo(new Tramo(desde, hasta, elegidos[i].linea(), elegidos[i].salida(), elegidos[i].llegada(), precio));
+            ruta.agregarTramo(new Tramo(desde, hasta, linea, sal, elegidos[i].llegada(), precio));
         }
         return new RutaProgramada(ruta, llegadaFinal, tramos, clave);
+    }
+
+    /** Viaje siguiente (desplazamiento +1) o anterior (-1) del mismo bloque, o null. */
+    private String vecinoDeBloque(String viaje, int desplazamiento) {
+        if (viaje == null) return null;
+        Viaje v = red.getViaje(viaje);
+        if (v == null || v.getBlockId() == null) return null;
+        List<String> bloque = viajesPorBloque.get(v.getBlockId());
+        if (bloque == null) return null;
+        int i = bloque.indexOf(viaje) + desplazamiento;
+        return (i >= 0 && i < bloque.size() && i - desplazamiento >= 0) ? bloque.get(i) : null;
+    }
+
+    /** True si {@code b} es el viaje que hace el mismo tren justo después de {@code a}. */
+    private boolean mismoTren(TrenElegido a, TrenElegido b) {
+        return a.viaje() != null && b.viaje() != null && b.viaje().equals(vecinoDeBloque(a.viaje(), 1))
+                && a.inicioDia() != null && a.inicioDia().equals(b.inicioDia());
+    }
+
+    /**
+     * Si el tren de {@code previo} continúa (siguiente viaje de su bloque) como la línea indicada,
+     * de {@code desde} a {@code hasta}, ese tramo con el mismo tren. Null si no.
+     */
+    private TrenElegido continuacion(TrenElegido previo, String linea, String desde, String hasta) {
+        String siguiente = vecinoDeBloque(previo.viaje(), 1);
+        return siguiente == null ? null : tramoDeViaje(siguiente, linea, desde, hasta, previo.inicioDia(),
+                previo.llegada(), null);
+    }
+
+    /**
+     * Si el tren de {@code posterior} venía haciendo antes (viaje anterior de su bloque) la línea
+     * indicada, de {@code desde} a {@code hasta}, ese tramo con el mismo tren. Null si no.
+     */
+    private TrenElegido anterior(TrenElegido posterior, String linea, String desde, String hasta) {
+        String previo = vecinoDeBloque(posterior.viaje(), -1);
+        return previo == null ? null : tramoDeViaje(previo, linea, desde, hasta, posterior.inicioDia(),
+                null, posterior.salida());
+    }
+
+    /** Tramo de {@code desde} a {@code hasta} en un viaje concreto, con límites opcionales de hora. */
+    private TrenElegido tramoDeViaje(String viaje, String linea, String desde, String hasta,
+                                     LocalDateTime inicioDia, LocalDateTime saleNoAntes, LocalDateTime llegaNoDespues) {
+        Viaje v = red.getViaje(viaje);
+        Linea l = (v == null) ? null : red.getLinea(v.getRouteId());
+        if (l == null || inicioDia == null || !l.getShortName().equals(linea)) return null;
+        for (ParadaHorario ph : red.getRutaDeViaje(viaje)) {
+            if (!ph.getStopId().equals(desde)) continue;
+            ParadaHorario bajada = paradaPosterior(viaje, ph.getStopSequence(), hasta);
+            if (bajada == null) continue;
+            LocalDateTime sal = inicioDia.plusSeconds(ph.getDepartureTime());
+            LocalDateTime lleg = inicioDia.plusSeconds(bajada.getArrivalTime());
+            if (saleNoAntes != null && sal.isBefore(saleNoAntes)) continue;
+            if (llegaNoDespues != null && lleg.isAfter(llegaNoDespues)) continue;
+            return new TrenElegido(sal, lleg, l, viaje, inicioDia);
+        }
+        return null;
+    }
+
+    /**
+     * Línea que se muestra cuando un mismo tren cambia de línea en el GTFS. Los trenes de la C2 que
+     * siguen en Chamartín como C8a o C8b son, para el viajero, trenes de la C8.
+     */
+    private static Linea lineaComercial(Linea a, Linea b) {
+        if (a.getShortName().equals("C2") && b.getShortName().startsWith("C8")) return b;
+        return a;
     }
 
     private String lineaDe(Paso p) {
@@ -417,7 +520,7 @@ public class ServicioBuscadorRutas {
                 LocalDateTime lleg = inicioDia.plusSeconds(bajada.getArrivalTime());
                 if (mejor == null || sal.isAfter(mejor.salida())
                         || (sal.equals(mejor.salida()) && lleg.isBefore(mejor.llegada()))) {
-                    mejor = new TrenElegido(sal, lleg, l);
+                    mejor = new TrenElegido(sal, lleg, l, v.getId(), inicioDia);
                 }
             }
         }
@@ -458,7 +561,7 @@ public class ServicioBuscadorRutas {
 
                 LocalDateTime llegada = inicioDia.plusSeconds(bajada.getArrivalTime());
                 if (mejor == null || llegada.isBefore(mejor.llegada())) {
-                    mejor = new TrenElegido(inicioDia.plusSeconds(ph.getDepartureTime()), llegada, l);
+                    mejor = new TrenElegido(inicioDia.plusSeconds(ph.getDepartureTime()), llegada, l, v.getId(), inicioDia);
                 }
             }
         }
@@ -561,6 +664,17 @@ public class ServicioBuscadorRutas {
         }
 
         recorridos = new ArrayList<>(porClave.values());
+
+        Map<String, Integer> salidaDeViaje = new HashMap<>();
+        for (Viaje v : red.getAllViajes()) {
+            if (v.getBlockId() == null) continue;
+            int primera = Integer.MAX_VALUE;
+            for (ParadaHorario ph : red.getRutaDeViaje(v.getId())) primera = Math.min(primera, ph.getDepartureTime());
+            if (primera == Integer.MAX_VALUE) continue;
+            salidaDeViaje.put(v.getId(), primera);
+            viajesPorBloque.computeIfAbsent(v.getBlockId(), k -> new ArrayList<>()).add(v.getId());
+        }
+        for (List<String> bloque : viajesPorBloque.values()) bloque.sort(Comparator.comparingInt(salidaDeViaje::get));
         for (Map<String, List<ParadaHorario>> porLinea : horariosPorEstacionYLinea.values()) {
             for (List<ParadaHorario> lista : porLinea.values()) lista.sort(Comparator.comparingInt(ParadaHorario::getArrivalTime));
         }

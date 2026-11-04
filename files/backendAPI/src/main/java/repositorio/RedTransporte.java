@@ -96,8 +96,6 @@ public class RedTransporte {
     public void aplicarAliasComerciales() {
         Linea aliasC8 = new Linea("VIRTUAL_C8", "C8", "Alias Comercial", "868584");
         Linea aliasC2 = new Linea("VIRTUAL_C2", "C2", "Alias Comercial", "00943D");
-        Linea aliasC8a = new Linea("VIRTUAL_C8a", "C8a", "Alias Comercial", "868584");
-        Linea aliasC3 = new Linea("VIRTUAL_C3", "C3", "Alias Comercial", "952585");
         Linea aliasC1 = new Linea("VIRTUAL_C1", "C1", "Alias Comercial", "75B6E0");
         Linea aliasC10 = new Linea("VIRTUAL_C10", "C10", "Alias Comercial", "BCCF00");
         Linea aliasC4 = new Linea("VIRTUAL_C4", "C4", "Alias Comercial", "2C2A86");
@@ -112,24 +110,21 @@ public class RedTransporte {
             String estacionId = entry.getKey();
             Set<Linea> lineas = entry.getValue();
 
-            boolean tieneC2 = false, tieneC8_o_b = false, tieneC3 = false, tieneC8a = false;
+            boolean tieneC2 = false, tieneC8_o_b = false;
             boolean tieneC4_ramal = false;
 
             for (Linea l : lineas) {
                 String nombre = l.getShortName().toUpperCase();
                 if (nombre.equals("C2")) tieneC2 = true;
                 if (nombre.equals("C8") || nombre.equals("C8B")) tieneC8_o_b = true; 
-                if (nombre.equals("C3")) tieneC3 = true;
-                if (nombre.equals("C8A")) tieneC8a = true;
                 if (nombre.startsWith("C4")) tieneC4_ramal = true;
             }
 
-            // 1. Unificar ejes pasantes (C2 <-> C8/C8b y C3 <-> C8a)
+            // 1. Eje pasante C2 <-> C8: los trenes de la C2 siguen en Chamartín como C8a/C8b
+            //    (mismo block_id en el GTFS). La C3 ya no enlaza con la C8a desde 2024: quien va
+            //    de la C3 a El Escorial cambia de tren en Chamartín.
             if (tieneC2 && !tieneC8_o_b) lineas.add(aliasC8);
             if (tieneC8_o_b && !tieneC2) lineas.add(aliasC2);
-            
-            if (tieneC3 && !tieneC8a) lineas.add(aliasC8a);
-            if (tieneC8a && !tieneC3) lineas.add(aliasC3);
             
             // 2. Unificar C4a y C4b bajo el sello comercial C4
             if (tieneC4_ramal) {
