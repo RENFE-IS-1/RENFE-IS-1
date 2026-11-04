@@ -18,6 +18,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RedTransporte {
     private Map<String, Estacion> estacionesById = new HashMap<>();
@@ -210,6 +212,145 @@ public class RedTransporte {
             if (estacion != null) estaciones.putIfAbsent(estacion.getId(), estacion);
         }
         return new ArrayList<>(estaciones.values());
+    }
+
+    /** Recorridos completos ya calculados, por nombre de línea (se piden desde la web). */
+    private final Map<String, List<Estacion>> recorridoCompletoCache = new ConcurrentHashMap<>();
+
+    /**
+     * Ramales con los que se muestra una línea en la web. Si hay al menos dos líneas con trenes que
+     * se llaman igual más una letra (C4a y C4b para "C4", C8a y C8b para "C8"), son sus ramales; si
+     * no, la línea es su único ramal.
+     */
+    public List<String> getRamales(String linea) {
+        if (linea == null || linea.isBlank()) return new ArrayList<>();
+        Set<String> ramales = new TreeSet<>();
+        boolean existe = false;
+        for (Linea l : lineasById.values()) {
+            String nombre = l.getShortName();
+            if (nombre.equalsIgnoreCase(linea)) existe = true;
+            if (nombre.length() == linea.length() + 1 && nombre.regionMatches(true, 0, linea, 0, linea.length())
+                    && Character.isLowerCase(nombre.charAt(linea.length()))) ramales.add(nombre);
+        }
+        ramales.removeIf(r -> getEstacionesDeLinea(r).isEmpty()); // solo las que tienen trenes
+        if (ramales.size() >= 2) return new ArrayList<>(ramales);
+        return existe ? new ArrayList<>(List.of(linea.toUpperCase())) : new ArrayList<>();
+    }
+
+    /**
+     * Recorrido completo de una línea, en orden. Se parte del recorrido más frecuente entre los
+     * largos (al menos la mitad de paradas que el más largo), para no tomar como base un servicio
+     * ocasional. Se alarga por sus extremos con otros recorridos de la misma línea que hagan al menos
+     * el 5 % de sus viajes (por ejemplo, la C8a de El Escorial a Santa María de la Alameda) y con los
+     * tramos que hace el mismo tren antes o después con otra línea, si eso pasa en al menos el 20 %
+     * de sus viajes (la C2 de Guadalajara que sigue como C8a/C8b, que Renfe anuncia como C8).
+     */
+    public List<Estacion> getRecorridoCompleto(String shortName) {
+        if (shortName == null || shortName.isBlank()) return new ArrayList<>();
+        return new ArrayList<>(recorridoCompletoCache.computeIfAbsent(shortName, this::calcularRecorridoCompleto));
+    }
+
+    private List<Estacion> calcularRecorridoCompleto(String shortName) {
+        // Secuencias de paradas de la línea y de los trenes que siguen o vienen de otra línea
+        Map<String, List<String>> propias = new LinkedHashMap<>();
+        Map<String, Integer> vecesPropia = new HashMap<>();
+        Map<String, Integer> enlazadas = new HashMap<>();
+        Map<String, List<String>> secuenciaEnlazada = new HashMap<>();
+        Map<String, List<Viaje>> porBloque = new HashMap<>();
+        for (Viaje v : viajesById.values()) {
+            if (v.getBlockId() != null) porBloque.computeIfAbsent(v.getBlockId(), k -> new ArrayList<>()).add(v);
+        }
+        int viajesLinea = 0;
+        for (Viaje v : viajesById.values()) {
+            Linea l = lineasById.get(v.getRouteId());
+            if (l == null || !l.getShortName().equals(shortName)) continue;
+            viajesLinea++;
+            List<String> seq = secuencia(v.getId());
+            if (seq.size() >= 2) {
+                propias.putIfAbsent(String.join(",", seq), seq);
+                vecesPropia.merge(String.join(",", seq), 1, Integer::sum);
+            }
+            if (v.getBlockId() == null) continue;
+            List<Viaje> bloque = new ArrayList<>(porBloque.get(v.getBlockId()));
+            bloque.sort((a, b) -> Integer.compare(primeraSalida(a.getId()), primeraSalida(b.getId())));
+            int i = bloque.indexOf(v);
+            for (int j : new int[]{i - 1, i + 1}) {
+                if (j < 0 || j >= bloque.size()) continue;
+                Linea otra = lineasById.get(bloque.get(j).getRouteId());
+                if (otra == null || otra.getShortName().equals(shortName)) continue;
+                List<String> s2 = secuencia(bloque.get(j).getId());
+                if (s2.size() < 2) continue;
+                String clave = String.join(",", s2);
+                enlazadas.merge(clave, 1, Integer::sum);
+                secuenciaEnlazada.put(clave, s2);
+            }
+        }
+        if (propias.isEmpty()) return new ArrayList<>();
+        int masLargo = 0;
+        for (List<String> seq : propias.values()) masLargo = Math.max(masLargo, seq.size());
+        String base = null;
+        for (Map.Entry<String, List<String>> e : propias.entrySet()) {
+            if (e.getValue().size() * 2 < masLargo) continue;
+            if (base == null || vecesPropia.get(e.getKey()) > vecesPropia.get(base)
+                    || (vecesPropia.get(e.getKey()).equals(vecesPropia.get(base)) && e.getValue().size() > propias.get(base).size())) {
+                base = e.getKey();
+            }
+        }
+        List<String> camino = new ArrayList<>(propias.get(base));
+        List<List<String>> candidatas = new ArrayList<>();
+        for (Map.Entry<String, List<String>> e : propias.entrySet()) {
+            if (vecesPropia.get(e.getKey()) >= 0.05 * viajesLinea) candidatas.add(e.getValue());
+        }
+        for (Map.Entry<String, Integer> e : enlazadas.entrySet()) {
+            if (e.getValue() >= 0.2 * viajesLinea) candidatas.add(secuenciaEnlazada.get(e.getKey()));
+        }
+        // Se alarga el camino por los dos extremos mientras alguna secuencia lo continúe
+        boolean cambiado = true;
+        while (cambiado) {
+            cambiado = false;
+            for (List<String> c : candidatas) {
+                for (List<String> s : List.of(c, invertida(c))) {
+                    String ultima = camino.get(camino.size() - 1), primera = camino.get(0);
+                    int k = s.indexOf(ultima);
+                    if (k >= 0 && k < s.size() - 1 && s.indexOf(primera) < 0 && !contieneAlguna(camino, s.subList(k + 1, s.size()))) {
+                        camino.addAll(s.subList(k + 1, s.size())); cambiado = true;
+                    }
+                    k = s.indexOf(primera);
+                    if (k > 0 && s.indexOf(ultima) < 0 && !contieneAlguna(camino, s.subList(0, k))) {
+                        camino.addAll(0, s.subList(0, k)); cambiado = true;
+                    }
+                }
+            }
+        }
+        List<Estacion> resultado = new ArrayList<>();
+        for (String id : camino) {
+            Estacion e = estacionesById.get(id);
+            if (e != null) resultado.add(e);
+        }
+        return resultado;
+    }
+
+    private List<String> secuencia(String tripId) {
+        List<ParadaHorario> paradas = new ArrayList<>(getRutaDeViaje(tripId));
+        paradas.sort((a, b) -> Integer.compare(a.getStopSequence(), b.getStopSequence()));
+        List<String> ids = new ArrayList<>();
+        for (ParadaHorario ph : paradas) if (ids.isEmpty() || !ids.get(ids.size() - 1).equals(ph.getStopId())) ids.add(ph.getStopId());
+        return ids;
+    }
+
+    private int primeraSalida(String tripId) {
+        int m = Integer.MAX_VALUE;
+        for (ParadaHorario ph : getRutaDeViaje(tripId)) m = Math.min(m, ph.getDepartureTime());
+        return m;
+    }
+
+    private static List<String> invertida(List<String> s) {
+        List<String> r = new ArrayList<>(s); Collections.reverse(r); return r;
+    }
+
+    private static boolean contieneAlguna(List<String> camino, List<String> nuevas) {
+        for (String n : nuevas) if (camino.contains(n)) return true;
+        return false;
     }
 
     /** Indica si los viajes con este service_id circulan en la fecha dada. */

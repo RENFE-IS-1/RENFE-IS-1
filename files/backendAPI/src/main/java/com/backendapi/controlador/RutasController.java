@@ -78,6 +78,26 @@ public class RutasController {
         return estaciones;
     }
 
+    /** Un ramal de una línea (por ejemplo C4a) con sus estaciones en orden. */
+    public record Ramal(String nombre, List<Estacion> estaciones) {}
+
+    /**
+     * Recorrido completo de una línea para dibujarlo en la web. Las líneas con bifurcación (C4 y C8)
+     * devuelven un ramal por cada rama (C4a y C4b, C8a y C8b); las demás, un solo ramal.
+     */
+    @GetMapping("/lineas/{linea}/ramales")
+    public List<Ramal> ramalesDeLinea(@PathVariable("linea") String linea) {
+        List<Ramal> ramales = new java.util.ArrayList<>();
+        for (String nombre : red.getRamales(linea)) {
+            List<Estacion> estaciones = red.getRecorridoCompleto(nombre);
+            if (!estaciones.isEmpty()) ramales.add(new Ramal(nombre, estaciones));
+        }
+        if (ramales.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontró la línea '" + linea + "'.");
+        }
+        return ramales;
+    }
+
     /** US-002 / US-010 / US-011: rutas con trenes reales, ordenadas por hora de llegada o criterio de comparación. */
     @GetMapping("/rutas")
     public List<Ruta> rutas(
