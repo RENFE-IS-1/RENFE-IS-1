@@ -1,0 +1,434 @@
+@startuml Java
+title RENFE-IS-1 · Diagrama de clases · proyecto Java (consola)
+
+skinparam shadowing false
+skinparam roundcorner 14
+skinparam defaultFontSize 12
+skinparam classFontSize 14
+skinparam classFontStyle bold
+skinparam classAttributeIconSize 11
+skinparam ArrowColor #37474F
+skinparam ArrowFontSize 11
+skinparam ArrowFontColor #37474F
+skinparam packageFontSize 18
+skinparam packageFontStyle bold
+skinparam NoteBackgroundColor #FFFDE7
+skinparam NoteBorderColor #F9A825
+skinparam LegendBackgroundColor #FAFAFA
+skinparam LegendBorderColor #B0BEC5
+skinparam nodesep 35
+skinparam ranksep 55
+hide empty members
+hide stereotype
+
+skinparam class {
+  BackgroundColor<<modelo>> #DCEBFA
+  BorderColor<<modelo>> #1565C0
+  BackgroundColor<<repo>> #DDF1DE
+  BorderColor<<repo>> #2E7D32
+  BackgroundColor<<consultas>> #FFE9CC
+  BorderColor<<consultas>> #EF6C00
+  BackgroundColor<<servicio>> #EBD9F1
+  BorderColor<<servicio>> #7B1FA2
+  BackgroundColor<<loader>> #D0EEEA
+  BorderColor<<loader>> #00796B
+  BackgroundColor<<iface>> #FADCE6
+  BorderColor<<iface>> #C2185B
+  BackgroundColor<<main>> #E3E8EB
+  BorderColor<<main>> #455A64
+  BackgroundColor<<spring>> #FFF6BF
+  BorderColor<<spring>> #F9A825
+  BackgroundColor<<test>> #F1F1F1
+  BorderColor<<test>> #9E9E9E
+  BackgroundColor<<ext>> #FFFFFF
+  BorderColor<<ext>> #9E9E9E
+  BackgroundColor<<inner>> #F4EAF7
+  BorderColor<<inner>> #AB47BC
+}
+top to bottom direction
+
+package "main" #F5F7F8;line:455A64;line.bold {
+  class Main <<main>> {
+    - {static} ZONA_MADRID: ZoneId
+    - {static} LLEGADAS_A_MOSTRAR: int
+    - {static} FMT_HORA / FMT_FECHA: DateTimeFormatter
+    + {static} main(args: String[])
+    - {static} directorioDatos(): String
+    - {static} formatearHora(fechaHora, hora): String
+    - {static} mostrarLlegadas(red, argumentos)
+    - {static} normalizar(texto: String): String
+  }
+}
+
+package "consultas" #FFF8EE;line:EF6C00;line.bold {
+  class BuscadorEstaciones <<consultas>> {
+    - red: RedTransporte
+    + BuscadorEstaciones(red: RedTransporte)
+    + buscar(texto: String): List<Estacion>
+    + {static} normalizar(texto: String): String
+  }
+
+  class ConsultaLlegadas <<consultas>> {
+    - {static} SEGUNDOS_DIA: int
+    - red: RedTransporte
+    - ultimaParadaPorViaje: Map<String, ParadaHorario>
+    + ConsultaLlegadas(red: RedTransporte)
+    + proximasLlegadas(estacion, desde, maximo): List<Llegada>
+    + proximasLlegadas(estacion, desde, maximo, filtroLinea): List<Llegada>
+    + lineasYSentidos(estacion, fecha, filtroLinea): Map<String, Set<String>>
+    + fechaCubierta(fecha: LocalDate): boolean
+    - ultimaParada(tripId: String): ParadaHorario
+    - {static} normalizar(texto: String): String
+  }
+}
+
+package "servicio" #FAF4FC;line:7B1FA2;line.bold {
+  class ServicioBuscadorRutas <<servicio>> {
+    - {static} MINUTOS_TRANSBORDO / AHORRO_MINIMO: int
+    - {static} MAX_OPCIONES / MAX_CANDIDATAS / MAX_INTENTOS: int
+    - {static} MAX_RETRASO_MINUTOS / MAX_REINTENTOS / MAX_TRENES: int
+    - {static} MAX_PASOS_BUSQUEDA / SIN_CAMINO: int
+    - {static} MARGEN_PARADA_SEG: long
+    + {static} MAX_ESPERA_MINUTOS: int
+    - {static} ZONA_MADRID: ZoneId
+    - {static} A_PIE: Linea
+    - red: RedTransporte
+    - recorridos: List<Recorrido>
+    - recorridosPorEstacion: Map<String, List<int[]>>
+    - horariosPorEstacionYLinea: Map<String, Map<String, List<ParadaHorario>>>
+    + ServicioBuscadorRutas(red: RedTransporte)
+    + buscarRutas(origen, destino): List<Ruta>
+    + buscarRutas(origen, destino, horaSalida: LocalTime): List<Ruta>
+    + buscarRutas(origen, destino, salida: LocalDateTime): List<Ruta>
+    - buscarEnDias(origen, destino, salida, ...): List<RutaProgramada>
+    - recorridosActivos(desde, hasta: LocalDate): boolean[]
+    - programar(pasos, salida, tramos, clave[, reintentos]): RutaProgramada
+    - siguienteTren(linea, desde, hasta, listo): TrenElegido
+    - ultimoTren(linea, desde, hasta, noAntes, limite): TrenElegido
+    - paradaPosterior(tripId, secuencia, estacion): ParadaHorario
+    - primeraLlegadaDesde(horarios, segundos): int
+    - calcularTrenesHasta(destino, activo): Map<String, Integer>
+    - construirRecorridos()
+    - calcularPrecio(distancia: double): double
+    - lineaDe(p: Paso): String
+    - {static} hayTrenAntes(pasos, i): boolean
+  }
+
+  class "Recorrido" as Recorrido <<inner>> {
+    linea: Linea
+    estaciones: String[]
+    llegada: int[]
+    salida: int[]
+    servicios: Set<String>
+  }
+  class "Busqueda" as Busqueda <<inner>> {
+    destino: String
+    trenesHasta: Map<String, Integer>
+    limiteTrenes: int
+    activo: boolean[]
+    mejorPorLineas / tiempoPorLineas / trenesPorLineas
+    camino: Deque<Paso>
+    visitadas: Set<String>
+    pasos: int
+    ~ explorar(x, trenes, minutos, ultimoRecorrido, vieneAPie)
+    - avanzar(paso, y, trenes, minutos, recorrido, aPie)
+    - registrar(trenes, minutos)
+  }
+  class "Paso  «record»" as Paso <<inner>> {
+    recorrido: int
+    desde: String
+    hasta: String
+    minutos: int
+  }
+  class "RutaProgramada  «record»" as RutaProgramada <<inner>> {
+    llegada: LocalDateTime
+    tramos: int
+    clave: String
+  }
+  class "TrenElegido  «record»" as TrenElegido <<inner>> {
+    salida: LocalDateTime
+    llegada: LocalDateTime
+    linea: Linea
+  }
+
+  class ServicioComparadorRutas <<servicio>> {
+    + ordenarRutas(rutas: List<Ruta>, criterio: Comparator<Ruta>): List<Ruta>
+    + obtenerMejorRuta(rutas: List<Ruta>, criterio: Comparator<Ruta>): Ruta
+  }
+
+  class ComparadoresRuta <<servicio>> {
+    + {static} POR_TIEMPO: Comparator<Ruta>
+    + {static} POR_PRECIO: Comparator<Ruta>
+    + {static} POR_TRANSBORDOS: Comparator<Ruta>
+  }
+}
+
+package "loader" #F1FAF9;line:00796B;line.bold {
+  class GTFSLoader <<loader>> {
+    + cargarDesdeDirectorio(basePath: String, red: RedTransporte)
+    - loadStops(path, red)
+    - loadRoutes(path, red)
+    - loadTrips(path, red)
+    - loadTransfers(path, red)
+    - loadStopTimes(path, red)
+    - loadCalendar(path, red)
+    - loadCalendarDates(path, red)
+    - indiceColumnas(cabecera: String): Map<String, Integer>
+    - campo(p, col, nombre): String
+    - timeToSeconds(time: String): int
+  }
+}
+
+package "interfaces" #FEF4F8;line:C2185B;line.bold {
+  interface FuenteDatosExterna <<iface>> {
+    + conectar()
+    + cargarDatos(red: RedTransporte)
+    + actualizarTiempoReal(red: RedTransporte)
+  }
+}
+
+package "repositorio" #F3FAF3;line:2E7D32;line.bold {
+  class RedTransporte <<repo>> {
+    - estacionesById: Map<String, Estacion>
+    - estacionesByName: Map<String, Estacion>
+    - lineasById: Map<String, Linea>
+    - viajesById: Map<String, Viaje>
+    - paradasPorEstacion: Map<String, List<ParadaHorario>>
+    - paradasPorViaje: Map<String, List<ParadaHorario>>
+    - lineasPorEstacion: Map<String, Set<Linea>>
+    - transbordosPorEstacion: Map<String, List<Transbordo>>
+    - calendarioPorServicio: Map<String, ServicioCalendario>
+    - inicioValidez: LocalDate
+    - finValidez: LocalDate
+    - fechaDatos: Instant
+    --  carga de datos  --
+    + addEstacion(e: Estacion)
+    + addLinea(l: Linea)
+    + addViaje(v: Viaje)
+    + addParadaHorario(p: ParadaHorario)
+    + addTransbordo(t: Transbordo)
+    + addServicioCalendario(s: ServicioCalendario)
+    + addExcepcionCalendario(serviceId, fecha, exceptionType)
+    + setFechaDatos(fechaDatos: Instant)
+    - ampliarValidez(fecha: LocalDate)
+    --  postproceso  --
+    + aplicarAliasComerciales()
+    + limpiarEstacionesFueraDeMadrid()
+    + optimizarIndices()
+    --  consultas  --
+    + getEstacion(id: String): Estacion
+    + getEstacionPorNombre(nombre: String): Estacion
+    + getLinea(id: String): Linea
+    + getViaje(id: String): Viaje
+    + getLineasEnEstacion(stopId: String): Set<Linea>
+    + getAllEstaciones(): List<Estacion>
+    + getAllLineas(): List<Linea>
+    + getAllViajes(): List<Viaje>
+    + getHorariosEstacion(stopId: String): List<ParadaHorario>
+    + getRutaDeViaje(tripId: String): List<ParadaHorario>
+    + getTransbordosDesde(stopId: String): List<Transbordo>
+    + getEstacionesEnRadio(lat, lon, radioKm): List<Estacion>
+    + isServicioActivo(serviceId: String, fecha: LocalDate): boolean
+    + hayCalendario(): boolean
+    + getInicioValidez() | getFinValidez() | getFechaDatos()
+  }
+}
+
+package "modelo" #F3F8FE;line:1565C0;line.bold {
+  class Estacion <<modelo>> {
+    - id: String
+    - nombre: String
+    - latitud: double
+    - longitud: double
+    - activa: boolean
+    + Estacion(id, nombre, latitud, longitud)
+    + distanciaEnKm(lat: double, lon: double): double
+    + setActiva(activa: boolean)
+    + isActiva(): boolean
+    + getId() | getNombre() | getLatitud() | getLongitud()
+  }
+
+  class Linea <<modelo>> {
+    - id: String
+    - shortName: String
+    - longName: String
+    - color: String
+    + Linea(id, shortName, longName, color)
+    + getId() | getShortName() | getLongName() | getColor()
+  }
+
+  class Viaje <<modelo>> {
+    - id: String
+    - routeId: String
+    - serviceId: String
+    - latitudActual: double
+    - longitudActual: double
+    + Viaje(id, routeId, serviceId)
+    + actualizarPosicion(lat: double, lon: double)
+    + getId() | getRouteId() | getServiceId()
+  }
+
+  class ParadaHorario <<modelo>> {
+    - tripId: String
+    - arrivalTime: int
+    - departureTime: int
+    - stopId: String
+    - stopSequence: int
+    + ParadaHorario(tripId, arrivalTime, departureTime, stopId, stopSequence)
+    + compareTo(o: ParadaHorario): int
+    + getTripId() | getArrivalTime() | getDepartureTime()
+    + getStopId() | getStopSequence()
+  }
+
+  class Transbordo <<modelo>> {
+    - fromStopId: String
+    - toStopId: String
+    - transferType: int
+    - minTransferTime: int
+    + Transbordo(fromStopId, toStopId, transferType, minTransferTime)
+    + getFromStopId() | getToStopId()
+    + getTransferType() | getMinTransferTime()
+  }
+
+  class ServicioCalendario <<modelo>> {
+    - serviceId: String
+    - dias: boolean[7]
+    - inicio: LocalDate
+    - fin: LocalDate
+    - fechasAnadidas: Set<LocalDate>
+    - fechasEliminadas: Set<LocalDate>
+    + ServicioCalendario(serviceId, dias, inicio, fin)
+    + {static} soloExcepciones(serviceId: String): ServicioCalendario
+    + addExcepcion(fecha: LocalDate, exceptionType: int)
+    + activoEn(fecha: LocalDate): boolean
+    + getServiceId() | getInicio() | getFin()
+  }
+
+  class Tramo <<modelo>> {
+    - horaSalida: LocalTime
+    - horaLlegada: LocalTime
+    - fechaHoraSalida: LocalDateTime
+    - fechaHoraLlegada: LocalDateTime
+    - precio: double
+    + Tramo(origen, destino, linea, horaSalida, horaLlegada, precio)
+    + Tramo(origen, destino, linea, salida: LocalDateTime, llegada: LocalDateTime, precio)
+    + getDuracionMinutos(): long
+    + getOrigen() | getDestino() | getLinea() | getPrecio()
+    + getHoraSalida() | getHoraLlegada()
+    + getFechaHoraSalida() | getFechaHoraLlegada()
+  }
+
+  class Ruta <<modelo>> {
+    + Ruta()
+    + agregarTramo(tramo: Tramo)
+    + getTramos(): List<Tramo>
+    + getPrecioTotal(): double
+    + getFechaHoraSalida(): LocalDateTime
+    + getFechaHoraLlegada(): LocalDateTime
+    + getTiempoTotalMinutos(): long
+    + getNumeroTransbordos(): int
+    + toString(): String
+  }
+
+  class "Llegada  «record»" as Llegada <<modelo>> {
+    hora: LocalDateTime
+    terminaAqui: boolean
+    tripId: String
+  }
+}
+
+interface "Comparable<ParadaHorario>" as Comparable <<ext>>
+
+' ---------- composición: la red es dueña de sus datos ----------
+RedTransporte "1" *-[#2E7D32,bold]- "*" Estacion
+RedTransporte "1" *-[#2E7D32,bold]- "*" Linea
+RedTransporte "1" *-[#2E7D32,bold]- "*" Viaje
+RedTransporte "1" *-[#2E7D32,bold]- "*" ParadaHorario
+RedTransporte "1" *-[#2E7D32,bold]- "*" Transbordo
+RedTransporte "1" *-[#2E7D32,bold]- "*" ServicioCalendario
+
+' ---------- modelo de rutas ----------
+Ruta "1" *-[#1565C0,bold]- "1..*" Tramo : tramos
+Tramo "*" -[#37474F,bold]-> "1" Estacion : origen
+Tramo "*" -[#37474F,bold]-> "1" Estacion : destino
+Tramo "*" -[#37474F,bold]-> "1" Linea
+Llegada -[#37474F,bold]-> Linea
+Llegada -[#37474F,bold]-> Estacion : destino
+ParadaHorario .[#1565C0].|> Comparable
+
+' ---------- referencias por id (GTFS) ----------
+Viaje .[#B0BEC5].> Linea : routeId
+Viaje .[#B0BEC5].> ServicioCalendario : serviceId
+ParadaHorario .[#B0BEC5].> Viaje : tripId
+ParadaHorario .[#B0BEC5].> Estacion : stopId
+Transbordo .[#B0BEC5].> Estacion : from / toStopId
+
+' ---------- interfaz ----------
+FuenteDatosExterna .[#78909C].> RedTransporte
+
+' ---------- loader ----------
+GTFSLoader -[#37474F,bold]-> RedTransporte : rellena
+GTFSLoader .[#78909C].> Estacion : crea
+GTFSLoader .[#78909C].> Linea : crea
+GTFSLoader .[#78909C].> Viaje : crea
+GTFSLoader .[#78909C].> ParadaHorario : crea
+GTFSLoader .[#78909C].> Transbordo : crea
+GTFSLoader .[#78909C].> ServicioCalendario : crea
+
+' ---------- consultas ----------
+BuscadorEstaciones -[#37474F,bold]-> RedTransporte : red
+BuscadorEstaciones .[#78909C].> Estacion
+ConsultaLlegadas -[#37474F,bold]-> RedTransporte : red
+ConsultaLlegadas -[#37474F,bold]-> "*" ParadaHorario : ultimaParadaPorViaje
+ConsultaLlegadas .[#78909C].> Llegada : crea
+ConsultaLlegadas .[#78909C].> Estacion
+ConsultaLlegadas .[#78909C].> Linea
+
+' ---------- servicios ----------
+ServicioBuscadorRutas -[#37474F,bold]-> RedTransporte : red
+ServicioBuscadorRutas .[#78909C].> Ruta : crea
+ServicioBuscadorRutas .[#78909C].> Tramo : crea
+ServicioBuscadorRutas .[#78909C].> Estacion
+ServicioBuscadorRutas .[#78909C].> Linea : A_PIE
+ServicioComparadorRutas .[#78909C].> Ruta
+ComparadoresRuta .[#78909C].> Ruta
+
+' ---------- clases internas de ServicioBuscadorRutas ----------
+ServicioBuscadorRutas "1" *-[#AB47BC,bold]- "*" Recorrido
+ServicioBuscadorRutas +-[#AB47BC,bold]- Busqueda
+ServicioBuscadorRutas +-[#AB47BC,bold]- Paso
+ServicioBuscadorRutas +-[#AB47BC,bold]- RutaProgramada
+ServicioBuscadorRutas +-[#AB47BC,bold]- TrenElegido
+Recorrido -[#37474F,bold]-> Linea
+Busqueda -[#37474F,bold]-> "*" Paso : camino
+RutaProgramada -[#37474F,bold]-> Ruta
+TrenElegido -[#37474F,bold]-> Linea
+
+Main .[#78909C].> RedTransporte
+Main .[#78909C].> GTFSLoader
+Main .[#78909C].> BuscadorEstaciones
+Main .[#78909C].> ConsultaLlegadas
+Main .[#78909C].> ServicioComparadorRutas
+Main .[#78909C].> ComparadoresRuta
+
+note bottom of FuenteDatosExterna
+  <b>Ninguna clase la implementa</b>
+  (ni siquiera GTFSLoader).
+end note
+
+legend bottom
+  |= Paquete (color) |
+  |<#DCEBFA> modelo |
+  |<#DDF1DE> repositorio |
+  |<#D0EEEA> loader |
+  |<#FFE9CC> consultas |
+  |<#EBD9F1> servicio |
+  |<#FADCE6> interfaces |
+  |<#E3E8EB> main |
+  <b>Flechas</b>
+  <color:#37474F><b>──▶</b></color>  asociación / usa (campo)     <color:#2E7D32><b>◆──</b></color>  composición (es dueña)
+  <color:#78909C><b>┈┈▶</b></color>  dependencia (crea / usa)       <color:#B0BEC5><b>┈┈▶</b></color>  referencia por id (GTFS)
+  <color:#AB47BC><b>⊕──</b></color>  clase interna
+endlegend
+
+@enduml
