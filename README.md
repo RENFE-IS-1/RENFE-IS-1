@@ -1,7 +1,7 @@
 # Sistema de Planificación de Cercanías Madrid <Nombre a elegir>
 
 ## Descripción
-Aplicación para la planificación de rutas y consulta de horarios de la red de transporte. 
+Aplicación para la planificación de rutas y consulta de horarios de la red de transporte. Análisis de datos y mejoras del servicio.
 
 ## Requisitos Previos
 * [Lenguaje y versión exacta: ] Java 17
@@ -11,6 +11,8 @@ Aplicación para la planificación de rutas y consulta de horarios de la red de 
 1. Clonar el repositorio: `git clone https://github.com/RENFE-IS-1/RENFE-IS-1`
 2. Instalar dependencias: `[comando de instalación]` a ver que usamos
 3. Ejecutar la aplicación: `[comando de ejecución]` depende de la versión lo cambiamos
+
+A medida que se escribe el código, ir comentando su funcionamiento, creando tests y actualizando la gestión de riesgos.
 
 Luego esto ya lo formateais como querais, tampoco se hasta que punto vosotros os vais a tener que instalar nada.
 
@@ -47,7 +49,7 @@ El proyecto `files/backendAPI` expone nuestras clases como una API web. Usa los 
 
 Las clases de `modelo`, `consultas`, `servicio`, etc. están copiadas en `files/backendAPI/src/main/java`. **Si cambias una en `files/Java/src`, copia también el cambio allí.**
 
-## Estructura del Proyecto
+## Estructura del Proyecto (actualizar con el mapa UML)
 * `/src`: Código fuente de la aplicación.
 * `/data`: Archivos de datos estáticos (horarios, estaciones, conexiones...)
 * `/docs`: Documentación adicional y memorias.
