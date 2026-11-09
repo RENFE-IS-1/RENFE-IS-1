@@ -28,9 +28,8 @@ Nota: para ejecutar los tests desde Eclipse, hay que abrir el proyecto de forma 
 
 -- OMITIR --
 
-Ya NO hay que descargar el zip de https://data.renfe.com/dataset/horarios-cercanias y extraer los txt en la carpeta data/horarios_cercanias/ y en src/Java/data/
+Ya NO hay que descargar el zip de https://data.renfe.com/dataset/horarios-cercanias: los txt están en `files/backendAPI/data/`.
 Recordad hacer refresh en la carpeta mas exterior al hacer pull para que se cargen los archivos
-Crear una carpeta vacia (ej. Workspace), clonar el repositorio dentro, y hacer new > Java proyect > desmarcar la casilla default location y elegir src/Java y desmarcar create mmodulo info java (esta abajo)
 
 ------------
 
@@ -40,18 +39,20 @@ De todas formas solo podemos utilzar el lfs con un maximo de 1 GB de descarga y 
 
 
 ## Backend (API REST con Spring Boot)
-El proyecto `files/backendAPI` expone nuestras clases como una API web. Usa los mismos datos que `files/Java` (`files/Java/data`), así que no hay que copiarlos.
+El proyecto `files/backendAPI` expone nuestras clases como una API web y sirve la web. Lee los horarios GTFS de `files/backendAPI/data` (se cambia con `renfe.datos` en `application.properties`).
 
 1. En Eclipse: **File → Import… → Maven → Existing Maven Projects** → `files/backendAPI` → **Finish**. La primera vez descarga las dependencias (un par de minutos).
 2. Abre `com.backendapi.BackendApiApplication` → clic derecho → **Run As → Java Application** (o **Spring Boot App** si tienes Spring Tools).
 3. Cuando la consola diga `Started BackendApiApplication`, abre http://localhost:8080/swagger-ui.html para probar los endpoints.
-4. 4. Si quieres meterte en la web visual pensada para el usuario, abre http://localhost:8080/ en su lugar.
+4. Si quieres meterte en la web visual pensada para el usuario, abre http://localhost:8080/ en su lugar.
 
-Las clases de `modelo`, `consultas`, `servicio`, etc. están copiadas en `files/backendAPI/src/main/java`. **Si cambias una en `files/Java/src`, copia también el cambio allí.**
+Todo el código está en `files/backendAPI/src/main/java` (`modelo`, `consultas`, `servicio`, etc.). La versión antigua de terminal (`files/Java`) se ha quitado del repositorio; se puede recuperar desde la etiqueta `version-terminal`. El diagrama `diagrama-clases-java` corresponde a esa versión.
 
 ## Estructura del Proyecto (actualizar con el mapa UML)
-* `/src`: Código fuente de la aplicación.
-* `/data`: Archivos de datos estáticos (horarios, estaciones, conexiones...)
+* `files/backendAPI/src/main/java`: código fuente de la aplicación (API REST con Spring Boot).
+* `files/backendAPI/src/main/resources/static`: web (`index.html`) y mapa de Cercanías.
+* `files/backendAPI/src/test`: pruebas JUnit.
+* `files/backendAPI/data`: horarios GTFS de Renfe (`stop_times.txt` va con Git LFS).
 * `/docs`: Documentación adicional y memorias.
 
 ## Autores
