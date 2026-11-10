@@ -2,6 +2,7 @@ package com.backendapi;
 
 import consultas.BuscadorEstaciones;
 import consultas.ConsultaLlegadas;
+import loader.ClienteApiRenfe;
 import loader.GTFSLoader;
 import modelo.Estacion;
 import repositorio.RedTransporte;
@@ -14,15 +15,11 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Crea los objetos del programa una sola vez, al arrancar el servidor, y Spring se los pasa
- * a los controladores que los necesiten.
- */
 @Configuration
 public class ConfiguracionRed {
 
     @Bean
-    public RedTransporte redTransporte(@Value("${renfe.datos}") String directorio) {
+    public RedTransporte redTransporte(@Value("${renfe.datos}") String directorio, ClienteApiRenfe clienteApi) {
         String ruta = new File(directorio).getAbsolutePath();
         File stopTimes = new File(directorio, "stop_times.txt");
         if (stopTimes.isFile() && stopTimes.length() < 10_000) {
@@ -31,11 +28,15 @@ public class ConfiguracionRed {
         }
 
         RedTransporte red = new RedTransporte();
+
         new GTFSLoader().cargarDesdeDirectorio(directorio, red);
         if (red.getAllEstaciones().isEmpty()) {
             throw new IllegalStateException("No se han cargado datos desde " + ruta
                     + ". Revisa renfe.datos en application.properties.");
         }
+
+        clienteApi.actualizarTiempoReal(red);
+
         return red;
     }
 
@@ -52,10 +53,10 @@ public class ConfiguracionRed {
     @Bean
     public ServicioBuscadorRutas buscadorRutas(RedTransporte red) {
         ServicioBuscadorRutas buscador = new ServicioBuscadorRutas(red);
-        // Una primera búsqueda al arrancar construye los índices del buscador. Así no se hace en la
-        // primera petición y, después, varias peticiones a la vez solo leen esos índices.
         List<Estacion> estaciones = red.getAllEstaciones();
-        buscador.buscarRutas(estaciones.get(0), estaciones.get(1), LocalDateTime.now());
+        if (estaciones.size() >= 2) {
+            buscador.buscarRutas(estaciones.get(0), estaciones.get(1), LocalDateTime.now());
+        }
         return buscador;
     }
 }

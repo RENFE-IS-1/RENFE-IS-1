@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RedTransporte {
     private Map<String, Estacion> estacionesById = new HashMap<>();
@@ -32,11 +33,51 @@ public class RedTransporte {
     private Map<String, Set<Linea>> lineasPorEstacion = new HashMap<>();
     private Map<String, List<Transbordo>> transbordosPorEstacion = new HashMap<>();
 
-    // Calendario de servicios (calendar.txt / calendar_dates.txt)
     private Map<String, ServicioCalendario> calendarioPorServicio = new HashMap<>();
     private LocalDate inicioValidez;
     private LocalDate finValidez;
-    private Instant fechaDatos; // fecha de los archivos de datos cargados
+    private Instant fechaDatos;
+
+    // --- TIEMPO REAL ---
+    private volatile boolean posicionesTiempoRealActivas = false;
+    private volatile boolean horariosTiempoRealActivos = false;
+    private volatile boolean incidenciasTiempoRealActivas = false;
+    
+    private final Map<String, Integer> retrasosPorViajeSegundos = new ConcurrentHashMap<>();
+    private final List<String> incidencias = new CopyOnWriteArrayList<>();
+
+    public boolean isPosicionesTiempoRealActivas() { return posicionesTiempoRealActivas; }
+    public void setPosicionesTiempoRealActivas(boolean activas) { this.posicionesTiempoRealActivas = activas; }
+
+    public boolean isHorariosTiempoRealActivos() { return horariosTiempoRealActivos; }
+    public void setHorariosTiempoRealActivos(boolean activos) { this.horariosTiempoRealActivos = activos; }
+
+    public boolean isIncidenciasTiempoRealActivas() { return incidenciasTiempoRealActivas; }
+    public void setIncidenciasTiempoRealActivas(boolean activas) { this.incidenciasTiempoRealActivas = activas; }
+
+    public void registrarRetrasoViaje(String tripId, int retrasoSegundos) {
+        if (tripId != null) {
+            retrasosPorViajeSegundos.put(tripId, retrasoSegundos);
+        }
+    }
+
+    public int getRetrasoViajeSegundos(String tripId) {
+        return retrasosPorViajeSegundos.getOrDefault(tripId, 0);
+    }
+
+    public void addIncidencia(String incidencia) {
+        if (incidencia != null && !incidencia.isBlank()) {
+            this.incidencias.add(incidencia);
+        }
+    }
+
+    public List<String> getIncidencias() {
+        return new ArrayList<>(this.incidencias);
+    }
+
+    public void limpiarIncidencias() {
+        this.incidencias.clear();
+    }
 
     // --- ESCRITURA ---
     
@@ -102,7 +143,6 @@ public class RedTransporte {
         Linea aliasC10 = new Linea("VIRTUAL_C10", "C10", "Alias Comercial", "BCCF00");
         Linea aliasC4 = new Linea("VIRTUAL_C4", "C4", "Alias Comercial", "2C2A86");
 
-        // Nodos del Pasillo Verde y extensión hacia el Aeropuerto T4
         List<String> tramoC1_C10 = Arrays.asList(
             "10000", "18005", "18004", "18003", "18000", "18001", "18002", 
             "17000", "98003", "98304", "98305"
@@ -122,18 +162,13 @@ public class RedTransporte {
                 if (nombre.startsWith("C4")) tieneC4_ramal = true;
             }
 
-            // 1. Eje pasante C2 <-> C8: los trenes de la C2 siguen en Chamartín como C8a/C8b
-            //    (mismo block_id en el GTFS). La C3 ya no enlaza con la C8a desde 2024: quien va
-            //    de la C3 a El Escorial cambia de tren en Chamartín.
             if (tieneC2 && !tieneC8_o_b) lineas.add(aliasC8);
             if (tieneC8_o_b && !tieneC2) lineas.add(aliasC2);
             
-            // 2. Unificar C4a y C4b bajo el sello comercial C4
             if (tieneC4_ramal) {
                 lineas.add(aliasC4);
             }
             
-            // 3. Forzar coexistencia C1 y C10 en el recorrido compartido completo
             if (tramoC1_C10.contains(estacionId)) {
                 lineas.add(aliasC1);
                 lineas.add(aliasC10);
@@ -142,11 +177,9 @@ public class RedTransporte {
     }
 
     public void limpiarEstacionesFueraDeMadrid() {
-        // Eliminar las estaciones que han quedado huérfanas tras el filtro de rutas
         estacionesById.entrySet().removeIf(entry -> getLineasEnEstacion(entry.getKey()).isEmpty());
         estacionesByName.entrySet().removeIf(entry -> getLineasEnEstacion(entry.getValue().getId()).isEmpty());
         
-        // Eliminar los transbordos cuyas estaciones origen o destino ya no existan en la red
         transbordosPorEstacion.entrySet().removeIf(entry -> !estacionesById.containsKey(entry.getKey()));
         for (List<Transbordo> lista : transbordosPorEstacion.values()) {
             lista.removeIf(t -> !estacionesById.containsKey(t.getToStopId()));
@@ -182,11 +215,6 @@ public class RedTransporte {
         return paradasPorViaje.getOrDefault(tripId, new ArrayList<>());
     }
 
-    /**
-     * Devuelve las estaciones de un recorrido representativo de una línea.
-     * Si una línea tiene varios recorridos GTFS, se elige el viaje con más
-     * paradas para incluir el recorrido completo disponible en la red.
-     */
     public List<Estacion> getEstacionesDeLinea(String shortName) {
         if (shortName == null || shortName.isBlank()) return new ArrayList<>();
 
@@ -214,14 +242,8 @@ public class RedTransporte {
         return new ArrayList<>(estaciones.values());
     }
 
-    /** Recorridos completos ya calculados, por nombre de línea (se piden desde la web). */
     private final Map<String, List<Estacion>> recorridoCompletoCache = new ConcurrentHashMap<>();
 
-    /**
-     * Ramales con los que se muestra una línea en la web. Si hay al menos dos líneas con trenes que
-     * se llaman igual más una letra (C4a y C4b para "C4", C8a y C8b para "C8"), son sus ramales; si
-     * no, la línea es su único ramal.
-     */
     public List<String> getRamales(String linea) {
         if (linea == null || linea.isBlank()) return new ArrayList<>();
         Set<String> ramales = new TreeSet<>();
@@ -232,26 +254,17 @@ public class RedTransporte {
             if (nombre.length() == linea.length() + 1 && nombre.regionMatches(true, 0, linea, 0, linea.length())
                     && Character.isLowerCase(nombre.charAt(linea.length()))) ramales.add(nombre);
         }
-        ramales.removeIf(r -> getEstacionesDeLinea(r).isEmpty()); // solo las que tienen trenes
+        ramales.removeIf(r -> getEstacionesDeLinea(r).isEmpty()); 
         if (ramales.size() >= 2) return new ArrayList<>(ramales);
         return existe ? new ArrayList<>(List.of(linea.toUpperCase())) : new ArrayList<>();
     }
 
-    /**
-     * Recorrido completo de una línea, en orden. Se parte del recorrido más frecuente entre los
-     * largos (al menos la mitad de paradas que el más largo), para no tomar como base un servicio
-     * ocasional. Se alarga por sus extremos con otros recorridos de la misma línea que hagan al menos
-     * el 5 % de sus viajes (por ejemplo, la C8a de El Escorial a Santa María de la Alameda) y con los
-     * tramos que hace el mismo tren antes o después con otra línea, si eso pasa en al menos el 20 %
-     * de sus viajes (la C2 de Guadalajara que sigue como C8a/C8b, que Renfe anuncia como C8).
-     */
     public List<Estacion> getRecorridoCompleto(String shortName) {
         if (shortName == null || shortName.isBlank()) return new ArrayList<>();
         return new ArrayList<>(recorridoCompletoCache.computeIfAbsent(shortName, this::calcularRecorridoCompleto));
     }
 
     private List<Estacion> calcularRecorridoCompleto(String shortName) {
-        // Secuencias de paradas de la línea y de los trenes que siguen o vienen de otra línea
         Map<String, List<String>> propias = new LinkedHashMap<>();
         Map<String, Integer> vecesPropia = new HashMap<>();
         Map<String, Integer> enlazadas = new HashMap<>();
@@ -304,7 +317,6 @@ public class RedTransporte {
         for (Map.Entry<String, Integer> e : enlazadas.entrySet()) {
             if (e.getValue() >= 0.2 * viajesLinea) candidatas.add(secuenciaEnlazada.get(e.getKey()));
         }
-        // Se alarga el camino por los dos extremos mientras alguna secuencia lo continúe
         boolean cambiado = true;
         while (cambiado) {
             cambiado = false;
@@ -353,7 +365,6 @@ public class RedTransporte {
         return false;
     }
 
-    /** Indica si los viajes con este service_id circulan en la fecha dada. */
     public boolean isServicioActivo(String serviceId, LocalDate fecha) {
         ServicioCalendario servicio = calendarioPorServicio.get(serviceId);
         return servicio != null && servicio.activoEn(fecha);
