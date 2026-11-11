@@ -6,9 +6,21 @@ import modelo.Viaje;
 import repositorio.RedTransporte;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Descarga los datos en tiempo real de Renfe (GTFS-RT en JSON): posiciones de los trenes, retrasos
+ * e incidencias. Si una descarga falla, se marca como no activa y el programa sigue con los
+ * horarios programados del GTFS.
+ */
 @Component
 public class ClienteApiRenfe implements FuenteDatosExterna {
 
@@ -23,8 +35,16 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
     @Value("${renfe.api.url.incidencias}")
     private String urlIncidencias;
 
-    public ClienteApiRenfe() {
-        this.restTemplate = new RestTemplate();
+    /**
+     * Cada petición espera como mucho renfe.api.timeout-ms (5 s por defecto) para conectar y otro
+     * tanto para leer. Sin límite, si la API de Renfe no responde la petición se quedaría esperando
+     * para siempre.
+     */
+    public ClienteApiRenfe(@Value("${renfe.api.timeout-ms:5000}") long timeoutMs) {
+        SimpleClientHttpRequestFactory fabrica = new SimpleClientHttpRequestFactory();
+        fabrica.setConnectTimeout(Duration.ofMillis(timeoutMs));
+        fabrica.setReadTimeout(Duration.ofMillis(timeoutMs));
+        this.restTemplate = new RestTemplate(fabrica);
     }
 
     @Override
@@ -38,8 +58,6 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
 
     @Override
     public void actualizarTiempoReal(RedTransporte red) {
-        red.limpiarIncidencias();
-
         boolean exitoPosiciones = actualizarPosiciones(red);
         red.setPosicionesTiempoRealActivas(exitoPosiciones);
 
@@ -83,6 +101,7 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
             GtfsRtJsonDto datos = restTemplate.getForObject(urlHorarios, GtfsRtJsonDto.class);
             if (datos == null || datos.getEntity() == null) return false;
 
+            Map<String, Integer> retrasos = new HashMap<>();
             for (GtfsRtJsonDto.Entity e : datos.getEntity()) {
                 if (e.getTripUpdate() != null && e.getTripUpdate().getTrip() != null) {
                     String tripId = e.getTripUpdate().getTrip().getTripId();
@@ -94,10 +113,11 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
                         } else if (stopUpdate.getDeparture() != null) {
                             delay = stopUpdate.getDeparture().getDelay();
                         }
-                        red.registrarRetrasoViaje(tripId, delay);
+                        if (tripId != null) retrasos.put(tripId, delay);
                     }
                 }
             }
+            red.reemplazarRetrasos(retrasos);
             return true;
         } catch (Exception e) {
             System.err.println("Motivo del fallo: " + e.getMessage());
@@ -110,6 +130,7 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
             GtfsRtJsonDto datos = restTemplate.getForObject(urlIncidencias, GtfsRtJsonDto.class);
             if (datos == null || datos.getEntity() == null) return false;
 
+            List<String> incidencias = new ArrayList<>();
             for (GtfsRtJsonDto.Entity e : datos.getEntity()) {
                 if (e.getAlert() != null) {
                     String titulo = "Incidencia";
@@ -120,9 +141,10 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
                     if (e.getAlert().getDescriptionText() != null && e.getAlert().getDescriptionText().getTranslation() != null && !e.getAlert().getDescriptionText().getTranslation().isEmpty()) {
                         descripcion = e.getAlert().getDescriptionText().getTranslation().get(0).getText();
                     }
-                    red.addIncidencia(titulo + ": " + descripcion);
+                    incidencias.add(titulo + ": " + descripcion);
                 }
             }
+            red.reemplazarIncidencias(incidencias);
             return true;
         } catch (Exception e) {
             System.err.println("Motivo del fallo: " + e.getMessage());

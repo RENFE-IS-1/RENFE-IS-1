@@ -33,3 +33,5 @@ bin/"data/"
 jcode-windows-x86_64.exe
 %WIKI_DIR%
 .metadata/
+# Proyecto antiguo de terminal (ya no está en el repositorio): que Eclipse no vuelva a subir nada
+files/Java/
