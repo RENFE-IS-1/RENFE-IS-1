@@ -44,7 +44,38 @@
         .map-line:focus,
         .detail-station,
         .detail-station:focus { outline: none !important; }
-        .mapa-real-svg { display: block; width: 100%; min-width: 780px; height: auto; }
+        .mapa-real-svg { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-select: none; }
+        /* Mapa general: lienzo con zoom y desplazamiento, controles, ficha de estación y filtros */
+        .mapa-lienzo { position: relative; width: 100%; max-height: 82vh; min-height: 280px; overflow: hidden; border-radius: 12px; background: #fff; cursor: grab; touch-action: pan-y; }
+        .mapa-lienzo.arrastrando { cursor: grabbing; }
+        .mapa-lienzo #mapaSvg { width: 100%; height: 100%; }
+        .mapa-controles { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 2; }
+        .mapa-controles button { width: 38px; height: 38px; border-radius: 10px; border: 1px solid #cbd5e1; background: rgba(255,255,255,.95); color: #334155; font-size: 22px; font-weight: 600; line-height: 1; box-shadow: 0 1px 3px rgba(15,23,42,.18); cursor: pointer; }
+        .mapa-controles button:hover:not(:disabled) { color: #E2001A; border-color: #E2001A; }
+        .mapa-controles button:disabled { opacity: .4; cursor: default; }
+        .mapa-controles button:focus-visible, .mapa-chip:focus-visible, .mapa-ficha button:focus-visible { outline: 2px solid #E2001A; outline-offset: 2px; }
+        .mapa-ficha { position: absolute; left: 10px; bottom: 10px; z-index: 2; width: min(320px, calc(100% - 20px)); background: rgba(255,255,255,.97); border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 4px 14px rgba(15,23,42,.2); padding: 12px 14px; cursor: default; }
+        .mapa-ficha[hidden] { display: none; }
+        .mapa-ficha h3 { font-size: 15px; font-weight: 700; color: #1f2937; margin: 0 26px 6px 0; }
+        .mapa-ficha .mapa-ficha-cerrar { position: absolute; top: 6px; right: 8px; width: 26px; height: 26px; border: 0; background: none; color: #64748b; font-size: 22px; line-height: 1; cursor: pointer; }
+        .mapa-ficha .mapa-ficha-lineas { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+        .mapa-ficha .mapa-ficha-lineas span { font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 6px; color: #fff; }
+        .mapa-ficha .mapa-ficha-acciones { display: flex; flex-wrap: wrap; gap: 6px; }
+        .mapa-ficha .mapa-ficha-acciones button { font-size: 12px; font-weight: 600; padding: 6px 10px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; color: #334155; cursor: pointer; }
+        .mapa-ficha .mapa-ficha-acciones button.principal { background: #E2001A; border-color: #E2001A; color: #fff; }
+        .mapa-barra { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 10px; }
+        .mapa-barra input[type=search] { flex: 1 1 220px; max-width: 340px; font-size: 14px; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 8px; }
+        .mapa-filtros { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; font-size: 12px; color: #64748b; }
+        .mapa-chip { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; border: 2px solid var(--c, #64748b); background: var(--c, #64748b); color: var(--t, #fff); cursor: pointer; }
+        .mapa-chip[aria-pressed="false"] { background: #fff; color: #94a3b8; border-color: #cbd5e1; text-decoration: line-through; }
+        .mapa-chip.todas { --c: #fff; --t: #334155; border-color: #cbd5e1; font-weight: 600; text-decoration: none; }
+        .mapa-estado-trenes { font-size: 12px; color: #475569; }
+        .mapa-estado-trenes[hidden] { display: none; }
+        .mapa-estado-trenes.obsoleto { color: #b45309; font-weight: 600; }
+        .mapa-real-svg [data-estacion], .mapa-real-svg [data-estacion-nombre] { pointer-events: auto; cursor: pointer; }
+        .mapa-real-svg [data-estacion-nombre]:hover text { fill: #E2001A; }
+        .mapa-real-svg .mapa-atenuada { opacity: .22; }
+        .mapa-real-svg .mapa-toque { fill: transparent; stroke: none; pointer-events: all; }
         .mapa-real-svg [data-map-line] { cursor: pointer; transition: opacity .2s, filter .2s; }
         .mapa-real-svg.map-highlight-active [data-map-line] { opacity: .14; }
         .mapa-real-svg.map-highlight-active [data-map-line].is-highlighted {
@@ -221,17 +252,31 @@
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-4">
                     <div>
                         <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-diagram-project text-[#E2001A] mr-2"></i>Mapa de Cercanías Madrid</h2>
-                        <p class="text-xs text-gray-500">Pulsa una línea para abrir su recorrido completo y consultar cualquiera de sus estaciones.</p>
+                        <p class="text-xs text-gray-500">Pulsa una línea para abrir su recorrido completo, o una estación para ver sus llegadas y buscar rutas.</p>
                     </div>
-                    <span class="text-xs text-gray-400">Mapa de red suministrado para el proyecto</span>
+                    <span id="mapaEstadoTrenes" class="mapa-estado-trenes" hidden></span>
                 </div>
-                <div class="schematic-map rounded-2xl border border-slate-200 overflow-auto p-2">
-                    <div id="mapaSvg" aria-live="polite" class="min-w-[780px]">
-                        <div class="py-16 text-center text-sm text-slate-500">
-                            <i class="fa-solid fa-spinner fa-spin mr-2 text-[#E2001A]"></i>Cargando mapa de Cercanías...
+                <div class="mapa-barra">
+                    <input type="search" id="mapaBuscarEstacion" list="mapaListaEstaciones" placeholder="Buscar estación en el mapa..." aria-label="Buscar estación en el mapa" autocomplete="off">
+                    <datalist id="mapaListaEstaciones"></datalist>
+                    <div id="mapaFiltros" class="mapa-filtros" role="group" aria-label="Líneas visibles en el mapa"></div>
+                </div>
+                <div class="schematic-map rounded-2xl border border-slate-200 p-2">
+                    <div id="mapaLienzo" class="mapa-lienzo">
+                        <div id="mapaSvg" aria-live="polite">
+                            <div class="py-16 text-center text-sm text-slate-500">
+                                <i class="fa-solid fa-spinner fa-spin mr-2 text-[#E2001A]"></i>Cargando mapa de Cercanías...
+                            </div>
                         </div>
+                        <div class="mapa-controles">
+                            <button type="button" id="mapaZoomMas" title="Ampliar" aria-label="Ampliar el mapa">+</button>
+                            <button type="button" id="mapaZoomMenos" title="Reducir" aria-label="Reducir el mapa">&minus;</button>
+                            <button type="button" id="mapaZoomTodo" title="Ver todo el mapa" aria-label="Ver todo el mapa"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg></button>
+                        </div>
+                        <div id="mapaFicha" class="mapa-ficha" hidden></div>
                     </div>
                 </div>
+                <p class="mt-2 text-xs text-gray-400">Arrastra para mover el mapa. Amplía con los botones, con doble clic, con Ctrl + rueda del ratón o pellizcando en pantallas táctiles. Pulsa una estación para ver sus opciones.</p>
                 <div id="mapaSelectorLineas" class="mt-4 flex flex-wrap gap-2" aria-label="Seleccionar línea de Cercanías"></div>
             </div>
 
@@ -610,6 +655,7 @@
                 svg.setAttribute('role', 'img');
                 svg.setAttribute('aria-label', 'Mapa interactivo de líneas de Cercanías Madrid');
                 prepararInteraccionesMapa(svg);
+                iniciarMapaInteractivo(svg);
                 contenedor.dataset.rendered = 'true';
             } catch (error) {
                 contenedor.innerHTML = `
@@ -655,6 +701,421 @@
                 elemento.addEventListener('click', () => abrirDetalleLinea(linea));
             });
         }
+
+        // ====================================================================================
+        // Mapa interactivo (US-023): zoom y desplazamiento, estaciones seleccionables, buscador,
+        // filtros de líneas y una capa preparada para dibujar los trenes en tiempo real (US-024).
+        // El zoom cambia el viewBox del SVG: no se recarga ni se vuelve a dibujar nada.
+        // ====================================================================================
+        const MAPA_ZOOM_MAX = 6;
+        const COLOR_CIVIS = '#E93CAC';
+        const mapaVista = {
+            svg: null, lienzo: null, ancho: 0, alto: 0, base: null, zoom: 1, cx: 0, cy: 0,
+            estaciones: new Map(),   // id -> { id, nombre, rotulo, lineas, x, y, radio, grupo, grupoNombre }
+            tramos: new Map(),       // "C5|35600|35608" -> { path, invertido }
+            ocultas: new Set(),      // líneas ocultas con los filtros
+            seleccionada: null
+        };
+        const SVG_NS = 'http://www.w3.org/2000/svg';
+        const sinTildes = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+        const colorDeLinea = linea => linea === 'CIVIS' ? COLOR_CIVIS : (mapaLineas[linea]?.color || '#64748b');
+        // C4a y C4b se dibujan como C4, y C8a y C8b como C8
+        const lineaDelMapa = linea => (linea || '').replace(/^(C\d+)[a-z]$/, '$1');
+
+        function iniciarMapaInteractivo(svg) {
+            const v = mapaVista;
+            v.svg = svg;
+            v.lienzo = document.getElementById('mapaLienzo');
+            v.ancho = svg.viewBox.baseVal.width;
+            v.alto = svg.viewBox.baseVal.height;
+            svg.removeAttribute('width');
+            svg.removeAttribute('height');
+            svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+            v.lienzo.style.aspectRatio = `${v.ancho} / ${v.alto}`;
+
+            // Capas propias, encima de las líneas y las estaciones: trenes y estación seleccionada
+            const referencia = svg.querySelector('.mapa-cabeceras');
+            ['mapa-capa-trenes', 'mapa-capa-seleccion'].forEach(id => {
+                const capa = document.createElementNS(SVG_NS, 'g');
+                capa.id = id;
+                capa.setAttribute('pointer-events', 'none');
+                if (referencia) referencia.after(capa); else svg.appendChild(capa);
+            });
+
+            indexarEstacionesMapa(svg);
+            indexarTramosMapa(svg);
+            prepararGestosMapa();
+            renderFiltrosMapa();
+            prepararBuscadorMapa();
+            v.zoom = 1; v.cx = v.ancho / 2; v.cy = v.alto / 2;
+            new ResizeObserver(ajustarVistaMapa).observe(v.lienzo);
+            ajustarVistaMapa();
+        }
+
+        // ---- Zoom y desplazamiento ---------------------------------------------------------
+        function ajustarVistaMapa() {
+            const v = mapaVista;
+            if (!v.svg) return;
+            const caja = v.lienzo.getBoundingClientRect();
+            if (!caja.width || !caja.height) return; // la pestaña del mapa está oculta
+            // Vista completa: todo el mapa, con la misma proporción que el lienzo
+            const proporcion = caja.width / caja.height;
+            let w = v.ancho, h = v.alto;
+            if (proporcion > v.ancho / v.alto) w = v.alto * proporcion; else h = v.ancho / proporcion;
+            v.base = { x: (v.ancho - w) / 2, y: (v.alto - h) / 2, w, h };
+            v.zoom = Math.min(MAPA_ZOOM_MAX, Math.max(1, v.zoom));
+            const vw = w / v.zoom, vh = h / v.zoom;
+            v.cx = Math.min(v.base.x + w - vw / 2, Math.max(v.base.x + vw / 2, v.cx));
+            v.cy = Math.min(v.base.y + h - vh / 2, Math.max(v.base.y + vh / 2, v.cy));
+            v.svg.setAttribute('viewBox', `${(v.cx - vw / 2).toFixed(2)} ${(v.cy - vh / 2).toFixed(2)} ${vw.toFixed(2)} ${vh.toFixed(2)}`);
+            // Sin ampliar, un dedo desplaza la página; ampliado, mueve el mapa
+            v.lienzo.style.touchAction = v.zoom > 1.01 ? 'none' : 'pan-y';
+            document.getElementById('mapaZoomMas').disabled = v.zoom >= MAPA_ZOOM_MAX - 0.01;
+            document.getElementById('mapaZoomMenos').disabled = v.zoom <= 1.01;
+            document.getElementById('mapaZoomTodo').disabled = v.zoom <= 1.01;
+        }
+
+        /** Amplía o reduce dejando fijo el punto de la pantalla (clientX, clientY); por defecto, el centro. */
+        function zoomMapa(factor, clientX, clientY) {
+            const v = mapaVista;
+            if (!v.base) return;
+            const caja = v.lienzo.getBoundingClientRect();
+            const fx = clientX == null ? 0.5 : (clientX - caja.left) / caja.width;
+            const fy = clientY == null ? 0.5 : (clientY - caja.top) / caja.height;
+            const antesW = v.base.w / v.zoom, antesH = v.base.h / v.zoom;
+            const px = v.cx + (fx - 0.5) * antesW, py = v.cy + (fy - 0.5) * antesH;
+            v.zoom = Math.min(MAPA_ZOOM_MAX, Math.max(1, v.zoom * factor));
+            v.cx = px - (fx - 0.5) * v.base.w / v.zoom;
+            v.cy = py - (fy - 0.5) * v.base.h / v.zoom;
+            ajustarVistaMapa();
+        }
+
+        function verTodoElMapa() {
+            mapaVista.zoom = 1;
+            ajustarVistaMapa();
+        }
+
+        function prepararGestosMapa() {
+            const v = mapaVista, lienzo = v.lienzo;
+            document.getElementById('mapaZoomMas').addEventListener('click', () => zoomMapa(1.6));
+            document.getElementById('mapaZoomMenos').addEventListener('click', () => zoomMapa(1 / 1.6));
+            document.getElementById('mapaZoomTodo').addEventListener('click', verTodoElMapa);
+
+            lienzo.addEventListener('wheel', e => {
+                if (!e.ctrlKey && !e.metaKey) return; // sin Ctrl, la rueda sigue desplazando la página
+                e.preventDefault();
+                zoomMapa(e.deltaY < 0 ? 1.25 : 0.8, e.clientX, e.clientY);
+            }, { passive: false });
+            lienzo.addEventListener('dblclick', e => {
+                if (e.target.closest('.mapa-controles, .mapa-ficha')) return;
+                zoomMapa(2, e.clientX, e.clientY);
+            });
+
+            const punteros = new Map();
+            let inicio = null, arrastrado = false, distanciaPellizco = 0;
+            lienzo.addEventListener('pointerdown', e => {
+                if (e.target.closest('.mapa-controles, .mapa-ficha') || (e.pointerType === 'mouse' && e.button !== 0)) return;
+                punteros.set(e.pointerId, { x: e.clientX, y: e.clientY });
+                if (punteros.size === 1) { inicio = { x: e.clientX, y: e.clientY, cx: v.cx, cy: v.cy }; arrastrado = false; }
+                if (punteros.size === 2) {
+                    const [a, b] = [...punteros.values()];
+                    distanciaPellizco = Math.hypot(a.x - b.x, a.y - b.y);
+                }
+            });
+            lienzo.addEventListener('pointermove', e => {
+                if (!punteros.has(e.pointerId)) return;
+                punteros.set(e.pointerId, { x: e.clientX, y: e.clientY });
+                if (punteros.size === 2) {
+                    const [a, b] = [...punteros.values()];
+                    const d = Math.hypot(a.x - b.x, a.y - b.y);
+                    if (distanciaPellizco > 0 && Math.abs(d - distanciaPellizco) > 2) {
+                        zoomMapa(d / distanciaPellizco, (a.x + b.x) / 2, (a.y + b.y) / 2);
+                        distanciaPellizco = d; arrastrado = true;
+                    }
+                    return;
+                }
+                if (!inicio || !v.base) return;
+                const dx = e.clientX - inicio.x, dy = e.clientY - inicio.y;
+                if (!arrastrado && Math.hypot(dx, dy) < 5) return;
+                if (!arrastrado) {
+                    arrastrado = true;
+                    lienzo.classList.add('arrastrando');
+                    try { lienzo.setPointerCapture(e.pointerId); } catch (_) { /* puntero ya liberado */ }
+                }
+                const escala = (v.base.w / v.zoom) / lienzo.getBoundingClientRect().width;
+                v.cx = inicio.cx - dx * escala;
+                v.cy = inicio.cy - dy * escala;
+                ajustarVistaMapa();
+            });
+            const soltar = e => {
+                punteros.delete(e.pointerId);
+                if (punteros.size < 2) distanciaPellizco = 0;
+                if (punteros.size === 0) { inicio = null; lienzo.classList.remove('arrastrando'); }
+                else { const p = [...punteros.values()][0]; inicio = { x: p.x, y: p.y, cx: v.cx, cy: v.cy }; }
+            };
+            lienzo.addEventListener('pointerup', soltar);
+            lienzo.addEventListener('pointercancel', soltar);
+            // Si se ha arrastrado, el clic que llega al soltar no debe abrir una línea ni una estación
+            lienzo.addEventListener('click', e => {
+                if (arrastrado) { e.stopPropagation(); e.preventDefault(); arrastrado = false; }
+            }, true);
+        }
+
+        // ---- Estaciones --------------------------------------------------------------------
+        function indexarEstacionesMapa(svg) {
+            const v = mapaVista;
+            v.estaciones.clear();
+            svg.querySelectorAll('.mapa-estaciones > g[data-estacion]').forEach(grupo => {
+                const id = grupo.dataset.estacion;
+                const puntos = [...grupo.querySelectorAll('circle')].map(c => ({ x: +c.getAttribute('cx'), y: +c.getAttribute('cy') }));
+                if (!puntos.length) return;
+                const x = puntos.reduce((s, p) => s + p.x, 0) / puntos.length;
+                const y = puntos.reduce((s, p) => s + p.y, 0) / puntos.length;
+                const radio = Math.max(...puntos.map(p => Math.hypot(p.x - x, p.y - y)));
+                const grupoNombre = svg.querySelector(`[data-estacion-nombre="${id}"]`);
+                const nombre = grupo.querySelector('title')?.textContent || id;
+                const rotulo = grupoNombre
+                    ? [...grupoNombre.querySelectorAll('tspan')].map(t => t.textContent).join(' ').replace(/- /g, '-')
+                    : nombre;
+                // Zona de toque más grande que el círculo, para el dedo
+                puntos.forEach(p => {
+                    const toque = document.createElementNS(SVG_NS, 'circle');
+                    toque.setAttribute('cx', p.x); toque.setAttribute('cy', p.y); toque.setAttribute('r', 9);
+                    toque.setAttribute('class', 'mapa-toque');
+                    grupo.appendChild(toque);
+                });
+                [grupo, grupoNombre].forEach(el => el?.addEventListener('click', e => {
+                    e.stopPropagation();
+                    seleccionarEstacionMapa(id);
+                }));
+                v.estaciones.set(id, { id, nombre, rotulo, lineas: (grupo.dataset.lineas || '').split(' ').filter(Boolean), puntos, x, y, radio, grupo, grupoNombre });
+            });
+        }
+
+        function seleccionarEstacionMapa(id, centrar = false) {
+            const v = mapaVista, e = v.estaciones.get(id);
+            if (!e) return false;
+            v.seleccionada = id;
+            const capa = v.svg.querySelector('#mapa-capa-seleccion');
+            capa.innerHTML = `<circle cx="${e.x.toFixed(1)}" cy="${e.y.toFixed(1)}" r="${(e.radio + 11).toFixed(1)}" fill="none" stroke="#E2001A" stroke-width="3"/>`;
+            if (centrar) {
+                v.zoom = Math.max(v.zoom, 2.5);
+                v.cx = e.x; v.cy = e.y;
+                ajustarVistaMapa();
+            }
+
+            const ficha = document.getElementById('mapaFicha');
+            ficha.innerHTML = `
+                <button type="button" class="mapa-ficha-cerrar" aria-label="Cerrar">&times;</button>
+                <h3></h3>
+                <div class="mapa-ficha-lineas"></div>
+                <div class="mapa-ficha-acciones">
+                    <button type="button" class="principal" data-accion="llegadas"><i class="fa-solid fa-clock mr-1"></i>Próximas llegadas</button>
+                    <button type="button" data-accion="origen">Ruta desde aquí</button>
+                    <button type="button" data-accion="destino">Ruta hasta aquí</button>
+                </div>`;
+            ficha.querySelector('h3').textContent = e.rotulo;
+            const lineas = ficha.querySelector('.mapa-ficha-lineas');
+            e.lineas.forEach(linea => {
+                const chip = document.createElement('span');
+                chip.textContent = linea;
+                chip.style.backgroundColor = colorDeLinea(linea);
+                if (['C5', 'C10'].includes(linea)) chip.style.color = '#111827';
+                lineas.appendChild(chip);
+            });
+            ficha.querySelector('.mapa-ficha-cerrar').addEventListener('click', cerrarFichaEstacion);
+            ficha.querySelector('[data-accion="llegadas"]').addEventListener('click', () => seleccionarEstacionYConsultar(e.nombre));
+            ficha.querySelector('[data-accion="origen"]').addEventListener('click', () => usarEstacionEnRuta('origen', e.nombre));
+            ficha.querySelector('[data-accion="destino"]').addEventListener('click', () => usarEstacionEnRuta('destino', e.nombre));
+            ficha.hidden = false;
+            return true;
+        }
+
+        function cerrarFichaEstacion() {
+            mapaVista.seleccionada = null;
+            document.getElementById('mapaFicha').hidden = true;
+            const capa = mapaVista.svg?.querySelector('#mapa-capa-seleccion');
+            if (capa) capa.innerHTML = '';
+        }
+
+        /** Lleva la estación al buscador de rutas como origen o destino. */
+        function usarEstacionEnRuta(campo, nombre) {
+            cambiarPestana('rutas');
+            const entrada = document.getElementById(campo);
+            entrada.value = nombre;
+            const otro = document.getElementById(campo === 'origen' ? 'destino' : 'origen');
+            if (sinTildes(otro.value) === sinTildes(nombre)) otro.value = '';
+            if (otro.value.trim()) buscarRutas(); else otro.focus();
+        }
+
+        function prepararBuscadorMapa() {
+            const entrada = document.getElementById('mapaBuscarEstacion');
+            const lista = document.getElementById('mapaListaEstaciones');
+            const estaciones = [...mapaVista.estaciones.values()].sort((a, b) => a.rotulo.localeCompare(b.rotulo, 'es'));
+            lista.innerHTML = '';
+            estaciones.forEach(e => { const o = document.createElement('option'); o.value = e.rotulo; lista.appendChild(o); });
+            const buscar = soloExacta => {
+                const q = sinTildes(entrada.value);
+                if (!q) return;
+                let e = estaciones.find(x => sinTildes(x.rotulo) === q || sinTildes(x.nombre) === q);
+                if (!e && !soloExacta) {
+                    const candidatas = estaciones.filter(x => sinTildes(x.rotulo).includes(q));
+                    e = candidatas.find(x => sinTildes(x.rotulo).startsWith(q)) || candidatas[0];
+                }
+                if (e) { seleccionarEstacionMapa(e.id, true); entrada.value = e.rotulo; }
+            };
+            entrada.addEventListener('change', () => buscar(false));           // Intro o elegir de la lista
+            entrada.addEventListener('input', () => buscar(true));             // al elegir una sugerencia
+            entrada.addEventListener('search', () => { if (!entrada.value) cerrarFichaEstacion(); });
+        }
+
+        // ---- Filtros de líneas -------------------------------------------------------------
+        function renderFiltrosMapa() {
+            const contenedor = document.getElementById('mapaFiltros');
+            contenedor.innerHTML = '<span>Líneas visibles:</span>';
+            [...Object.keys(mapaLineas), 'CIVIS'].forEach(linea => {
+                if (!mapaVista.svg.querySelector(`[data-linea="${linea}"]`)) return;
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'mapa-chip';
+                chip.dataset.filtroLinea = linea;
+                chip.textContent = linea;
+                chip.style.setProperty('--c', colorDeLinea(linea));
+                if (['C5', 'C10'].includes(linea)) chip.style.setProperty('--t', '#111827');
+                chip.setAttribute('aria-pressed', 'true');
+                chip.title = `Mostrar u ocultar la ${linea}`;
+                chip.addEventListener('click', () => {
+                    if (mapaVista.ocultas.has(linea)) mapaVista.ocultas.delete(linea); else mapaVista.ocultas.add(linea);
+                    aplicarFiltrosMapa();
+                });
+                contenedor.appendChild(chip);
+            });
+            const todas = document.createElement('button');
+            todas.type = 'button';
+            todas.className = 'mapa-chip todas';
+            todas.textContent = 'Todas';
+            todas.addEventListener('click', () => { mapaVista.ocultas.clear(); aplicarFiltrosMapa(); });
+            contenedor.appendChild(todas);
+        }
+
+        function aplicarFiltrosMapa() {
+            const v = mapaVista;
+            v.svg.querySelectorAll('[data-linea]').forEach(grupo => {
+                const oculta = v.ocultas.has(grupo.dataset.linea);
+                // El trazo visible se oculta con visibility para poder seguir midiéndolo (capa de
+                // trenes); la zona sensible al ratón, con display, para que no reciba clics
+                if (grupo.getAttribute('pointer-events') === 'stroke') grupo.style.display = oculta ? 'none' : '';
+                else grupo.style.visibility = oculta ? 'hidden' : '';
+            });
+            v.estaciones.forEach(e => {
+                const sinLineas = e.lineas.length > 0 && e.lineas.every(l => v.ocultas.has(l));
+                e.grupo.classList.toggle('mapa-atenuada', sinLineas);
+                e.grupoNombre?.classList.toggle('mapa-atenuada', sinLineas);
+            });
+            v.svg.querySelectorAll('#mapa-capa-trenes [data-tren-linea]').forEach(tren => {
+                tren.style.display = v.ocultas.has(tren.dataset.trenLinea) ? 'none' : '';
+            });
+            document.querySelectorAll('[data-filtro-linea]').forEach(chip => {
+                chip.setAttribute('aria-pressed', String(!v.ocultas.has(chip.dataset.filtroLinea)));
+            });
+        }
+
+        // ---- Capa de trenes en tiempo real (preparada para US-024) ---------------------------
+        /** Relaciona cada tramo dibujado (entre dos estaciones seguidas de una línea) con su trazo. */
+        function indexarTramosMapa(svg) {
+            const v = mapaVista;
+            v.tramos.clear();
+            const estacionEn = p => {
+                for (const e of v.estaciones.values()) {
+                    if (e.puntos.some(q => Math.hypot(q.x - p.x, q.y - p.y) < 1.5)) return e.id;
+                }
+                return null;
+            };
+            svg.querySelectorAll('g[data-linea]:not([pointer-events="stroke"])').forEach(grupo => {
+                grupo.querySelectorAll('path').forEach(path => {
+                    const a = estacionEn(path.getPointAtLength(0));
+                    const b = estacionEn(path.getPointAtLength(path.getTotalLength()));
+                    if (!a || !b) return;
+                    v.tramos.set(`${grupo.dataset.linea}|${a}|${b}`, { path, invertido: false });
+                    v.tramos.set(`${grupo.dataset.linea}|${b}|${a}`, { path, invertido: true });
+                });
+            });
+        }
+
+        /**
+         * Punto del mapa en el que está un tren que va de la estación `desde` a la estación `hasta`
+         * (stop_id del GTFS) y lleva recorrida la fracción `progreso` del tramo (0 = sale, 1 = llega).
+         * Si las dos estaciones son consecutivas en la línea se sigue el trazo dibujado; si no, se
+         * interpola en línea recta. Devuelve null si no se conoce alguna estación.
+         */
+        function posicionTrenMapa(linea, desde, hasta, progreso = 0) {
+            const v = mapaVista, t = Math.min(1, Math.max(0, progreso));
+            const a = v.estaciones.get(desde), b = v.estaciones.get(hasta || desde);
+            if (!a || !b) return null;
+            const tramo = v.tramos.get(`${lineaDelMapa(linea)}|${desde}|${hasta}`);
+            if (tramo) {
+                const largo = tramo.path.getTotalLength();
+                const p = tramo.path.getPointAtLength((tramo.invertido ? 1 - t : t) * largo);
+                return { x: p.x, y: p.y };
+            }
+            return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
+        }
+
+        /**
+         * Dibuja los trenes sobre el mapa, sustituyendo a los anteriores, sin recargar nada más.
+         * Cada tren: { id, linea, desde, hasta, progreso } (estaciones por stop_id) o { id, linea, x, y }
+         * en coordenadas del mapa; opcionales: destino y retrasoSegundos (salen al pasar el ratón).
+         * `estado` es opcional: { actualizado: Date, obsoleto: boolean } para el texto de vigencia.
+         * Devuelve cuántos trenes ha podido situar.
+         */
+        function pintarTrenesMapa(trenes, estado) {
+            const v = mapaVista;
+            if (!v.svg) return 0;
+            const capa = v.svg.querySelector('#mapa-capa-trenes');
+            capa.innerHTML = '';
+            let situados = 0;
+            (trenes || []).forEach(tren => {
+                const p = tren.x != null && tren.y != null ? { x: tren.x, y: tren.y } : posicionTrenMapa(tren.linea, tren.desde, tren.hasta, tren.progreso);
+                if (!p) return;
+                const linea = lineaDelMapa(tren.linea);
+                const g = document.createElementNS(SVG_NS, 'g');
+                g.dataset.tren = tren.id ?? '';
+                g.dataset.trenLinea = linea;
+                g.setAttribute('pointer-events', 'auto');
+                if (v.ocultas.has(linea)) g.style.display = 'none';
+                const retraso = Math.round((tren.retrasoSegundos || 0) / 60);
+                const titulo = document.createElementNS(SVG_NS, 'title');
+                titulo.textContent = `${tren.linea || 'Tren'}${tren.destino ? ' → ' + tren.destino : ''}${retraso > 0 ? ` · +${retraso} min` : ''}`;
+                g.appendChild(titulo);
+                g.insertAdjacentHTML('beforeend',
+                    `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="8" fill="#fff" stroke="#1f2937" stroke-width="1.5"/>` +
+                    `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="5" fill="${colorDeLinea(linea)}"/>`);
+                capa.appendChild(g);
+                situados++;
+            });
+            const texto = document.getElementById('mapaEstadoTrenes');
+            if (estado?.actualizado) {
+                const hora = new Date(estado.actualizado).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                texto.textContent = estado.obsoleto
+                    ? `Posiciones de trenes sin actualizar desde las ${hora}`
+                    : `Trenes en tiempo real · actualizado a las ${hora}`;
+                texto.classList.toggle('obsoleto', !!estado.obsoleto);
+                texto.hidden = false;
+            }
+            return situados;
+        }
+
+        function limpiarTrenesMapa() {
+            const capa = mapaVista.svg?.querySelector('#mapa-capa-trenes');
+            if (capa) capa.innerHTML = '';
+            document.getElementById('mapaEstadoTrenes').hidden = true;
+        }
+
+        // Lo que puede usar el resto de la web (por ejemplo, la capa de tiempo real de US-024)
+        window.mapaCercanias = {
+            pintarTrenes: pintarTrenesMapa, limpiarTrenes: limpiarTrenesMapa, posicionTren: posicionTrenMapa,
+            seleccionarEstacion: seleccionarEstacionMapa, verTodo: verTodoElMapa, zoom: zoomMapa
+        };
 
         function resaltarLineaMapa(linea) {
             const svg = document.querySelector('#mapaSvg svg');
