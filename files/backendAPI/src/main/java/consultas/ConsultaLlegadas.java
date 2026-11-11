@@ -20,18 +20,12 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * US-004: próximas llegadas a una estación según los horarios planificados (GTFS).
- *
- * En GTFS las horas se cuentan desde el inicio del "día de servicio" y pueden superar
- * las 24:00 (un tren del lunes que llega a las 00:30 del martes figura como 24:30:00 con
- * el calendario del lunes). Por eso, para una consulta en la fecha D se examinan los días
- * de servicio D-1, D y D+1 y cada horario se convierte a fecha y hora reales.
+ * US-004: próximas llegadas a una estación según los horarios planificados (GTFS) y tiempo real.
  */
 public class ConsultaLlegadas {
     private static final int SEGUNDOS_DIA = 24 * 3600;
 
     private final RedTransporte red;
-    // ConcurrentHashMap: la API web puede atender varias consultas a la vez
     private final Map<String, ParadaHorario> ultimaParadaPorViaje = new ConcurrentHashMap<>();
 
     public ConsultaLlegadas(RedTransporte red) {
@@ -45,8 +39,7 @@ public class ConsultaLlegadas {
 
     /**
      * Devuelve como máximo {@code maximo} llegadas a la estación a partir de {@code desde},
-     * ordenadas por hora. Si {@code filtroLinea} no es null, solo se incluyen las de esa línea
-     * ("C4" incluye también C4a y C4b, pero "C1" no incluye C10).
+     * ordenadas por hora. Si {@code filtroLinea} no es null, solo se incluyen las de esa línea.
      */
     public List<Llegada> proximasLlegadas(Estacion estacion, LocalDateTime desde, int maximo, String filtroLinea) {
         List<Llegada> resultado = new ArrayList<>();
@@ -61,8 +54,14 @@ public class ConsultaLlegadas {
                 Viaje viaje = red.getViaje(ph.getTripId());
                 if (viaje == null || !red.isServicioActivo(viaje.getServiceId(), diaServicio)) continue;
 
-                LocalDateTime hora = inicioDia.plusSeconds(ph.getArrivalTime());
-                if (hora.isBefore(desde)) continue;
+                LocalDateTime horaTeorica = inicioDia.plusSeconds(ph.getArrivalTime());
+                
+                // 1. Obtener retraso en minutos y tiempo real desde RedTransporte
+                int retrasoMinutos = red.getRetrasoMinutos(viaje.getId(), ph.getStopId());
+                LocalDateTime horaEstimada = horaTeorica.plusMinutes(retrasoMinutos);
+
+                // 2. Comprobar que la hora estimada no haya pasado respecto a la consulta
+                if (horaEstimada.isBefore(desde)) continue;
 
                 Linea linea = red.getLinea(viaje.getRouteId());
                 if (filtroLinea != null && !coincideLinea(linea, filtroLinea)) continue;
@@ -70,7 +69,21 @@ public class ConsultaLlegadas {
                 ParadaHorario ultima = ultimaParada(viaje.getId());
                 Estacion destino = ultima != null ? red.getEstacion(ultima.getStopId()) : null;
                 boolean terminaAqui = ultima != null && ultima.getStopSequence() == ph.getStopSequence();
-                resultado.add(new Llegada(hora, linea, destino, terminaAqui, viaje.getId()));
+
+                // 3. Determinar si el viaje viene reportado por el tiempo real de Renfe
+                boolean esRT = red.isHorariosTiempoRealActivos();
+
+                // 4. Crear Llegada pasando la información completa de tiempo real
+                resultado.add(new Llegada(
+                    horaEstimada,
+                    linea,
+                    destino,
+                    terminaAqui,
+                    viaje.getId(),
+                    retrasoMinutos,
+                    esRT,
+                    esRT ? LocalDateTime.now() : null
+                ));
             }
         }
 
@@ -78,13 +91,6 @@ public class ConsultaLlegadas {
         return resultado.size() > maximo ? new ArrayList<>(resultado.subList(0, maximo)) : resultado;
     }
 
-    /**
-     * Líneas que paran en la estación en un día de servicio y, para cada una, los destinos
-     * (sentidos) de sus trenes. Los trenes que terminan en la estación no aportan sentido;
-     * si todos los de una línea terminan allí, la línea aparece con el conjunto vacío.
-     * Las líneas se ordenan de forma comercial (C1, C2, ..., C10) y {@code filtroLinea}
-     * funciona igual que en {@link #proximasLlegadas}.
-     */
     public Map<String, Set<String>> lineasYSentidos(Estacion estacion, LocalDate fecha, String filtroLinea) {
         Map<String, Set<String>> resultado = new TreeMap<>(ConsultaLlegadas::compararLineas);
         if (estacion == null) return resultado;
@@ -104,7 +110,6 @@ public class ConsultaLlegadas {
         return resultado;
     }
 
-    /** Orden comercial de líneas: por número y, a igualdad, alfabético (C4 < C4a < C4b < C10). */
     static int compararLineas(String a, String b) {
         String na = a.replaceAll("[^0-9]", "");
         String nb = b.replaceAll("[^0-9]", "");
@@ -114,7 +119,6 @@ public class ConsultaLlegadas {
         return a.compareToIgnoreCase(b);
     }
 
-    /** true si la fecha está dentro del periodo cubierto por los horarios cargados. */
     public boolean fechaCubierta(LocalDate fecha) {
         LocalDate inicio = red.getInicioValidez();
         LocalDate fin = red.getFinValidez();
@@ -136,7 +140,6 @@ public class ConsultaLlegadas {
         String nombre = normalizar(linea.getShortName());
         String f = normalizar(filtro);
         if (nombre.equals(f)) return true;
-        // "c4" debe coincidir con "c4a" y "c4b", pero "c1" no con "c10"
         return nombre.startsWith(f) && nombre.length() > f.length()
             && Character.isLetter(nombre.charAt(f.length()));
     }

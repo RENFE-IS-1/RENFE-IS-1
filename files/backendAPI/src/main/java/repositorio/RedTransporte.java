@@ -71,9 +71,29 @@ public class RedTransporte {
      * si la parada no trae su propio dato vale el de la parada anterior más cercana que sí lo traiga
      * (el retraso se arrastra). Devuelve 0 si no hay ninguno antes: se usa el horario programado.
      */
+    /**
+     * Retraso en segundos de un viaje en una parada, según la última descarga. Como dice GTFS-RT,
+     * si la parada no trae su propio dato vale el de la parada anterior más cercana que sí lo traiga
+     * (el retraso se arrastra). Devuelve 0 si no hay ninguno antes: se usa el horario programado.
+     */
     public int getRetrasoEnParada(String tripId, String stopId) {
-        List<RetrasoParada> datos = tripId == null ? null : retrasosPorViaje.get(tripId);
-        if (datos == null || datos.isEmpty() || stopId == null) return 0;
+        if (tripId == null || stopId == null || retrasosPorViaje.isEmpty()) return 0;
+
+        // 1. Búsqueda exacta
+        List<RetrasoParada> datos = retrasosPorViaje.get(tripId);
+
+        // 2. Si no coincide exacto, busca si el tripId de la consulta está contenido en la clave de Renfe (o viceversa)
+        if (datos == null) {
+            for (Map.Entry<String, List<RetrasoParada>> entry : retrasosPorViaje.entrySet()) {
+                String claveRenfe = entry.getKey();
+                if (claveRenfe.endsWith(tripId) || claveRenfe.contains(tripId) || tripId.contains(claveRenfe)) {
+                    datos = entry.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (datos == null || datos.isEmpty()) return 0;
 
         List<ParadaHorario> paradas = new ArrayList<>(getRutaDeViaje(tripId));
         paradas.sort(Comparator.comparingInt(ParadaHorario::getStopSequence));
@@ -91,7 +111,14 @@ public class RedTransporte {
         }
         return (elegido == null || elegido.retrasoSegundos() == null) ? 0 : elegido.retrasoSegundos();
     }
-
+    
+    /**
+     * Devuelve el retraso en minutos de un viaje en una parada (convirtiendo los segundos de GTFS-RT).
+     */
+    public int getRetrasoMinutos(String tripId, String stopId) {
+        int retrasoSegundos = getRetrasoEnParada(tripId, stopId);
+        return Math.max(0, retrasoSegundos / 60);
+    }
     /** Retraso de un viaje en su primera parada con dato (0 si no hay). Para una parada concreta, getRetrasoEnParada. */
     public int getRetrasoViajeSegundos(String tripId) {
         List<RetrasoParada> datos = tripId == null ? null : retrasosPorViaje.get(tripId);

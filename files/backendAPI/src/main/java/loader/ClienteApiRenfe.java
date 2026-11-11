@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,9 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
 
     @Value("${renfe.api.url.incidencias}")
     private String urlIncidencias;
+
+    // Almacena en memoria la lista de vehículos en tiempo real obtenida de Renfe
+    private final List<GtfsRtJsonDto.VehiclePosition> posicionesEnVivo = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * Cada petición espera como mucho renfe.api.timeout-ms (5 s por defecto) para conectar y otro
@@ -78,18 +82,26 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
             GtfsRtJsonDto datos = restTemplate.getForObject(urlPosiciones, GtfsRtJsonDto.class);
             if (datos == null || datos.getEntity() == null) return false;
 
+            List<GtfsRtJsonDto.VehiclePosition> nuevasPosiciones = new ArrayList<>();
             for (GtfsRtJsonDto.Entity e : datos.getEntity()) {
-                if (e.getVehicle() != null && e.getVehicle().getTrip() != null && e.getVehicle().getPosition() != null) {
-                    String tripId = e.getVehicle().getTrip().getTripId();
-                    Viaje viaje = red.getViaje(tripId);
-                    if (viaje != null) {
-                        viaje.actualizarPosicion(
-                            e.getVehicle().getPosition().getLatitude(), 
-                            e.getVehicle().getPosition().getLongitude()
-                        );
+                if (e.getVehicle() != null) {
+                    nuevasPosiciones.add(e.getVehicle());
+
+                    if (e.getVehicle().getTrip() != null && e.getVehicle().getPosition() != null) {
+                        String tripId = e.getVehicle().getTrip().getTripId();
+                        Viaje viaje = red.getViaje(tripId);
+                        if (viaje != null) {
+                            viaje.actualizarPosicion(
+                                e.getVehicle().getPosition().getLatitude(), 
+                                e.getVehicle().getPosition().getLongitude()
+                            );
+                        }
                     }
                 }
             }
+
+            posicionesEnVivo.clear();
+            posicionesEnVivo.addAll(nuevasPosiciones);
             return true;
         } catch (Exception e) {
             System.err.println("Motivo del fallo: " + e.getMessage());
@@ -97,18 +109,28 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
         }
     }
 
+    /**
+     * Devuelve la lista con las últimas posiciones de los trenes obtenidas del feed GTFS-RT.
+     */
+    public List<GtfsRtJsonDto.VehiclePosition> getPosicionesEnVivo() {
+        return new ArrayList<>(posicionesEnVivo);
+    }
+
     private boolean actualizarHorarios(RedTransporte red) {
         try {
             GtfsRtJsonDto datos = restTemplate.getForObject(urlHorarios, GtfsRtJsonDto.class);
             if (datos == null || datos.getEntity() == null) return false;
+
+            // --- AÑADE ESTAS LÍNEAS DE CONTROL ---
+            System.out.println("=== GTFS-RT RENFE ===");
+            System.out.println("Entidades recibidas de Renfe: " + datos.getEntity().size());
+            // ------------------------------------
 
             Map<String, List<RetrasoParada>> retrasos = new HashMap<>();
             for (GtfsRtJsonDto.Entity e : datos.getEntity()) {
                 GtfsRtJsonDto.TripUpdate tu = e.getTripUpdate();
                 if (tu == null || tu.getTrip() == null || tu.getTrip().getTripId() == null) continue;
 
-                // Un retraso por parada: Renfe puede dar uno distinto en cada una (un tren que
-                // recupera tiempo, o que se retrasa más adelante por una incidencia)
                 List<RetrasoParada> paradas = new ArrayList<>();
                 if (tu.getStopTimeUpdate() != null) {
                     for (GtfsRtJsonDto.StopTimeUpdate stu : tu.getStopTimeUpdate()) {
@@ -121,6 +143,11 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
                 }
                 if (!paradas.isEmpty()) retrasos.put(tu.getTrip().getTripId(), paradas);
             }
+
+            // --- AÑADE ESTA LÍNEA DE CONTROL ---
+            System.out.println("Retrasos mapeados en memoria: " + retrasos.size());
+            // ------------------------------------
+
             red.reemplazarRetrasos(retrasos);
             return true;
         } catch (Exception e) {
@@ -129,11 +156,6 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
         }
     }
 
-    /**
-     * Pasa una actualización de parada a RetrasoParada. Se usa el retraso de llegada y, si no viene,
-     * el de salida. Devuelve null si no aporta nada: parada que el tren se salta (SKIPPED) o que
-     * solo trae la hora y no el retraso.
-     */
     private static RetrasoParada retrasoDeParada(GtfsRtJsonDto.StopTimeUpdate stu) {
         if (stu.getStopId() == null && stu.getStopSequence() == null) return null;
         String tipo = stu.getScheduleRelationship();
