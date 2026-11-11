@@ -3,6 +3,7 @@ package repositorio;
 import modelo.Estacion;
 import modelo.Linea;
 import modelo.ParadaHorario;
+import modelo.RetrasoParada;
 import modelo.ServicioCalendario;
 import modelo.Transbordo;
 import modelo.Viaje;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -45,7 +47,7 @@ public class RedTransporte {
     private volatile boolean horariosTiempoRealActivos = false;
     private volatile boolean incidenciasTiempoRealActivas = false;
 
-    private volatile Map<String, Integer> retrasosPorViajeSegundos = Map.of();
+    private volatile Map<String, List<RetrasoParada>> retrasosPorViaje = Map.of();
     private volatile List<String> incidencias = List.of();
 
     public boolean isPosicionesTiempoRealActivas() { return posicionesTiempoRealActivas; }
@@ -57,14 +59,55 @@ public class RedTransporte {
     public boolean isIncidenciasTiempoRealActivas() { return incidenciasTiempoRealActivas; }
     public void setIncidenciasTiempoRealActivas(boolean activas) { this.incidenciasTiempoRealActivas = activas; }
 
-    /** Sustituye todos los retrasos (segundos por trip_id) por los de la última descarga. */
-    public void reemplazarRetrasos(Map<String, Integer> retrasos) {
-        this.retrasosPorViajeSegundos = Map.copyOf(retrasos);
+    /** Sustituye todos los retrasos (por trip_id, uno por parada) por los de la última descarga. */
+    public void reemplazarRetrasos(Map<String, List<RetrasoParada>> retrasos) {
+        Map<String, List<RetrasoParada>> copia = new HashMap<>();
+        retrasos.forEach((viaje, lista) -> copia.put(viaje, List.copyOf(lista)));
+        this.retrasosPorViaje = Map.copyOf(copia);
     }
 
-    /** Retraso en segundos de un viaje según la última descarga, o 0 si no hay dato. */
+    /**
+     * Retraso en segundos de un viaje en una parada, según la última descarga. Como dice GTFS-RT,
+     * si la parada no trae su propio dato vale el de la parada anterior más cercana que sí lo traiga
+     * (el retraso se arrastra). Devuelve 0 si no hay ninguno antes: se usa el horario programado.
+     */
+    public int getRetrasoEnParada(String tripId, String stopId) {
+        List<RetrasoParada> datos = tripId == null ? null : retrasosPorViaje.get(tripId);
+        if (datos == null || datos.isEmpty() || stopId == null) return 0;
+
+        List<ParadaHorario> paradas = new ArrayList<>(getRutaDeViaje(tripId));
+        paradas.sort(Comparator.comparingInt(ParadaHorario::getStopSequence));
+        int objetivo = -1;
+        for (int i = 0; i < paradas.size(); i++) {
+            if (stopId.equals(paradas.get(i).getStopId())) { objetivo = i; break; }
+        }
+        if (objetivo < 0) return 0;
+
+        RetrasoParada elegido = null;
+        int posElegido = -1;
+        for (RetrasoParada r : datos) {
+            int pos = posicionEnViaje(r, paradas);
+            if (pos >= 0 && pos <= objetivo && pos >= posElegido) { elegido = r; posElegido = pos; }
+        }
+        return (elegido == null || elegido.retrasoSegundos() == null) ? 0 : elegido.retrasoSegundos();
+    }
+
+    /** Retraso de un viaje en su primera parada con dato (0 si no hay). Para una parada concreta, getRetrasoEnParada. */
     public int getRetrasoViajeSegundos(String tripId) {
-        return tripId == null ? 0 : retrasosPorViajeSegundos.getOrDefault(tripId, 0);
+        List<RetrasoParada> datos = tripId == null ? null : retrasosPorViaje.get(tripId);
+        if (datos == null) return 0;
+        for (RetrasoParada r : datos) if (r.retrasoSegundos() != null) return r.retrasoSegundos();
+        return 0;
+    }
+
+    /** Posición en el viaje de la parada a la que se refiere un retraso (por stop_sequence o, si no, por stop_id). */
+    private static int posicionEnViaje(RetrasoParada r, List<ParadaHorario> paradas) {
+        if (r.esDeTodoElViaje()) return 0;
+        for (int i = 0; i < paradas.size(); i++) {
+            ParadaHorario p = paradas.get(i);
+            if (r.stopSequence() != null ? p.getStopSequence() == r.stopSequence() : p.getStopId().equals(r.stopId())) return i;
+        }
+        return -1;
     }
 
     /** Sustituye todas las incidencias por las de la última descarga. */
