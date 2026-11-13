@@ -3,38 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cercanías Madrid - Portal Completo</title>
+    <title>Cercanías Madrid · Movilidad y Tiempo Real</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .renfe-red { background-color: #E2001A; }
-        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #f8fafc 0%, #eef2f6 55%, #e2e8f0 100%);
+            color: #0f172a;
+        }
+        h1, h2, h3, .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .tabular-nums { font-variant-numeric: tabular-nums; }
+
+        .renfe-header {
+            background: linear-gradient(135deg, #b80015 0%, #E2001A 52%, #9e0012 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .renfe-header::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+            background-size: 18px 18px;
+            pointer-events: none;
+        }
+        .renfe-red {
+            background: linear-gradient(135deg, #E2001A 0%, #c40016 100%);
+        }
+        .renfe-red:hover {
+            background: linear-gradient(135deg, #cc0017 0%, #a80013 100%);
+        }
+
         .line-badge {
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 6px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            padding: 3px 9px;
+            border-radius: 7px;
             color: white;
-            font-size: 0.8rem;
-            display: inline-block;
+            font-size: 0.78rem;
+            letter-spacing: 0.02em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
         }
         .line-C1 { background-color: #75B6E0; }
         .line-C2 { background-color: #00943D; }
         .line-C3 { background-color: #952585; }
         .line-C4, .line-C4a, .line-C4b { background-color: #2C2A86; }
-        .line-C5 { background-color: #ECA328; color: black; }
+        .line-C5 { background-color: #ECA328; color: #111827; }
         .line-C7 { background-color: #C0272D; }
         .line-C8, .line-C8a, .line-C8b { background-color: #868584; }
         .line-C9 { background-color: #915419; }
-        .line-C10 { background-color: #BCCF00; color: black; }
-        .line-TRANS { background-color: #6B7280; }
+        .line-C10 { background-color: #BCCF00; color: #111827; }
+        .line-TRANS { background-color: #475569; }
 
+        .tab-btn {
+            color: rgba(255, 255, 255, 0.85);
+            transition: all 0.18s ease;
+        }
+        .tab-btn:hover {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.12);
+        }
         .tab-btn.active {
-            background-color: white;
+            background-color: #ffffff;
             color: #E2001A;
             font-weight: 700;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
+        }
+
+        .card-surface {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 8px 24px -6px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
         }
 
         .schematic-map { background: linear-gradient(135deg, #f8fafc, #eef2ff); }
@@ -45,7 +91,6 @@
         .detail-station,
         .detail-station:focus { outline: none !important; }
         .mapa-real-svg { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-select: none; }
-        /* Mapa general: lienzo con zoom y desplazamiento, controles, ficha de estación y filtros */
         .mapa-lienzo { position: relative; width: 100%; max-height: 82vh; min-height: 280px; overflow: hidden; border-radius: 12px; background: #fff; cursor: grab; touch-action: pan-y; }
         .mapa-lienzo.arrastrando { cursor: grabbing; }
         .mapa-lienzo #mapaSvg { width: 100%; height: 100%; }
@@ -54,7 +99,7 @@
         .mapa-controles button:hover:not(:disabled) { color: #E2001A; border-color: #E2001A; }
         .mapa-controles button:disabled { opacity: .4; cursor: default; }
         .mapa-controles button:focus-visible, .mapa-chip:focus-visible, .mapa-ficha button:focus-visible { outline: 2px solid #E2001A; outline-offset: 2px; }
-        .mapa-ficha { position: absolute; left: 10px; bottom: 10px; z-index: 2; width: min(320px, calc(100% - 20px)); background: rgba(255,255,255,.97); border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 4px 14px rgba(15,23,42,.2); padding: 12px 14px; cursor: default; }
+        .mapa-ficha { position: absolute; left: 10px; bottom: 10px; z-index: 2; width: min(340px, calc(100% - 20px)); background: rgba(255,255,255,.97); border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 4px 14px rgba(15,23,42,.2); padding: 12px 14px; cursor: default; }
         .mapa-ficha[hidden] { display: none; }
         .mapa-ficha h3 { font-size: 15px; font-weight: 700; color: #1f2937; margin: 0 26px 6px 0; }
         .mapa-ficha .mapa-ficha-cerrar { position: absolute; top: 6px; right: 8px; width: 26px; height: 26px; border: 0; background: none; color: #64748b; font-size: 22px; line-height: 1; cursor: pointer; }
@@ -91,73 +136,128 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <header class="renfe-red text-white shadow-md">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center space-x-3">
-                <div class="bg-white text-[#E2001A] p-2.5 rounded-xl font-bold text-xl shadow-inner">🚆</div>
+    <!-- CABECERA RENFE CERCANÍAS MADRID -->
+    <header class="renfe-header text-white shadow-lg border-b border-red-900/30">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col lg:flex-row justify-between items-center gap-4 relative z-10">
+            <!-- Marca y Emblema Vectorial -->
+            <div class="flex items-center gap-3.5 cursor-pointer" onclick="cambiarPestana('rutas')">
+                <div class="w-12 h-12 rounded-2xl bg-white text-[#E2001A] flex items-center justify-center shadow-md ring-2 ring-white/25 shrink-0">
+                    <!-- Emblema SVG estilo Cercanías -->
+                    <svg viewBox="0 0 48 48" class="w-8 h-8" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="24" cy="24" r="20" stroke="#E2001A" stroke-width="4.2"/>
+                        <path d="M31.5 16.2C29.6 14.2 26.9 13 23.8 13C17.7 13 13 17.8 13 24C13 30.2 17.7 35 23.8 35C27 35 29.7 33.7 31.6 31.6" stroke="#E2001A" stroke-width="4.6" stroke-linecap="round"/>
+                        <path d="M23 24H36" stroke="#E2001A" stroke-width="3.6" stroke-linecap="round"/>
+                    </svg>
+                </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-tight">Cercanías Madrid</h1>
-                    <p class="text-xs text-red-100">Sistema Integral de Transporte (API REST / Swagger)</p>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-none">Cercanías Madrid</h1>
+                        <span class="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider bg-black/25 text-white px-2.5 py-0.5 rounded-full border border-white/15">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            En vivo
+                        </span>
+                    </div>
+                    <p class="text-xs text-red-100/90 mt-1 font-medium">Red de Movilidad Ferroviaria · Horarios y Tiempo Real</p>
                 </div>
             </div>
 
-            <nav class="flex bg-red-900/40 p-1 rounded-xl text-xs font-medium border border-red-400/20">
-                <button onclick="cambiarPestana('rutas')" id="tab-rutas" class="tab-btn active px-4 py-2 rounded-lg transition">
-                    <i class="fa-solid fa-route mr-1.5"></i>Comparar Rutas
+            <!-- Navegación + Acceso Usuario -->
+            <div class="flex flex-wrap items-center justify-center gap-2.5">
+                <nav class="flex bg-black/20 backdrop-blur-xs p-1 rounded-xl text-xs font-semibold border border-white/15">
+                    <button onclick="cambiarPestana('rutas')" id="tab-rutas" class="tab-btn active px-3.5 py-2 rounded-lg">
+                        <i class="fa-solid fa-route mr-1.5"></i>Comparar Rutas
+                    </button>
+                    <button onclick="cambiarPestana('llegadas')" id="tab-llegadas" class="tab-btn px-3.5 py-2 rounded-lg">
+                        <i class="fa-solid fa-clock mr-1.5"></i>Llegadas
+                    </button>
+                    <button onclick="cambiarPestana('estaciones')" id="tab-estaciones" class="tab-btn px-3.5 py-2 rounded-lg">
+                        <i class="fa-solid fa-map-pin mr-1.5"></i>Estaciones
+                    </button>
+                    <button onclick="cambiarPestana('mapa')" id="tab-mapa" class="tab-btn px-3.5 py-2 rounded-lg">
+                        <i class="fa-solid fa-diagram-project mr-1.5"></i>Mapa de líneas
+                    </button>
+                </nav>
+
+                <!-- Botón de Cuenta / Inicio de Sesión (US-013) -->
+                <button id="btn-usuario-header" onclick="abrirModalUsuario()"
+                    class="bg-white text-slate-800 hover:bg-red-50 px-3.5 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-2 border border-white/40">
+                    <span id="avatar-usuario-header" class="w-5 h-5 rounded-full bg-[#E2001A] text-white text-[10px] font-extrabold flex items-center justify-center">
+                        <i class="fa-solid fa-user"></i>
+                    </span>
+                    <span id="texto-usuario-header">Iniciar sesión</span>
                 </button>
-                <button onclick="cambiarPestana('llegadas')" id="tab-llegadas" class="tab-btn px-4 py-2 rounded-lg text-red-100 hover:text-white transition">
-                    <i class="fa-solid fa-clock mr-1.5"></i>Próximas Llegadas
-                </button>
-                <button onclick="cambiarPestana('estaciones')" id="tab-estaciones" class="tab-btn px-4 py-2 rounded-lg text-red-100 hover:text-white transition">
-                    <i class="fa-solid fa-map-pin mr-1.5"></i>Estaciones
-                </button>
-                <button onclick="cambiarPestana('mapa')" id="tab-mapa" class="tab-btn px-4 py-2 rounded-lg text-red-100 hover:text-white transition">
-                    <i class="fa-solid fa-diagram-project mr-1.5"></i>Mapa de líneas
-                </button>
-            </nav>
+            </div>
         </div>
     </header>
 
     <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
         <!-- PESTAÑA RUTAS -->
-        <div id="sec-rutas" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <section class="lg:col-span-4 space-y-6">
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-route text-[#E2001A]"></i>
-                        Planificar Trayecto
-                    </h2>
+        <div id="sec-rutas" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <section class="lg:col-span-4 space-y-5">
+                <div class="card-surface rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <span class="w-8 h-8 rounded-lg bg-red-50 text-[#E2001A] flex items-center justify-center text-sm">
+                                <i class="fa-solid fa-route"></i>
+                            </span>
+                            Planificar Trayecto
+                        </h2>
+                    </div>
 
                     <form id="routeForm" onsubmit="event.preventDefault(); buscarRutas();" class="space-y-4">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Origen</label>
-                            <input type="text" id="origen" value="Atocha" required
-                                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Estación de Origen</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-circle-dot text-emerald-600 text-xs absolute left-3.5 top-3.5"></i>
+                                <input type="text" id="origen" value="Atocha" required
+                                    class="w-full pl-9 pr-4 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E2001A]/30 focus:border-[#E2001A] transition">
+                            </div>
                         </div>
 
                         <div class="flex justify-center -my-2 relative z-10">
-                            <button type="button" onclick="intercambiarEstaciones()" 
-                                class="bg-white border border-gray-200 p-2 rounded-full text-gray-500 hover:text-[#E2001A] shadow-sm transition transform hover:rotate-180">
+                            <button type="button" onclick="intercambiarEstaciones()" title="Invertir origen y destino"
+                                class="bg-white border border-slate-200 w-9 h-9 rounded-full text-slate-500 hover:text-[#E2001A] hover:border-red-200 shadow-sm transition transform hover:rotate-180 flex items-center justify-center">
                                 <i class="fa-solid fa-arrows-up-down text-xs"></i>
                             </button>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Destino</label>
-                            <input type="text" id="destino" value="alcala" required
-                                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Criterio de Ordenación (US-002)</label>
-                            <div class="grid grid-cols-3 gap-2 bg-gray-100 p-1 rounded-xl">
-                                <button type="button" onclick="setCriterio('tiempo')" id="btn-tiempo" class="criterio-btn text-xs py-2 font-medium rounded-lg text-gray-700">⏱️ Tiempo</button>
-                                <button type="button" onclick="setCriterio('precio')" id="btn-precio" class="criterio-btn text-xs py-2 font-medium rounded-lg text-gray-700">💶 Precio</button>
-                                <button type="button" onclick="setCriterio('transbordos')" id="btn-transbordos" class="criterio-btn text-xs py-2 font-medium rounded-lg text-gray-700">🔄 Cambios</button>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Estación de Destino</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-location-dot text-[#E2001A] text-xs absolute left-3.5 top-3.5"></i>
+                                <input type="text" id="destino" value="alcala" required
+                                    class="w-full pl-9 pr-4 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E2001A]/30 focus:border-[#E2001A] transition">
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full renfe-red text-white font-semibold py-3 rounded-xl shadow-lg shadow-red-500/20 hover:bg-red-700 transition">
+                        <!-- Accesos rápidos -->
+                        <div class="pt-1">
+                            <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Nodos frecuentes</span>
+                            <div class="flex flex-wrap gap-1.5">
+                                <button type="button" onclick="rellenarNodoRapido('Atocha')" class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-red-50 hover:text-[#E2001A] text-slate-600 transition">Atocha</button>
+                                <button type="button" onclick="rellenarNodoRapido('Sol')" class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-red-50 hover:text-[#E2001A] text-slate-600 transition">Sol</button>
+                                <button type="button" onclick="rellenarNodoRapido('Chamartín')" class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-red-50 hover:text-[#E2001A] text-slate-600 transition">Chamartín</button>
+                                <button type="button" onclick="rellenarNodoRapido('Nuevos Ministerios')" class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-red-50 hover:text-[#E2001A] text-slate-600 transition">N. Ministerios</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Priorizar por</label>
+                            <div class="grid grid-cols-3 gap-1.5 bg-slate-100 p-1 rounded-xl">
+                                <button type="button" onclick="setCriterio('tiempo')" id="btn-tiempo" class="criterio-btn text-xs py-2 font-medium rounded-lg text-slate-700 transition">
+                                    <i class="fa-solid fa-bolt mr-1"></i>Tiempo
+                                </button>
+                                <button type="button" onclick="setCriterio('precio')" id="btn-precio" class="criterio-btn text-xs py-2 font-medium rounded-lg text-slate-700 transition">
+                                    <i class="fa-solid fa-euro-sign mr-1"></i>Precio
+                                </button>
+                                <button type="button" onclick="setCriterio('transbordos')" id="btn-transbordos" class="criterio-btn text-xs py-2 font-medium rounded-lg text-slate-700 transition">
+                                    <i class="fa-solid fa-right-left mr-1"></i>Cambios
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full renfe-red text-white font-bold py-3 rounded-xl shadow-lg shadow-red-600/20 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
                             Buscar Rutas
                         </button>
                     </form>
@@ -165,54 +265,66 @@
             </section>
 
             <section class="lg:col-span-8">
-                <div id="resultsHeaderRutas" class="hidden mb-4 flex justify-between items-center bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                <div id="resultsHeaderRutas" class="hidden mb-4 flex flex-wrap justify-between items-center gap-3 card-surface p-4 rounded-2xl">
                     <div>
-                        <h2 id="routeTitle" class="font-bold text-gray-800"></h2>
-                        <p id="routeSub" class="text-xs text-gray-500"></p>
+                        <h2 id="routeTitle" class="font-bold text-slate-800 text-base"></h2>
+                        <p id="routeSub" class="text-xs text-slate-500"></p>
                     </div>
-                    <span id="badgeCriterio" class="text-xs font-bold px-3 py-1.5 rounded-full bg-red-50 text-[#E2001A] uppercase"></span>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="solicitarGuardarRutaActual()"
+                            class="text-xs font-bold px-3.5 py-1.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition flex items-center gap-1.5">
+                            <i class="fa-regular fa-bookmark"></i>Guardar ruta
+                        </button>
+                        <span id="badgeCriterio" class="text-[11px] font-extrabold px-3 py-1.5 rounded-xl bg-red-50 text-[#E2001A] uppercase tracking-wide"></span>
+                    </div>
                 </div>
                 <div id="resultsRutas" class="space-y-4">
-                    <div class="bg-white rounded-2xl p-12 text-center text-gray-400 border border-gray-100">
-                        <i class="fa-solid fa-train text-4xl mb-3 text-gray-300"></i>
-                        <p class="text-sm">Busca un trayecto para comparar horarios, tiempos, costes y transbordos.</p>
+                    <div class="card-surface rounded-2xl p-12 text-center text-slate-400">
+                        <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-300 flex items-center justify-center mx-auto mb-4 text-2xl">
+                            <i class="fa-solid fa-train-subway"></i>
+                        </div>
+                        <p class="text-sm font-semibold text-slate-600">¿A dónde viajas hoy?</p>
+                        <p class="text-xs text-slate-400 mt-1 max-w-md mx-auto">Selecciona origen y destino para comparar horarios reales, duración, tarifas y transbordos.</p>
                     </div>
                 </div>
             </section>
         </div>
 
         <!-- PESTAÑA LLEGADAS -->
-        <div id="sec-llegadas" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div id="sec-llegadas" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <section class="lg:col-span-4 space-y-6">
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-clock text-[#E2001A]"></i>
-                        Consultar Estación (US-004)
+                <div class="card-surface rounded-2xl p-6">
+                    <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-red-50 text-[#E2001A] flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-clock"></i>
+                        </span>
+                        Panel de Estación
                     </h2>
 
                     <form onsubmit="event.preventDefault(); buscarLlegadas();" class="space-y-4">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Nombre o ID de Estación</label>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nombre o ID de Estación</label>
                             <input type="text" id="estacionLlegadas" value="Atocha" required
-                                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                                class="w-full px-4 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E2001A]/30 focus:border-[#E2001A]">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Filtrar por Línea (Opcional)</label>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Filtrar por Línea (Opcional)</label>
                             <input type="text" id="filtroLinea" placeholder="Ej: C4, C5, C10..."
-                                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                                class="w-full px-4 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E2001A]/30 focus:border-[#E2001A]">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Número de Trenes</label>
-                            <select id="maxLlegadas" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Número de Trenes</label>
+                            <select id="maxLlegadas" class="w-full px-4 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-sm font-medium">
                                 <option value="5">5 próximos trenes</option>
                                 <option value="10" selected>10 próximos trenes</option>
                                 <option value="20">20 próximos trenes</option>
                             </select>
                         </div>
 
-                        <button type="submit" class="w-full renfe-red text-white font-semibold py-3 rounded-xl shadow-lg shadow-red-500/20 hover:bg-red-700 transition">
+                        <button type="submit" class="w-full renfe-red text-white font-bold py-3 rounded-xl shadow-lg shadow-red-600/20 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-display text-xs"></i>
                             Ver Panel de Llegadas
                         </button>
                     </form>
@@ -221,9 +333,12 @@
 
             <section class="lg:col-span-8">
                 <div id="resultsLlegadas" class="space-y-3">
-                    <div class="bg-white rounded-2xl p-12 text-center text-gray-400 border border-gray-100">
-                        <i class="fa-solid fa-tv text-4xl mb-3 text-gray-300"></i>
-                        <p class="text-sm">Ingresa una estación para ver el panel electrónico con los próximos pasos de trenes.</p>
+                    <div class="card-surface rounded-2xl p-12 text-center text-slate-400">
+                        <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-300 flex items-center justify-center mx-auto mb-4 text-2xl">
+                            <i class="fa-solid fa-tv"></i>
+                        </div>
+                        <p class="text-sm font-semibold text-slate-600">Teleindicador en tiempo real</p>
+                        <p class="text-xs text-slate-400 mt-1">Consulta los próximos pasos de trenes y demoras estimadas en cualquier estación de la red.</p>
                     </div>
                 </div>
             </section>
@@ -231,14 +346,15 @@
 
         <!-- PESTAÑA ESTACIONES -->
         <div id="sec-estaciones" class="hidden space-y-6">
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="card-surface rounded-2xl p-5 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="w-full md:w-1/2 relative">
-                    <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400"></i>
-                    <input type="text" id="buscarEstacionTexto" onkeyup="filtrarDirectorioEstaciones()" placeholder="Buscar estación por nombre..."
-                        class="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-400"></i>
+                    <input type="text" id="buscarEstacionTexto" onkeyup="filtrarDirectorioEstaciones()" placeholder="Filtrar estación por nombre o código..."
+                        class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E2001A]/30 focus:border-[#E2001A]">
                 </div>
-                <button onclick="cargarTodasEstaciones()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-semibold transition">
-                    🔄 Cargar Red Completa
+                <button onclick="cargarTodasEstaciones()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold transition flex items-center gap-2">
+                    <i class="fa-solid fa-rotate"></i>
+                    Actualizar Directorio
                 </button>
             </div>
 
@@ -248,11 +364,14 @@
 
         <!-- PESTAÑA MAPA DE LÍNEAS -->
         <div id="sec-mapa" class="hidden space-y-6">
-            <div id="mapaVistaGeneral" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div id="mapaVistaGeneral" class="card-surface rounded-2xl p-6">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-4">
                     <div>
-                        <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-diagram-project text-[#E2001A] mr-2"></i>Mapa de Cercanías Madrid</h2>
-                        <p class="text-xs text-gray-500">Pulsa una línea para abrir su recorrido completo, o una estación para ver sus llegadas y buscar rutas.</p>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-diagram-project text-[#E2001A]"></i>
+                            Plano Esquemático de Cercanías Madrid
+                        </h2>
+                        <p class="text-xs text-slate-500">Pulsa una línea para abrir su recorrido completo, o una estación para ver sus llegadas y buscar rutas.</p>
                     </div>
                     <span id="mapaEstadoTrenes" class="mapa-estado-trenes" hidden></span>
                 </div>
@@ -276,21 +395,21 @@
                         <div id="mapaFicha" class="mapa-ficha" hidden></div>
                     </div>
                 </div>
-                <p class="mt-2 text-xs text-gray-400">Arrastra para mover el mapa. Amplía con los botones, con doble clic, con Ctrl + rueda del ratón o pellizcando en pantallas táctiles. Pulsa una estación para ver sus opciones.</p>
+                <p class="mt-2.5 text-xs text-slate-400">Arrastra para mover el mapa. Amplía con los botones, con doble clic, con Ctrl + rueda del ratón o pellizcando en pantallas táctiles.</p>
                 <div id="mapaSelectorLineas" class="mt-4 flex flex-wrap gap-2" aria-label="Seleccionar línea de Cercanías"></div>
             </div>
 
-            <div id="mapaVistaLinea" class="hidden bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div id="mapaVistaLinea" class="hidden card-surface rounded-2xl p-6">
                 <div class="flex items-center gap-3 mb-5">
-                    <button type="button" onclick="volverMapaGeneral()" class="text-sm text-gray-600 hover:text-[#E2001A] font-semibold transition">
-                        <i class="fa-solid fa-arrow-left mr-2"></i>Volver al mapa general
+                    <button type="button" onclick="volverMapaGeneral()" class="text-sm text-slate-600 hover:text-[#E2001A] font-bold transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i>Volver al plano general
                     </button>
                 </div>
                 <div class="flex items-center gap-3 mb-4">
                     <span id="mapaLineaBadge" class="line-badge text-base px-3 py-1"></span>
                     <div>
-                        <h2 id="mapaLineaTitulo" class="text-lg font-bold text-gray-800"></h2>
-                        <p class="text-xs text-gray-500">Todas las estaciones del recorrido cargadas desde GTFS.</p>
+                        <h2 id="mapaLineaTitulo" class="text-lg font-bold text-slate-800"></h2>
+                        <p class="text-xs text-slate-500">Todas las estaciones del recorrido cargadas desde GTFS.</p>
                     </div>
                 </div>
                 <div id="mapaLineaContenedor" class="schematic-map rounded-2xl border border-slate-200 overflow-auto p-3">
@@ -300,21 +419,471 @@
         </div>
     </main>
 
+    <!-- PIE DE PÁGINA -->
+    <footer class="border-t border-slate-200/80 bg-white/70 backdrop-blur-xs mt-12">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-500">
+            <div class="flex items-center gap-2 font-semibold text-slate-600">
+                <span class="w-2 h-2 rounded-full bg-[#E2001A]"></span>
+                Cercanías Madrid · Plataforma Integral de Movilidad
+            </div>
+            <div class="flex items-center gap-4">
+                <span>Datos GTFS & GTFS-RT</span>
+                <a href="/swagger-ui.html" target="_blank" class="text-[#E2001A] font-semibold hover:underline">API Docs</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL DE CUENTA / LOGIN / REGISTRO / PANEL PERSONAL (EP-08) -->
+    <div id="modalUsuario" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 p-6 relative">
+            <button type="button" onclick="cerrarModalUsuario()" class="absolute top-4 right-4 w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 text-xl font-bold flex items-center justify-center">&times;</button>
+
+            <!-- VISTA 1: NO AUTENTICADO (LOGIN / REGISTRO US-013) -->
+            <div id="vistaAuthModal" class="space-y-4">
+                <div class="flex items-center gap-2.5 text-[#E2001A]">
+                    <span class="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center">
+                        <i class="fa-solid fa-user-shield text-lg"></i>
+                    </span>
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 leading-tight">Área de Usuarios</h2>
+                        <p class="text-xs text-slate-500">Guarda tus estaciones favoritas y trayectos habituales</p>
+                    </div>
+                </div>
+                <p id="avisoInvitacionLogin" class="hidden text-xs bg-amber-50 text-amber-800 border border-amber-200 p-3 rounded-xl font-medium">
+                    Inicia sesión o crea una cuenta gratuita para guardar tus estaciones favoritas y rutas habituales.
+                </p>
+
+                <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+                    <button type="button" id="subtab-login" onclick="cambiarModoAuth('login')" class="py-2 rounded-lg bg-white text-[#E2001A] shadow-xs">Iniciar Sesión</button>
+                    <button type="button" id="subtab-registro" onclick="cambiarModoAuth('registro')" class="py-2 rounded-lg text-slate-600">Crear Cuenta</button>
+                </div>
+
+                <div id="authMensajeError" class="hidden text-xs bg-red-50 text-red-700 border border-red-200 p-3 rounded-xl font-semibold"></div>
+                <div id="authMensajeOk" class="hidden text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 p-3 rounded-xl font-semibold"></div>
+
+                <!-- Formulario Login -->
+                <form id="formLogin" onsubmit="event.preventDefault(); enviarLogin();" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Correo electrónico</label>
+                        <input type="email" id="loginEmail" required placeholder="tu@email.com"
+                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:border-[#E2001A]">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Contraseña</label>
+                        <input type="password" id="loginPassword" required placeholder="••••••••"
+                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:border-[#E2001A]">
+                    </div>
+                    <button type="submit" class="w-full renfe-red text-white font-bold py-2.5 rounded-xl shadow-md transition text-sm">
+                        Entrar en mi cuenta
+                    </button>
+                </form>
+
+                <!-- Formulario Registro -->
+                <form id="formRegistro" onsubmit="event.preventDefault(); enviarRegistro();" class="hidden space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre</label>
+                        <input type="text" id="regNombre" required placeholder="Ej: Ana García"
+                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:border-[#E2001A]">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Correo electrónico</label>
+                        <input type="email" id="regEmail" required placeholder="tu@email.com"
+                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:border-[#E2001A]">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Contraseña (mínimo 8 caracteres)</label>
+                        <input type="password" id="regPassword" minlength="8" required placeholder="Mínimo 8 caracteres"
+                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:border-[#E2001A]">
+                    </div>
+                    <label class="flex items-start gap-2 text-xs text-slate-600 cursor-pointer">
+                        <input type="checkbox" id="regPrivacidad" required class="mt-0.5 accent-[#E2001A]">
+                        <span>Acepto la política de privacidad: mis datos se guardan exclusivamente para gestionar mis estaciones favoritas y rutas habituales.</span>
+                    </label>
+                    <button type="submit" class="w-full renfe-red text-white font-bold py-2.5 rounded-xl shadow-md transition text-sm">
+                        Registrarme como Viajero
+                    </button>
+                </form>
+            </div>
+
+            <!-- VISTA 2: PANEL PERSONAL AUTENTICADO (US-013, US-014, US-015) -->
+            <div id="vistaPerfilModal" class="hidden space-y-5">
+                <div class="border-b border-slate-100 pb-4 flex items-center gap-3.5">
+                    <div id="perfilAvatarGrande" class="w-12 h-12 rounded-2xl renfe-red text-white font-extrabold text-lg flex items-center justify-center shadow-md shrink-0"></div>
+                    <div>
+                        <span id="perfilRolBadge" class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-red-100 text-[#E2001A]">VIAJERO</span>
+                        <h2 id="perfilNombre" class="text-lg font-bold text-slate-800 mt-0.5"></h2>
+                        <p id="perfilEmail" class="text-xs text-slate-500"></p>
+                    </div>
+                </div>
+
+                <!-- Estaciones Favoritas (US-014) -->
+                <div>
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-star text-amber-400"></i> Mis Estaciones Favoritas
+                    </h3>
+                    <div id="listaFavoritasPerfil" class="space-y-2 text-xs"></div>
+                </div>
+
+                <!-- Rutas Guardadas (US-015) -->
+                <div>
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-bookmark text-[#E2001A]"></i> Mis Rutas Habituales
+                    </h3>
+                    <div id="listaRutasPerfil" class="space-y-2 text-xs"></div>
+                </div>
+
+                <!-- Acciones de cuenta (US-013) -->
+                <div class="pt-4 border-t border-slate-100 flex flex-wrap justify-between gap-2">
+                    <button type="button" onclick="cerrarSesionUsuario()"
+                        class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+                        <i class="fa-solid fa-right-from-bracket mr-1"></i>Cerrar sesión
+                    </button>
+                    <button id="btnEliminarCuenta" type="button" onclick="eliminarCuentaUsuario()"
+                        class="px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold transition">
+                        <i class="fa-solid fa-trash mr-1"></i>Eliminar cuenta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let criterioActual = 'tiempo';
         let listaEstacionesCache = [];
+        let ultimaBusquedaRutas = { origen: '', destino: '', criterio: 'tiempo' };
+        let turnoRellenoRapido = 'origen';
 
+        function rellenarNodoRapido(nombre) {
+            const orig = document.getElementById('origen');
+            const dest = document.getElementById('destino');
+            if (turnoRellenoRapido === 'origen') {
+                orig.value = nombre;
+                turnoRellenoRapido = 'destino';
+            } else {
+                dest.value = nombre;
+                turnoRellenoRapido = 'origen';
+            }
+            if (orig.value.trim() && dest.value.trim() && orig.value.trim().toLowerCase() !== dest.value.trim().toLowerCase()) {
+                buscarRutas();
+            }
+        }
+
+        // ====================================================================================
+        // GESTIÓN DE SESIÓN, FAVORITOS Y RUTAS GUARDADAS (EP-08: US-013, US-014, US-015)
+        // ====================================================================================
+        let sesionUsuario = {
+            token: localStorage.getItem('renfe_token') || null,
+            usuario: JSON.parse(localStorage.getItem('renfe_usuario') || 'null'),
+            favoritas: [],
+            rutas: []
+        };
+
+        function headersAuth() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${sesionUsuario.token}`
+            };
+        }
+
+        function obtenerIniciales(nombre) {
+            if (!nombre) return 'U';
+            return nombre.trim().split(/\s+/).slice(0, 2).map(p => p[0].toUpperCase()).join('');
+        }
+
+        function actualizarBotonHeaderUsuario() {
+            const txt = document.getElementById('texto-usuario-header');
+            const avatar = document.getElementById('avatar-usuario-header');
+            if (sesionUsuario.usuario) {
+                txt.textContent = `${sesionUsuario.usuario.nombre} · ${sesionUsuario.usuario.rol}`;
+                avatar.textContent = obtenerIniciales(sesionUsuario.usuario.nombre);
+            } else {
+                txt.textContent = 'Iniciar sesión';
+                avatar.innerHTML = '<i class="fa-solid fa-user"></i>';
+            }
+        }
+
+        async function cargarDatosUsuarioLogueado() {
+            if (!sesionUsuario.token) return;
+            try {
+                const resPerfil = await fetch('/api/usuarios/me', { headers: headersAuth() });
+                if (!resPerfil.ok) {
+                    limpiarSesionLocal();
+                    return;
+                }
+                sesionUsuario.usuario = await resPerfil.json();
+                localStorage.setItem('renfe_usuario', JSON.stringify(sesionUsuario.usuario));
+
+                const [resFav, resRut] = await Promise.all([
+                    fetch('/api/usuarios/favoritos', { headers: headersAuth() }),
+                    fetch('/api/usuarios/rutas', { headers: headersAuth() })
+                ]);
+                if (resFav.ok) sesionUsuario.favoritas = await resFav.json();
+                if (resRut.ok) sesionUsuario.rutas = await resRut.json();
+            } catch (_) { /* sin conexión */ }
+            actualizarBotonHeaderUsuario();
+        }
+
+        function limpiarSesionLocal() {
+            sesionUsuario = { token: null, usuario: null, favoritas: [], rutas: [] };
+            localStorage.removeItem('renfe_token');
+            localStorage.removeItem('renfe_usuario');
+            actualizarBotonHeaderUsuario();
+        }
+
+        function abrirModalUsuario(invitacion = false) {
+            document.getElementById('modalUsuario').classList.remove('hidden');
+            document.getElementById('authMensajeError').classList.add('hidden');
+            document.getElementById('authMensajeOk').classList.add('hidden');
+            document.getElementById('avisoInvitacionLogin').classList.toggle('hidden', !invitacion);
+
+            if (sesionUsuario.token && sesionUsuario.usuario) {
+                document.getElementById('vistaAuthModal').classList.add('hidden');
+                document.getElementById('vistaPerfilModal').classList.remove('hidden');
+                renderizarPanelPerfil();
+            } else {
+                document.getElementById('vistaPerfilModal').classList.add('hidden');
+                document.getElementById('vistaAuthModal').classList.remove('hidden');
+            }
+        }
+
+        function cerrarModalUsuario() {
+            document.getElementById('modalUsuario').classList.add('hidden');
+        }
+
+        function cambiarModoAuth(modo) {
+            const esLogin = modo === 'login';
+            document.getElementById('formLogin').classList.toggle('hidden', !esLogin);
+            document.getElementById('formRegistro').classList.toggle('hidden', esLogin);
+            document.getElementById('subtab-login').className = esLogin ? 'py-2 rounded-lg bg-white text-[#E2001A] shadow-xs' : 'py-2 rounded-lg text-slate-600';
+            document.getElementById('subtab-registro').className = !esLogin ? 'py-2 rounded-lg bg-white text-[#E2001A] shadow-xs' : 'py-2 rounded-lg text-slate-600';
+            document.getElementById('authMensajeError').classList.add('hidden');
+        }
+
+        async function enviarLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errBox = document.getElementById('authMensajeError');
+            errBox.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Credenciales incorrectas.');
+
+                sesionUsuario.token = data.token;
+                sesionUsuario.usuario = data.usuario;
+                localStorage.setItem('renfe_token', data.token);
+                localStorage.setItem('renfe_usuario', JSON.stringify(data.usuario));
+                await cargarDatosUsuarioLogueado();
+                abrirModalUsuario(false);
+                if (listaEstacionesCache.length > 0) renderDirectorioEstaciones(listaEstacionesCache);
+            } catch (e) {
+                errBox.textContent = e.message;
+                errBox.classList.remove('hidden');
+            }
+        }
+
+        async function enviarRegistro() {
+            const nombre = document.getElementById('regNombre').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const aceptaPrivacidad = document.getElementById('regPrivacidad').checked;
+            const errBox = document.getElementById('authMensajeError');
+            const okBox = document.getElementById('authMensajeOk');
+            errBox.classList.add('hidden');
+            okBox.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/auth/registro', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre, email, password, aceptaPrivacidad })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'No se pudo completar el registro.');
+
+                okBox.textContent = 'Cuenta creada con éxito. Ya puedes iniciar sesión.';
+                okBox.classList.remove('hidden');
+                document.getElementById('loginEmail').value = email;
+                cambiarModoAuth('login');
+            } catch (e) {
+                errBox.textContent = e.message;
+                errBox.classList.remove('hidden');
+            }
+        }
+
+        async function cerrarSesionUsuario() {
+            if (sesionUsuario.token) {
+                await fetch('/api/auth/logout', { method: 'POST', headers: headersAuth() }).catch(() => {});
+            }
+            limpiarSesionLocal();
+            cerrarModalUsuario();
+            if (listaEstacionesCache.length > 0) renderDirectorioEstaciones(listaEstacionesCache);
+        }
+
+        async function eliminarCuentaUsuario() {
+            if (!confirm('¿Seguro que quieres eliminar tu cuenta? Se borrarán permanentemente tus estaciones favoritas y rutas guardadas.')) return;
+            const res = await fetch('/api/usuarios/me', { method: 'DELETE', headers: headersAuth() });
+            if (res.ok) {
+                limpiarSesionLocal();
+                cerrarModalUsuario();
+                alert('Tu cuenta y tus datos han sido eliminados.');
+            }
+        }
+
+        function renderizarPanelPerfil() {
+            const u = sesionUsuario.usuario;
+            if (!u) return;
+            document.getElementById('perfilNombre').textContent = u.nombre;
+            document.getElementById('perfilEmail').textContent = u.email;
+            document.getElementById('perfilRolBadge').textContent = `ROL: ${u.rol}`;
+            document.getElementById('perfilAvatarGrande').textContent = obtenerIniciales(u.nombre);
+            document.getElementById('btnEliminarCuenta').classList.toggle('hidden', u.rol !== 'VIAJERO');
+
+            const contFav = document.getElementById('listaFavoritasPerfil');
+            if (sesionUsuario.favoritas.length === 0) {
+                contFav.innerHTML = '<p class="text-slate-400 italic">No tienes estaciones favoritas guardadas.</p>';
+            } else {
+                contFav.innerHTML = sesionUsuario.favoritas.map(f => `
+                    <div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                        <button type="button" onclick="cerrarModalUsuario(); seleccionarEstacionYConsultar('${escaparHtml(f.nombreEstacion)}')"
+                            class="font-bold text-slate-800 hover:text-[#E2001A] text-left flex items-center gap-2">
+                            <i class="fa-solid fa-location-dot text-[#E2001A]"></i>
+                            ${escaparHtml(f.nombreEstacion)}
+                        </button>
+                        <button type="button" onclick="alternarFavorita('${escaparHtml(f.stopId)}', '${escaparHtml(f.nombreEstacion)}')"
+                            class="text-red-500 hover:text-red-700 font-semibold px-2" title="Quitar favorita">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            const contRut = document.getElementById('listaRutasPerfil');
+            if (sesionUsuario.rutas.length === 0) {
+                contRut.innerHTML = '<p class="text-slate-400 italic">No tienes rutas guardadas todavía.</p>';
+            } else {
+                contRut.innerHTML = sesionUsuario.rutas.map(r => `
+                    <div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100 gap-2">
+                        <button type="button" onclick="abrirRutaGuardada(${r.id})" class="text-left flex-1">
+                            <p class="font-bold text-slate-800 hover:text-[#E2001A]">${escaparHtml(r.nombre)}</p>
+                            <p class="text-[11px] text-slate-500">${escaparHtml(r.origen)} ➔ ${escaparHtml(r.destino)} · ${escaparHtml(r.criterio)}</p>
+                        </button>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="renombrarRutaGuardada(${r.id}, '${escaparHtml(r.nombre)}')"
+                                class="text-slate-500 hover:text-slate-800 px-1.5" title="Renombrar"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" onclick="eliminarRutaGuardada(${r.id})"
+                                class="text-red-500 hover:text-red-700 px-1.5" title="Eliminar"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function esEstacionFavorita(stopId) {
+            return sesionUsuario.favoritas.some(f => f.stopId === String(stopId));
+        }
+
+        async function alternarFavorita(stopId, nombreEstacion) {
+            if (!sesionUsuario.token) {
+                abrirModalUsuario(true);
+                return;
+            }
+            const yaEs = esEstacionFavorita(stopId);
+            if (yaEs) {
+                await fetch(`/api/usuarios/favoritos/${encodeURIComponent(stopId)}`, {
+                    method: 'DELETE',
+                    headers: headersAuth()
+                });
+            } else {
+                await fetch('/api/usuarios/favoritos', {
+                    method: 'POST',
+                    headers: headersAuth(),
+                    body: JSON.stringify({ stopId: String(stopId), nombreEstacion })
+                });
+            }
+            await cargarDatosUsuarioLogueado();
+            if (!document.getElementById('vistaPerfilModal').classList.contains('hidden')) renderizarPanelPerfil();
+            if (listaEstacionesCache.length > 0) renderDirectorioEstaciones(listaEstacionesCache);
+            const btnPanel = document.getElementById(`btn-fav-llegadas-${stopId}`);
+            if (btnPanel) {
+                const activa = esEstacionFavorita(stopId);
+                btnPanel.innerHTML = activa ? '<i class="fa-solid fa-star text-amber-400 mr-1"></i>En favoritas' : '<i class="fa-regular fa-star mr-1"></i>Guardar favorita';
+            }
+        }
+
+        async function solicitarGuardarRutaActual() {
+            if (!sesionUsuario.token) {
+                abrirModalUsuario(true);
+                return;
+            }
+            const { origen, destino, criterio } = ultimaBusquedaRutas;
+            if (!origen || !destino) return;
+            const nombre = prompt('Nombre para esta ruta habitual:', `${origen} - ${destino}`);
+            if (!nombre || !nombre.trim()) return;
+
+            const res = await fetch('/api/usuarios/rutas', {
+                method: 'POST',
+                headers: headersAuth(),
+                body: JSON.stringify({ nombre: nombre.trim(), origen, destino, criterio })
+            });
+            if (res.ok) {
+                await cargarDatosUsuarioLogueado();
+                alert('Ruta guardada en tu perfil.');
+            }
+        }
+
+        function abrirRutaGuardada(id) {
+            const ruta = sesionUsuario.rutas.find(r => r.id === id);
+            if (!ruta) return;
+            cerrarModalUsuario();
+            cambiarPestana('rutas');
+            document.getElementById('origen').value = ruta.origen;
+            document.getElementById('destino').value = ruta.destino;
+            setCriterio(ruta.criterio || 'tiempo');
+            buscarRutas();
+        }
+
+        async function renombrarRutaGuardada(id, nombreActual) {
+            const nuevo = prompt('Nuevo nombre para la ruta:', nombreActual);
+            if (!nuevo || !nuevo.trim()) return;
+            const res = await fetch(`/api/usuarios/rutas/${id}`, {
+                method: 'PUT',
+                headers: headersAuth(),
+                body: JSON.stringify({ nombre: nuevo.trim() })
+            });
+            if (res.ok) {
+                await cargarDatosUsuarioLogueado();
+                renderizarPanelPerfil();
+            }
+        }
+
+        async function eliminarRutaGuardada(id) {
+            const res = await fetch(`/api/usuarios/rutas/${id}`, {
+                method: 'DELETE',
+                headers: headersAuth()
+            });
+            if (res.ok) {
+                await cargarDatosUsuarioLogueado();
+                renderizarPanelPerfil();
+            }
+        }
+
+        // ====================================================================================
+        // FUNCIONES DE RUTAS, LLEGADAS, ESTACIONES Y MAPA
+        // ====================================================================================
         function cambiarPestana(pestana) {
             ['rutas', 'llegadas', 'estaciones', 'mapa'].forEach(p => {
                 document.getElementById(`sec-${p}`).classList.add('hidden');
-                document.getElementById(`tab-${p}`).classList.remove('active', 'text-[#E2001A]');
-                document.getElementById(`tab-${p}`).classList.add('text-red-100');
+                document.getElementById(`tab-${p}`).classList.remove('active');
             });
 
             document.getElementById(`sec-${pestana}`).classList.remove('hidden');
-            const activeTab = document.getElementById(`tab-${pestana}`);
-            activeTab.classList.add('active');
-            activeTab.classList.remove('text-red-100');
+            document.getElementById(`tab-${pestana}`).classList.add('active');
 
             if (pestana === 'estaciones' && listaEstacionesCache.length === 0) {
                 cargarTodasEstaciones();
@@ -324,8 +893,8 @@
 
         function setCriterio(c) {
             criterioActual = c;
-            document.querySelectorAll('.criterio-btn').forEach(b => b.className = 'criterio-btn text-xs py-2 font-medium rounded-lg text-gray-700');
-            document.getElementById(`btn-${c}`).className = 'criterio-btn text-xs py-2 font-semibold rounded-lg bg-white text-[#E2001A] shadow-sm';
+            document.querySelectorAll('.criterio-btn').forEach(b => b.className = 'criterio-btn text-xs py-2 font-semibold rounded-lg text-slate-600 transition');
+            document.getElementById(`btn-${c}`).className = 'criterio-btn text-xs py-2 font-bold rounded-lg bg-white text-[#E2001A] shadow-xs transition';
             if (document.getElementById('origen').value && document.getElementById('destino').value) buscarRutas();
         }
 
@@ -344,13 +913,12 @@
 
             if (!origen || !destino) return;
 
-            container.innerHTML = '<div class="bg-white rounded-2xl p-12 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin text-3xl text-[#E2001A] mb-3"></i><p class="text-sm">Calculando itinerarios GTFS...</p></div>';
+            container.innerHTML = '<div class="card-surface rounded-2xl p-12 text-center text-slate-500"><i class="fa-solid fa-spinner fa-spin text-3xl text-[#E2001A] mb-3"></i><p class="text-sm font-medium">Calculando itinerarios óptimos...</p></div>';
             header.classList.add('hidden');
 
             try {
                 const res = await fetch(`/api/rutas?origen=${encodeURIComponent(origen)}&destino=${encodeURIComponent(destino)}&criterio=${criterioActual}`);
                 
-                // ESTRATEGIA INFALIBLE: Si la ruta falla, el frontend busca las opciones directamente
                 if (!res.ok) {
                     const resOrig = await fetch(`/api/estaciones?nombre=${encodeURIComponent(origen)}`);
                     const estOrig = await resOrig.json();
@@ -361,13 +929,11 @@
                     if (estOrig.length === 0) throw new Error(`No existe la estación de origen: ${origen}`);
                     if (estDest.length === 0) throw new Error(`No existe la estación de destino: ${destino}`);
 
-                    // Detectar ambigüedad en Origen
                     if (estOrig.length > 1 && !estOrig.some(e => e.nombre.toLowerCase() === origen.toLowerCase())) {
                         mostrarAmbiguedad('Origen', origen, estOrig);
                         return;
                     }
 
-                    // Detectar ambigüedad en Destino
                     if (estDest.length > 1 && !estDest.some(e => e.nombre.toLowerCase() === destino.toLowerCase())) {
                         mostrarAmbiguedad('Destino', destino, estDest);
                         return;
@@ -394,10 +960,16 @@
                     if (ultimoTramo.destino && ultimoTramo.destino.nombre) nombreDestinoOficial = ultimoTramo.destino.nombre;
                 }
 
+                ultimaBusquedaRutas = {
+                    origen: nombreOrigenOficial,
+                    destino: nombreDestinoOficial,
+                    criterio: criterioActual
+                };
+
                 header.classList.remove('hidden');
                 document.getElementById('routeTitle').innerText = `${nombreOrigenOficial} ➔ ${nombreDestinoOficial}`;
-                document.getElementById('routeSub').innerText = `${rutas.length} opciones encontradas`;
-                document.getElementById('badgeCriterio').innerText = `ORDENADO POR ${criterioActual.toUpperCase()}`;
+                document.getElementById('routeSub').innerText = `${rutas.length} alternativas disponibles`;
+                document.getElementById('badgeCriterio').innerText = `POR ${criterioActual.toUpperCase()}`;
 
                 container.innerHTML = '';
                 rutas.forEach((r, idx) => {
@@ -408,26 +980,38 @@
                     const hSalida = r.fechaHoraSalida ? extraeHora(r.fechaHoraSalida) : (r.tramos && r.tramos[0] ? r.tramos[0].horaSalida : '--:--');
                     const hLlegada = r.fechaHoraLlegada ? extraeHora(r.fechaHoraLlegada) : (r.tramos && r.tramos[r.tramos.length-1] ? r.tramos[r.tramos.length-1].horaLlegada : '--:--');
 
-                    let lineasBadges = r.tramos ? r.tramos.map(t => `<span class="line-badge line-${(t.linea?.shortName || 'C1').replace(/[^a-zA-Z0-9]/g, '')} mr-1">${t.linea?.shortName || 'Tren'}</span>`).join('') : '';
+                    let lineasBadges = r.tramos ? r.tramos.map(t => `<span class="line-badge line-${(t.linea?.shortName || 'C1').replace(/[^a-zA-Z0-9]/g, '')} mr-1.5">${t.linea?.shortName || 'Tren'}</span>`).join('') : '';
 
                     container.innerHTML += `
-                        <div class="bg-white rounded-2xl p-6 border ${esMejor ? 'border-red-400 ring-2 ring-red-500/10' : 'border-gray-100'} shadow-sm relative space-y-4">
-                            ${esMejor ? '<div class="absolute top-0 right-0 bg-[#E2001A] text-white text-[10px] uppercase font-extrabold px-3 py-1 rounded-bl-xl">MEJOR OPCIÓN</div>' : ''}
-                            <div class="flex justify-between items-center">
-                                <div>${lineasBadges}</div>
-                                <div class="flex space-x-6 text-right">
-                                    <div><span class="text-xs text-gray-400 uppercase">Tiempo</span><p class="font-bold text-gray-800">${duracion} min</p></div>
-                                    <div><span class="text-xs text-gray-400 uppercase">Precio</span><p class="font-bold text-emerald-600">${precio} €</p></div>
-                                    <div><span class="text-xs text-gray-400 uppercase">Transbordos</span><p class="font-bold text-gray-800">${transbordos}</p></div>
+                        <div class="card-surface rounded-2xl p-6 ${esMejor ? 'border-red-300 ring-2 ring-red-500/15' : 'hover:border-slate-300'} transition relative space-y-4">
+                            ${esMejor ? '<div class="absolute top-0 right-0 renfe-red text-white text-[10px] uppercase font-extrabold px-3.5 py-1 rounded-bl-xl rounded-tr-2xl tracking-wider shadow-xs">Opción Recomendada</div>' : ''}
+                            <div class="flex flex-wrap justify-between items-center gap-3 pt-1">
+                                <div class="flex items-center flex-wrap gap-1">${lineasBadges}</div>
+                                <div class="flex items-center gap-5 text-right tabular-nums">
+                                    <div><span class="text-[10px] font-bold text-slate-400 uppercase block">Duración</span><p class="font-extrabold text-slate-800 text-sm">${duracion} min</p></div>
+                                    <div><span class="text-[10px] font-bold text-slate-400 uppercase block">Tarifa</span><p class="font-extrabold text-emerald-600 text-sm">${precio} €</p></div>
+                                    <div><span class="text-[10px] font-bold text-slate-400 uppercase block">Cambios</span><p class="font-extrabold text-slate-800 text-sm">${transbordos}</p></div>
                                 </div>
                             </div>
-                            <div class="bg-gray-50 rounded-xl p-4 flex justify-between items-center font-bold text-gray-800">
-                                <div><p class="text-xs text-gray-400 font-normal">Salida</p>${hSalida}</div>
-                                <div class="text-xs text-gray-400 font-normal">── ${duracion} min ──</div>
-                                <div><p class="text-xs text-gray-400 font-normal">Llegada</p>${hLlegada}</div>
+                            <div class="bg-slate-50/90 border border-slate-100 rounded-xl p-4 flex justify-between items-center tabular-nums">
+                                <div>
+                                    <span class="text-[11px] text-slate-400 font-semibold uppercase block">Salida</span>
+                                    <span class="text-lg font-extrabold text-slate-800">${hSalida}</span>
+                                </div>
+                                <div class="flex-1 mx-4 flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                    <div class="flex-1 border-t-2 border-dashed border-slate-300 relative text-center">
+                                        <span class="bg-slate-50 px-2 text-[11px] font-bold text-slate-500 -top-2.5 relative">${duracion} min</span>
+                                    </div>
+                                    <span class="w-2 h-2 rounded-full bg-[#E2001A]"></span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[11px] text-slate-400 font-semibold uppercase block">Llegada</span>
+                                    <span class="text-lg font-extrabold text-slate-800">${hLlegada}</span>
+                                </div>
                             </div>
-                            <div class="border-t border-gray-100 pt-3 space-y-2">
-                                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Detalle del Itinerario</p>
+                            <div class="border-t border-slate-100 pt-3 space-y-2">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Desglose del recorrido</p>
                                 ${renderTramosDetalle(r.tramos)}
                             </div>
                         </div>
@@ -439,23 +1023,22 @@
             }
         }
 
-        // Nueva función que pinta los botones
         function mostrarAmbiguedad(campo, termino, listaEstaciones) {
             const container = document.getElementById('resultsRutas');
             let botonesHtml = listaEstaciones.map(e => `
                 <button onclick="seleccionarSugerencia('${campo}', '${e.nombre}')" 
-                    class="bg-white border border-red-300 text-gray-800 hover:bg-red-600 hover:text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition mb-2 mr-2">
-                    📍 ${e.nombre}
+                    class="bg-white border border-red-300 text-slate-800 hover:bg-[#E2001A] hover:text-white px-4 py-2 rounded-xl text-xs font-bold shadow-xs transition mb-2 mr-2">
+                    <i class="fa-solid fa-location-dot mr-1.5"></i>${e.nombre}
                 </button>
             `).join('');
 
             container.innerHTML = `
-                <div class="bg-red-50 border border-red-200 rounded-2xl p-6 text-left space-y-3">
+                <div class="bg-red-50/80 border border-red-200 rounded-2xl p-6 text-left space-y-3">
                     <div class="flex items-center space-x-2 text-red-700 font-bold text-sm">
                         <i class="fa-solid fa-circle-question text-lg"></i>
                         <span>Búsqueda ambigua en el campo ${campo} ("${termino}")</span>
                     </div>
-                    <p class="text-xs text-gray-600">Haz clic en la estación exacta a la que deseas viajar:</p>
+                    <p class="text-xs text-slate-600">Selecciona la estación exacta a la que deseas viajar:</p>
                     <div class="flex flex-wrap pt-1">${botonesHtml}</div>
                 </div>
             `;
@@ -470,21 +1053,6 @@
             buscarRutas();
         }
 
-        // Función auxiliar para rellenar el campo con la estación pulsada y recalcular automáticamente
-        function seleccionarSugerencia(campo, nombreEstacion) {
-            if (campo === 'Origen') {
-                document.getElementById('origen').value = nombreEstacion;
-            } else {
-                document.getElementById('destino').value = nombreEstacion;
-            }
-            buscarRutas();
-        }
-
-        function BuscadorEstacionesNormalizar(t) {
-            if (!t) return "";
-            return t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-        }
-
         function renderTramosDetalle(tramos) {
             if (!tramos || tramos.length === 0) return '';
             return tramos.map(t => {
@@ -496,12 +1064,12 @@
                 const dur = t.duracionMinutos || 0;
 
                 return `
-                    <div class="bg-gray-50/60 p-2.5 rounded-xl flex items-center justify-between text-xs">
-                        <div class="flex items-center space-x-2">
+                    <div class="bg-slate-50/70 p-2.5 rounded-xl flex items-center justify-between text-xs border border-slate-100/80">
+                        <div class="flex items-center space-x-2.5">
                             <span class="line-badge line-${linea.replace(/[^a-zA-Z0-9]/g, '')} text-[10px]">${linea}</span>
-                            <span class="text-gray-700"><strong>${orig}</strong> ➔ <strong>${dest}</strong></span>
+                            <span class="text-slate-700"><strong>${orig}</strong> ➔ <strong>${dest}</strong></span>
                         </div>
-                        <div class="text-gray-500 font-medium">
+                        <div class="text-slate-500 font-semibold tabular-nums">
                             ${sal} - ${lleg} (${dur} min)
                         </div>
                     </div>
@@ -515,7 +1083,7 @@
             const max = document.getElementById('maxLlegadas').value;
             const container = document.getElementById('resultsLlegadas');
 
-            container.innerHTML = '<div class="bg-white rounded-2xl p-12 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin text-3xl text-[#E2001A] mb-3"></i><p class="text-sm">Consultando panel de estación...</p></div>';
+            container.innerHTML = '<div class="card-surface rounded-2xl p-12 text-center text-slate-500"><i class="fa-solid fa-spinner fa-spin text-3xl text-[#E2001A] mb-3"></i><p class="text-sm font-medium">Consultando teleindicador...</p></div>';
 
             try {
                 const estRes = await fetch(`/api/estaciones?nombre=${encodeURIComponent(estacionInput)}`);
@@ -530,17 +1098,28 @@
                 const llegadas = await res.json();
 
                 if (!llegadas || llegadas.length === 0) {
-                    container.innerHTML = '<div class="bg-amber-50 text-amber-800 p-6 rounded-2xl text-center font-bold text-sm">No hay próximas llegadas registradas para esta estación.</div>';
+                    container.innerHTML = '<div class="bg-amber-50 border border-amber-200 text-amber-800 p-6 rounded-2xl text-center font-bold text-sm">No hay próximas llegadas registradas para esta estación.</div>';
                     return;
                 }
 
+                const favActiva = esEstacionFavorita(est.id);
+                const horaActual = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
                 container.innerHTML = `
-                    <div class="bg-slate-900 text-white rounded-2xl p-4 mb-4 flex justify-between items-center shadow-lg">
+                    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-2xl p-5 mb-4 flex flex-wrap justify-between items-center gap-3 shadow-lg border border-slate-700/80">
                         <div>
-                            <h3 class="font-bold text-lg text-amber-400">📍 ${est.nombre}</h3>
-                            <p class="text-xs text-slate-400">Panel Electrónico de Llegadas</p>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Teleindicador de Estación · ${horaActual}</span>
+                            </div>
+                            <h3 class="font-extrabold text-xl text-amber-400 mt-0.5">${est.nombre}</h3>
                         </div>
-                        <span class="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-300 font-mono">${llegadas.length} TRENES</span>
+                        <div class="flex items-center gap-2">
+                            <button id="btn-fav-llegadas-${est.id}" onclick="alternarFavorita('${est.id}', '${escaparHtml(est.nombre)}')"
+                                class="text-xs bg-white/10 hover:bg-white/20 px-3.5 py-2 rounded-xl text-white font-bold transition border border-white/10">
+                                ${favActiva ? '<i class="fa-solid fa-star text-amber-400 mr-1.5"></i>En favoritas' : '<i class="fa-regular fa-star mr-1.5"></i>Guardar favorita'}
+                            </button>
+                            <span class="text-xs bg-black/40 px-3 py-2 rounded-xl text-slate-300 font-mono font-bold border border-white/10">${llegadas.length} TRENES</span>
+                        </div>
                     </div>
                 `;
 
@@ -552,52 +1131,51 @@
 
                     let badgeEstado = '';
                     if (l.estado === 'CON_RETRASO' || l.retrasoMinutos > 0) {
-                        badgeEstado = `<span class="bg-red-100 text-red-700 text-xs font-bold px-2.5 py-1 rounded-full">+${l.retrasoMinutos} min (${horaEst})</span>`;
+                        badgeEstado = `<span class="bg-red-100 text-red-700 text-xs font-extrabold px-3 py-1 rounded-full tabular-nums">+${l.retrasoMinutos} min (${horaEst})</span>`;
                     } else if (l.estado === 'CANCELADO') {
-                        badgeEstado = '<span class="bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">Cancelado</span>';
+                        badgeEstado = '<span class="bg-red-600 text-white text-xs font-extrabold px-3 py-1 rounded-full">Cancelado</span>';
                     } else {
-                        badgeEstado = '<span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full">En hora</span>';
+                        badgeEstado = '<span class="bg-emerald-100 text-emerald-700 text-xs font-extrabold px-3 py-1 rounded-full">En hora</span>';
                     }
 
                     let avisoAntiguedad = '';
                     if (l.esTiempoReal && l.ultimaActualizacion) {
                         const mins = (new Date() - new Date(l.ultimaActualizacion)) / 60000;
                         if (mins > 2) {
-                            avisoAntiguedad = `<span class="text-amber-600 text-[11px] ml-2 font-medium" title="Datos de tiempo real sin actualizar">⚠️ hace ${Math.floor(mins)}m</span>`;
+                            avisoAntiguedad = `<span class="text-amber-600 text-[11px] ml-2 font-semibold" title="Datos de tiempo real sin actualizar"><i class="fa-solid fa-triangle-exclamation mr-1"></i>hace ${Math.floor(mins)}m</span>`;
                         }
                     }
 
                     container.innerHTML += `
-                        <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm flex items-center justify-between">
+                        <div class="card-surface rounded-xl p-4 hover:border-slate-300 transition flex items-center justify-between gap-3">
                             <div class="flex items-center space-x-4">
-                                <span class="line-badge line-${lineaNombre.replace(/[^a-zA-Z0-9]/g, '')} text-base px-3 py-1">${lineaNombre}</span>
+                                <span class="line-badge line-${lineaNombre.replace(/[^a-zA-Z0-9]/g, '')} text-sm px-3.5 py-1.5 min-w-[46px]">${lineaNombre}</span>
                                 <div>
-                                    <p class="font-bold text-gray-800 text-sm">Destino: ${destinoNombre}</p>
-                                    <p class="text-xs text-gray-400">Hora oficial: ${horaPlan}${avisoAntiguedad}</p>
+                                    <p class="font-bold text-slate-800 text-sm">${destinoNombre}</p>
+                                    <p class="text-xs text-slate-500 tabular-nums">Salida programada: <strong class="text-slate-700">${horaPlan}</strong>${avisoAntiguedad}</p>
                                 </div>
                             </div>
                             <div class="text-right flex flex-col items-end gap-1">
-                                <span class="text-xs text-gray-400 uppercase">Estado</span>
                                 ${badgeEstado}
                             </div>
                         </div>
                     `;
                 });
             } catch (err) {
-                container.innerHTML = `<div class="bg-red-50 text-red-700 p-6 rounded-2xl text-center font-bold text-sm">${err.message}</div>`;
+                container.innerHTML = `<div class="bg-red-50 border border-red-200 text-red-700 p-6 rounded-2xl text-center font-bold text-sm">${err.message}</div>`;
             }
         }
 
         async function cargarTodasEstaciones() {
             const container = document.getElementById('resultsEstaciones');
-            container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-2"></i><p>Cargando estaciones de la red...</p></div>';
+            container.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-3xl text-[#E2001A] mb-2"></i><p class="text-sm font-medium">Cargando estaciones de la red...</p></div>';
 
             try {
                 const res = await fetch('/api/estaciones');
                 listaEstacionesCache = await res.json();
                 renderDirectorioEstaciones(listaEstacionesCache);
             } catch (err) {
-                container.innerHTML = `<div class="col-span-full text-red-500 text-center font-bold">Error al cargar las estaciones.</div>`;
+                container.innerHTML = `<div class="col-span-full text-red-600 text-center font-bold">Error al cargar las estaciones.</div>`;
             }
         }
 
@@ -606,16 +1184,25 @@
             container.innerHTML = '';
 
             lista.forEach(e => {
+                const fav = esEstacionFavorita(e.id);
                 container.innerHTML += `
-                    <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:border-red-200 transition">
-                        <div class="flex justify-between items-start">
-                            <h4 class="font-bold text-gray-800 text-sm">${e.nombre}</h4>
-                            <span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-mono">ID: ${e.id}</span>
+                    <div class="card-surface p-4 rounded-2xl hover:border-red-300 transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start gap-2">
+                                <h4 class="font-bold text-slate-800 text-sm">${e.nombre}</h4>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <button type="button" onclick="alternarFavorita('${e.id}', '${escaparHtml(e.nombre)}')"
+                                        class="text-base transition ${fav ? 'text-amber-400 scale-110' : 'text-slate-300 hover:text-amber-400'}" title="Marcar favorita">
+                                        <i class="fa-${fav ? 'solid' : 'regular'} fa-star"></i>
+                                    </button>
+                                    <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-mono font-bold">ID ${e.id}</span>
+                                </div>
+                            </div>
+                            <p class="text-[11px] text-slate-400 mt-1.5 tabular-nums">Lat ${e.latitud.toFixed(4)} · Lon ${e.longitud.toFixed(4)}</p>
                         </div>
-                        <p class="text-xs text-gray-400 mt-2">Lat: ${e.latitud.toFixed(4)} | Lon: ${e.longitud.toFixed(4)}</p>
-                        <div class="mt-3 pt-2 border-t border-gray-50 flex justify-between items-center">
-                            <button onclick="seleccionarEstacionYConsultar('${e.nombre}')" class="text-xs text-[#E2001A] font-semibold hover:underline">
-                                Ver llegadas ➔
+                        <div class="mt-3 pt-2.5 border-t border-slate-100 flex justify-between items-center">
+                            <button onclick="seleccionarEstacionYConsultar('${escaparHtml(e.nombre)}')" class="text-xs text-[#E2001A] font-bold hover:underline flex items-center gap-1">
+                                Ver llegadas <i class="fa-solid fa-arrow-right text-[10px]"></i>
                             </button>
                         </div>
                     </div>
@@ -636,8 +1223,6 @@
         }
 
         const URL_MAPA_CERCANIAS = '/mapas/cercanias-madrid.svg';
-        // Líneas del mapa. Cada una corresponde a un grupo data-linea del SVG; la C4 y la C8 tienen
-        // dos ramales (C4a/C4b y C8a/C8b) y se abren como una sola línea con su bifurcación.
         const mapaLineas = {
             C1: { color: '#75B6E0', recorrido: 'Chamartín-Clara Campoamor → Aeropuerto T4' },
             C2: { color: '#00943D', recorrido: 'Guadalajara → Atocha → Chamartín-Clara Campoamor' },
@@ -708,10 +1293,9 @@
         }
 
         function prepararInteraccionesMapa(svg) {
-            // Cada línea del SVG es un grupo <g data-linea="..."> (con todos sus tramos y ramales)
             svg.querySelectorAll('[data-linea]').forEach(elemento => {
                 const linea = elemento.dataset.linea;
-                elemento.dataset.mapLine = linea; // también las que no se abren (CIVIS), para atenuarlas
+                elemento.dataset.mapLine = linea;
                 if (!mapaLineas[linea]) return;
                 elemento.setAttribute('aria-label', `Abrir línea ${linea}`);
                 elemento.addEventListener('mouseenter', () => resaltarLineaMapa(linea));
@@ -720,24 +1304,18 @@
             });
         }
 
-        // ====================================================================================
-        // Mapa interactivo (US-023): zoom y desplazamiento, estaciones seleccionables, buscador,
-        // filtros de líneas y una capa preparada para dibujar los trenes en tiempo real (US-024).
-        // El zoom cambia el viewBox del SVG: no se recarga ni se vuelve a dibujar nada.
-        // ====================================================================================
         const MAPA_ZOOM_MAX = 6;
         const COLOR_CIVIS = '#E93CAC';
         const mapaVista = {
             svg: null, lienzo: null, ancho: 0, alto: 0, base: null, zoom: 1, cx: 0, cy: 0,
-            estaciones: new Map(),   // id -> { id, nombre, rotulo, lineas, x, y, radio, grupo, grupoNombre }
-            tramos: new Map(),       // "C5|35600|35608" -> { path, invertido }
-            ocultas: new Set(),      // líneas ocultas con los filtros
+            estaciones: new Map(),
+            tramos: new Map(),
+            ocultas: new Set(),
             seleccionada: null
         };
         const SVG_NS = 'http://www.w3.org/2000/svg';
-        const sinTildes = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+        const sinTildes = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
         const colorDeLinea = linea => linea === 'CIVIS' ? COLOR_CIVIS : (mapaLineas[linea]?.color || '#64748b');
-        // C4a y C4b se dibujan como C4, y C8a y C8b como C8
         const lineaDelMapa = linea => (linea || '').replace(/^(C\d+)[a-z]$/, '$1');
 
         function iniciarMapaInteractivo(svg) {
@@ -751,7 +1329,6 @@
             svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
             v.lienzo.style.aspectRatio = `${v.ancho} / ${v.alto}`;
 
-            // Capas propias, encima de las líneas y las estaciones: trenes y estación seleccionada
             const referencia = svg.querySelector('.mapa-cabeceras');
             ['mapa-capa-trenes', 'mapa-capa-seleccion'].forEach(id => {
                 const capa = document.createElementNS(SVG_NS, 'g');
@@ -770,13 +1347,11 @@
             ajustarVistaMapa();
         }
 
-        // ---- Zoom y desplazamiento ---------------------------------------------------------
         function ajustarVistaMapa() {
             const v = mapaVista;
             if (!v.svg) return;
             const caja = v.lienzo.getBoundingClientRect();
-            if (!caja.width || !caja.height) return; // la pestaña del mapa está oculta
-            // Vista completa: todo el mapa, con la misma proporción que el lienzo
+            if (!caja.width || !caja.height) return;
             const proporcion = caja.width / caja.height;
             let w = v.ancho, h = v.alto;
             if (proporcion > v.ancho / v.alto) w = v.alto * proporcion; else h = v.ancho / proporcion;
@@ -786,14 +1361,12 @@
             v.cx = Math.min(v.base.x + w - vw / 2, Math.max(v.base.x + vw / 2, v.cx));
             v.cy = Math.min(v.base.y + h - vh / 2, Math.max(v.base.y + vh / 2, v.cy));
             v.svg.setAttribute('viewBox', `${(v.cx - vw / 2).toFixed(2)} ${(v.cy - vh / 2).toFixed(2)} ${vw.toFixed(2)} ${vh.toFixed(2)}`);
-            // Sin ampliar, un dedo desplaza la página; ampliado, mueve el mapa
             v.lienzo.style.touchAction = v.zoom > 1.01 ? 'none' : 'pan-y';
             document.getElementById('mapaZoomMas').disabled = v.zoom >= MAPA_ZOOM_MAX - 0.01;
             document.getElementById('mapaZoomMenos').disabled = v.zoom <= 1.01;
             document.getElementById('mapaZoomTodo').disabled = v.zoom <= 1.01;
         }
 
-        /** Amplía o reduce dejando fijo el punto de la pantalla (clientX, clientY); por defecto, el centro. */
         function zoomMapa(factor, clientX, clientY) {
             const v = mapaVista;
             if (!v.base) return;
@@ -820,7 +1393,7 @@
             document.getElementById('mapaZoomTodo').addEventListener('click', verTodoElMapa);
 
             lienzo.addEventListener('wheel', e => {
-                if (!e.ctrlKey && !e.metaKey) return; // sin Ctrl, la rueda sigue desplazando la página
+                if (!e.ctrlKey && !e.metaKey) return;
                 e.preventDefault();
                 zoomMapa(e.deltaY < 0 ? 1.25 : 0.8, e.clientX, e.clientY);
             }, { passive: false });
@@ -858,7 +1431,7 @@
                 if (!arrastrado) {
                     arrastrado = true;
                     lienzo.classList.add('arrastrando');
-                    try { lienzo.setPointerCapture(e.pointerId); } catch (_) { /* puntero ya liberado */ }
+                    try { lienzo.setPointerCapture(e.pointerId); } catch (_) {}
                 }
                 const escala = (v.base.w / v.zoom) / lienzo.getBoundingClientRect().width;
                 v.cx = inicio.cx - dx * escala;
@@ -873,13 +1446,11 @@
             };
             lienzo.addEventListener('pointerup', soltar);
             lienzo.addEventListener('pointercancel', soltar);
-            // Si se ha arrastrado, el clic que llega al soltar no debe abrir una línea ni una estación
             lienzo.addEventListener('click', e => {
                 if (arrastrado) { e.stopPropagation(); e.preventDefault(); arrastrado = false; }
             }, true);
         }
 
-        // ---- Estaciones --------------------------------------------------------------------
         function indexarEstacionesMapa(svg) {
             const v = mapaVista;
             v.estaciones.clear();
@@ -895,7 +1466,6 @@
                 const rotulo = grupoNombre
                     ? [...grupoNombre.querySelectorAll('tspan')].map(t => t.textContent).join(' ').replace(/- /g, '-')
                     : nombre;
-                // Zona de toque más grande que el círculo, para el dedo
                 puntos.forEach(p => {
                     const toque = document.createElementNS(SVG_NS, 'circle');
                     toque.setAttribute('cx', p.x); toque.setAttribute('cy', p.y); toque.setAttribute('r', 9);
@@ -922,6 +1492,7 @@
                 ajustarVistaMapa();
             }
 
+            const fav = esEstacionFavorita(e.id);
             const ficha = document.getElementById('mapaFicha');
             ficha.innerHTML = `
                 <button type="button" class="mapa-ficha-cerrar" aria-label="Cerrar">&times;</button>
@@ -929,8 +1500,9 @@
                 <div class="mapa-ficha-lineas"></div>
                 <div class="mapa-ficha-acciones">
                     <button type="button" class="principal" data-accion="llegadas"><i class="fa-solid fa-clock mr-1"></i>Próximas llegadas</button>
-                    <button type="button" data-accion="origen">Ruta desde aquí</button>
-                    <button type="button" data-accion="destino">Ruta hasta aquí</button>
+                    <button type="button" data-accion="favorita"><i class="fa-${fav ? 'solid' : 'regular'} fa-star mr-1 text-amber-500"></i>${fav ? 'Favorita' : 'Guardar'}</button>
+                    <button type="button" data-accion="origen">Origen</button>
+                    <button type="button" data-accion="destino">Destino</button>
                 </div>`;
             ficha.querySelector('h3').textContent = e.rotulo;
             const lineas = ficha.querySelector('.mapa-ficha-lineas');
@@ -943,6 +1515,10 @@
             });
             ficha.querySelector('.mapa-ficha-cerrar').addEventListener('click', cerrarFichaEstacion);
             ficha.querySelector('[data-accion="llegadas"]').addEventListener('click', () => seleccionarEstacionYConsultar(e.nombre));
+            ficha.querySelector('[data-accion="favorita"]').addEventListener('click', async () => {
+                await alternarFavorita(e.id, e.nombre);
+                if (sesionUsuario.token) seleccionarEstacionMapa(id, false);
+            });
             ficha.querySelector('[data-accion="origen"]').addEventListener('click', () => usarEstacionEnRuta('origen', e.nombre));
             ficha.querySelector('[data-accion="destino"]').addEventListener('click', () => usarEstacionEnRuta('destino', e.nombre));
             ficha.hidden = false;
@@ -956,7 +1532,6 @@
             if (capa) capa.innerHTML = '';
         }
 
-        /** Lleva la estación al buscador de rutas como origen o destino. */
         function usarEstacionEnRuta(campo, nombre) {
             cambiarPestana('rutas');
             const entrada = document.getElementById(campo);
@@ -982,12 +1557,11 @@
                 }
                 if (e) { seleccionarEstacionMapa(e.id, true); entrada.value = e.rotulo; }
             };
-            entrada.addEventListener('change', () => buscar(false));           // Intro o elegir de la lista
-            entrada.addEventListener('input', () => buscar(true));             // al elegir una sugerencia
+            entrada.addEventListener('change', () => buscar(false));
+            entrada.addEventListener('input', () => buscar(true));
             entrada.addEventListener('search', () => { if (!entrada.value) cerrarFichaEstacion(); });
         }
 
-        // ---- Filtros de líneas -------------------------------------------------------------
         function renderFiltrosMapa() {
             const contenedor = document.getElementById('mapaFiltros');
             contenedor.innerHTML = '<span>Líneas visibles:</span>';
@@ -1020,8 +1594,6 @@
             const v = mapaVista;
             v.svg.querySelectorAll('[data-linea]').forEach(grupo => {
                 const oculta = v.ocultas.has(grupo.dataset.linea);
-                // El trazo visible se oculta con visibility para poder seguir midiéndolo (capa de
-                // trenes); la zona sensible al ratón, con display, para que no reciba clics
                 if (grupo.getAttribute('pointer-events') === 'stroke') grupo.style.display = oculta ? 'none' : '';
                 else grupo.style.visibility = oculta ? 'hidden' : '';
             });
@@ -1038,8 +1610,6 @@
             });
         }
 
-        // ---- Capa de trenes en tiempo real (preparada para US-024) ---------------------------
-        /** Relaciona cada tramo dibujado (entre dos estaciones seguidas de una línea) con su trazo. */
         function indexarTramosMapa(svg) {
             const v = mapaVista;
             v.tramos.clear();
@@ -1060,12 +1630,6 @@
             });
         }
 
-        /**
-         * Punto del mapa en el que está un tren que va de la estación `desde` a la estación `hasta`
-         * (stop_id del GTFS) y lleva recorrida la fracción `progreso` del tramo (0 = sale, 1 = llega).
-         * Si las dos estaciones son consecutivas en la línea se sigue el trazo dibujado; si no, se
-         * interpola en línea recta. Devuelve null si no se conoce alguna estación.
-         */
         function posicionTrenMapa(linea, desde, hasta, progreso = 0) {
             const v = mapaVista, t = Math.min(1, Math.max(0, progreso));
             const a = v.estaciones.get(desde), b = v.estaciones.get(hasta || desde);
@@ -1079,13 +1643,6 @@
             return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
         }
 
-        /**
-         * Dibuja los trenes sobre el mapa, sustituyendo a los anteriores, sin recargar nada más.
-         * Cada tren: { id, linea, desde, hasta, progreso } (estaciones por stop_id) o { id, linea, x, y }
-         * en coordenadas del mapa; opcionales: destino y retrasoSegundos (salen al pasar el ratón).
-         * `estado` es opcional: { actualizado: Date, obsoleto: boolean } para el texto de vigencia.
-         * Devuelve cuántos trenes ha podido situar.
-         */
         function pintarTrenesMapa(trenes, estado) {
             const v = mapaVista;
             if (!v.svg) return 0;
@@ -1129,7 +1686,6 @@
             document.getElementById('mapaEstadoTrenes').hidden = true;
         }
 
-        // Lo que puede usar el resto de la web (por ejemplo, la capa de tiempo real de US-024)
         window.mapaCercanias = {
             pintarTrenes: pintarTrenesMapa, limpiarTrenes: limpiarTrenesMapa, posicionTren: posicionTrenMapa,
             seleccionarEstacion: seleccionarEstacionMapa, verTodo: verTodoElMapa, zoom: zoomMapa
@@ -1252,7 +1808,6 @@
             activarEstacionesDetalle(svg);
         }
 
-        // Al pulsar una estación del recorrido (o Enter/Espacio) se consultan sus llegadas
         function activarEstacionesDetalle(svg) {
             svg.querySelectorAll('.detail-station').forEach(estacionSvg => {
                 const consultar = () => seleccionarEstacionYConsultar(estacionSvg.dataset.estacion);
@@ -1277,15 +1832,12 @@
             return `<g class="detail-station" style="--line-color:${color}" data-estacion="${escaparHtml(nombre)}" role="button" tabindex="0" aria-label="Consultar llegadas en ${escaparHtml(nombre)}"><circle cx="${x}" cy="${y}" r="6"></circle><text x="${xTexto}" y="${yTexto}" text-anchor="middle">${tspans}</text></g>`;
         }
 
-        // Número de estaciones iguales al principio de dos recorridos
         function prefijoComun(a, b) {
             let i = 0;
             while (i < a.length && i < b.length && a[i].id === b[i].id) i++;
             return i;
         }
 
-        // Orienta los ramales para que el tramo común (por ejemplo, Parla - Universidad-Cantoblanco
-        // en la C4) quede al principio de todos
         function orientarRamales(ramales) {
             let mejor = null;
             for (const invertirPrimero of [false, true]) {
@@ -1303,8 +1855,6 @@
             return mejor;
         }
 
-        // Línea con bifurcación (C4, C8): tramo común en horizontal y, desde la estación donde se
-        // separan, un ramal hacia arriba y otro hacia abajo, cada uno con su nombre al final
         function renderDetalleRamales(linea, ramales) {
             const data = mapaLineas[linea];
             const svg = document.getElementById('mapaLineaSvg');
@@ -1323,8 +1873,6 @@
             if (tronco.length > 0) {
                 const puntos = tronco.map((_, i) => `${margenIzquierdo + i * separacion},${yCentro}`).join(' ');
                 trazos += `<polyline points="${puntos}" fill="none" stroke="${data.color}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></polyline>`;
-                // El nombre de la estación donde se separan los ramales va arriba y algo a la izquierda,
-                // para que no lo tape el ramal que sube
                 estacionesSvg += tronco.map((e, i) => i === tronco.length - 1
                     ? estacionDetalleSvg(e, margenIzquierdo + i * separacion, yCentro, true, data.color, -48)
                     : estacionDetalleSvg(e, margenIzquierdo + i * separacion, yCentro, i % 2 === 1 && i !== tronco.length - 2, data.color)).join('');
@@ -1362,7 +1910,9 @@
             return fechaIso.includes('T') ? fechaIso.split('T')[1].substring(0, 5) : fechaIso.substring(0, 5);
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            actualizarBotonHeaderUsuario();
+            await cargarDatosUsuarioLogueado();
             setCriterio('tiempo');
             const tabSolicitada = new URLSearchParams(window.location.search).get('tab');
             if (['rutas', 'llegadas', 'estaciones', 'mapa'].includes(tabSolicitada)) {
