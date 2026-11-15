@@ -1,7 +1,6 @@
 package com.backendapi.controlador;
 
 import com.backendapi.ActualizadorTiempoReal;
-import com.backendapi.modelo.gtfsrt.GtfsRtFeed;
 import consultas.BuscadorEstaciones;
 import consultas.ConsultaLlegadas;
 import modelo.Estacion;
