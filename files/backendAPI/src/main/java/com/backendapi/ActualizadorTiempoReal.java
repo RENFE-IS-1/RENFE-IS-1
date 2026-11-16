@@ -2,7 +2,6 @@ package com.backendapi;
 
 import loader.ClienteApiRenfe;
 import repositorio.RedTransporte;
-import com.backendapi.modelo.gtfsrt.GtfsRtFeed;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;

@@ -90,8 +90,12 @@ class RutasControllerIntegrationTest {
                 .param("desde", "2026-10-26T07:59:00")
                 .param("max", "5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].linea.shortName").value("C1"))
-                .andExpect(jsonPath("$[0].destino.nombre").value("Chamartín"));
+                .andExpect(jsonPath("$[0].linea").value("C1"))
+                .andExpect(jsonPath("$[0].destino").value("Chamartín"))
+                .andExpect(jsonPath("$[0].horaPlanificada").value("08:00:00"))
+                .andExpect(jsonPath("$[0].horaEstimada").value("08:00:00"))
+                .andExpect(jsonPath("$[0].estado").value("EN_HORA"))
+                .andExpect(jsonPath("$[0].esTiempoReal").value(false));
     }
 
     /** Si no hay coincidencias, la API responde 200 con una lista JSON vacía. */

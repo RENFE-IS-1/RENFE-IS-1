@@ -7,6 +7,7 @@ import modelo.Viaje;
 import repositorio.RedTransporte;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -45,11 +46,21 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
      * tanto para leer. Sin límite, si la API de Renfe no responde la petición se quedaría esperando
      * para siempre.
      */
+    @Autowired
     public ClienteApiRenfe(@Value("${renfe.api.timeout-ms:5000}") long timeoutMs) {
+        this(crearRestTemplate(timeoutMs));
+    }
+
+    /** Constructor acotado al paquete para probar el cliente con respuestas HTTP simuladas. */
+    ClienteApiRenfe(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+    private static RestTemplate crearRestTemplate(long timeoutMs) {
         SimpleClientHttpRequestFactory fabrica = new SimpleClientHttpRequestFactory();
         fabrica.setConnectTimeout(Duration.ofMillis(timeoutMs));
         fabrica.setReadTimeout(Duration.ofMillis(timeoutMs));
-        this.restTemplate = new RestTemplate(fabrica);
+        return new RestTemplate(fabrica);
     }
 
     @Override
@@ -77,17 +88,20 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
         if (!exitoIncidencias) System.err.println("Fallo T-API: Incidencias no disponibles.");
     }
 
-    private boolean actualizarPosiciones(RedTransporte red) {
+    boolean actualizarPosiciones(RedTransporte red) {
         try {
             GtfsRtJsonDto datos = restTemplate.getForObject(urlPosiciones, GtfsRtJsonDto.class);
-            if (datos == null || datos.getEntity() == null) return false;
+            if (datos == null || datos.getEntity() == null) {
+                posicionesEnVivo.clear();
+                return false;
+            }
 
             List<GtfsRtJsonDto.VehiclePosition> nuevasPosiciones = new ArrayList<>();
             for (GtfsRtJsonDto.Entity e : datos.getEntity()) {
-                if (e.getVehicle() != null) {
+                if (e != null && posicionValida(e.getVehicle())) {
                     nuevasPosiciones.add(e.getVehicle());
 
-                    if (e.getVehicle().getTrip() != null && e.getVehicle().getPosition() != null) {
+                    if (e.getVehicle().getTrip() != null) {
                         String tripId = e.getVehicle().getTrip().getTripId();
                         Viaje viaje = red.getViaje(tripId);
                         if (viaje != null) {
@@ -104,9 +118,20 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
             posicionesEnVivo.addAll(nuevasPosiciones);
             return true;
         } catch (Exception e) {
+            posicionesEnVivo.clear();
             System.err.println("Motivo del fallo: " + e.getMessage());
             return false;
         }
+    }
+
+    private static boolean posicionValida(GtfsRtJsonDto.VehiclePosition vehiculo) {
+        if (vehiculo == null || vehiculo.getPosition() == null) return false;
+        Double latitud = vehiculo.getPosition().getLatitude();
+        Double longitud = vehiculo.getPosition().getLongitude();
+        if (latitud == null || longitud == null) return false;
+        return Double.isFinite(latitud) && Double.isFinite(longitud)
+                && latitud >= -90 && latitud <= 90
+                && longitud >= -180 && longitud <= 180;
     }
 
     /**

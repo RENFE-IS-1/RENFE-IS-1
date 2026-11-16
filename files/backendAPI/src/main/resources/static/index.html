@@ -16,6 +16,7 @@
         }
         h1, h2, h3, .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
         .tabular-nums { font-variant-numeric: tabular-nums; }
+        :where(button, a, input, select, [tabindex]):focus-visible { outline: 2px solid #8f0011; outline-offset: 2px; }
 
         .renfe-header {
             background: linear-gradient(135deg, #b80015 0%, #E2001A 52%, #9e0012 100%);
@@ -84,12 +85,10 @@
         }
 
         .schematic-map { background: linear-gradient(135deg, #f8fafc, #eef2ff); }
-        .schematic-map svg,
-        .schematic-map svg:focus,
-        .map-line,
-        .map-line:focus,
-        .detail-station,
-        .detail-station:focus { outline: none !important; }
+        .mapa-real-svg [data-linea]:focus-visible,
+        .mapa-real-svg [data-estacion]:focus-visible { filter: drop-shadow(0 0 3px #E2001A); }
+        .mapa-real-svg [data-estacion]:focus-visible > circle { stroke: #E2001A; stroke-width: 3; }
+        .detail-station:focus-visible circle { stroke: #E2001A; stroke-width: 4; }
         .mapa-real-svg { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-select: none; }
         .mapa-lienzo { position: relative; width: 100%; max-height: 82vh; min-height: 280px; overflow: hidden; border-radius: 12px; background: #fff; cursor: grab; touch-action: pan-y; }
         .mapa-lienzo.arrastrando { cursor: grabbing; }
@@ -117,6 +116,7 @@
         .mapa-estado-trenes { font-size: 12px; color: #475569; }
         .mapa-estado-trenes[hidden] { display: none; }
         .mapa-estado-trenes.obsoleto { color: #b45309; font-weight: 600; }
+        .mapa-real-svg .mapa-trenes-obsoletos { opacity: .45; }
         .mapa-real-svg [data-estacion], .mapa-real-svg [data-estacion-nombre] { pointer-events: auto; cursor: pointer; }
         .mapa-real-svg [data-estacion-nombre]:hover text { fill: #E2001A; }
         .mapa-real-svg .mapa-atenuada { opacity: .22; }
@@ -163,17 +163,17 @@
 
             <!-- Navegación + Acceso Usuario -->
             <div class="flex flex-wrap items-center justify-center gap-2.5">
-                <nav class="flex bg-black/20 backdrop-blur-xs p-1 rounded-xl text-xs font-semibold border border-white/15">
-                    <button onclick="cambiarPestana('rutas')" id="tab-rutas" class="tab-btn active px-3.5 py-2 rounded-lg">
+                <nav aria-label="Secciones principales" class="flex bg-black/20 backdrop-blur-xs p-1 rounded-xl text-xs font-semibold border border-white/15">
+                    <button type="button" aria-controls="sec-rutas" aria-pressed="true" onclick="cambiarPestana('rutas')" id="tab-rutas" class="tab-btn active px-3.5 py-2 rounded-lg">
                         <i class="fa-solid fa-route mr-1.5"></i>Comparar Rutas
                     </button>
-                    <button onclick="cambiarPestana('llegadas')" id="tab-llegadas" class="tab-btn px-3.5 py-2 rounded-lg">
+                    <button type="button" aria-controls="sec-llegadas" aria-pressed="false" onclick="cambiarPestana('llegadas')" id="tab-llegadas" class="tab-btn px-3.5 py-2 rounded-lg">
                         <i class="fa-solid fa-clock mr-1.5"></i>Llegadas
                     </button>
-                    <button onclick="cambiarPestana('estaciones')" id="tab-estaciones" class="tab-btn px-3.5 py-2 rounded-lg">
+                    <button type="button" aria-controls="sec-estaciones" aria-pressed="false" onclick="cambiarPestana('estaciones')" id="tab-estaciones" class="tab-btn px-3.5 py-2 rounded-lg">
                         <i class="fa-solid fa-map-pin mr-1.5"></i>Estaciones
                     </button>
-                    <button onclick="cambiarPestana('mapa')" id="tab-mapa" class="tab-btn px-3.5 py-2 rounded-lg">
+                    <button type="button" aria-controls="sec-mapa" aria-pressed="false" onclick="cambiarPestana('mapa')" id="tab-mapa" class="tab-btn px-3.5 py-2 rounded-lg">
                         <i class="fa-solid fa-diagram-project mr-1.5"></i>Mapa de líneas
                     </button>
                 </nav>
@@ -206,7 +206,7 @@
 
                     <form id="routeForm" onsubmit="event.preventDefault(); buscarRutas();" class="space-y-4">
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Estación de Origen</label>
+                            <label for="origen" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Estación de Origen</label>
                             <div class="relative">
                                 <i class="fa-solid fa-circle-dot text-emerald-600 text-xs absolute left-3.5 top-3.5"></i>
                                 <input type="text" id="origen" value="Atocha" required
@@ -215,14 +215,14 @@
                         </div>
 
                         <div class="flex justify-center -my-2 relative z-10">
-                            <button type="button" onclick="intercambiarEstaciones()" title="Invertir origen y destino"
+                            <button type="button" onclick="intercambiarEstaciones()" aria-label="Intercambiar estaciones de origen y destino" title="Invertir origen y destino"
                                 class="bg-white border border-slate-200 w-9 h-9 rounded-full text-slate-500 hover:text-[#E2001A] hover:border-red-200 shadow-sm transition transform hover:rotate-180 flex items-center justify-center">
                                 <i class="fa-solid fa-arrows-up-down text-xs"></i>
                             </button>
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Estación de Destino</label>
+                            <label for="destino" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Estación de Destino</label>
                             <div class="relative">
                                 <i class="fa-solid fa-location-dot text-[#E2001A] text-xs absolute left-3.5 top-3.5"></i>
                                 <input type="text" id="destino" value="alcala" required
@@ -242,15 +242,15 @@
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Priorizar por</label>
-                            <div class="grid grid-cols-3 gap-1.5 bg-slate-100 p-1 rounded-xl">
-                                <button type="button" onclick="setCriterio('tiempo')" id="btn-tiempo" class="criterio-btn text-xs py-2 font-medium rounded-lg text-slate-700 transition">
+                            <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Priorizar por</span>
+                            <div role="group" aria-label="Criterio para ordenar rutas" class="grid grid-cols-3 gap-1.5 bg-slate-100 p-1 rounded-xl">
+                                <button type="button" aria-pressed="true" onclick="setCriterio('tiempo')" id="btn-tiempo" class="criterio-btn text-xs py-2 font-medium rounded-lg text-slate-700 transition">
                                     <i class="fa-solid fa-bolt mr-1"></i>Tiempo
                                 </button>
-                                <button type="button" onclick="setCriterio('precio')" id="btn-precio" class="criterio-btn text-xs py-2 font-medium rounded-lg text-slate-700 transition">
+                                <button type="button" aria-pressed="false" onclick="setCriterio('precio')" id="btn-precio" class="criterio-btn text-xs py-2 font-medium rounded-lg text-slate-700 transition">
                                     <i class="fa-solid fa-euro-sign mr-1"></i>Precio
                                 </button>
-                                <button type="button" onclick="setCriterio('transbordos')" id="btn-transbordos" class="criterio-btn text-xs py-2 font-medium rounded-lg text-slate-700 transition">
+                                <button type="button" aria-pressed="false" onclick="setCriterio('transbordos')" id="btn-transbordos" class="criterio-btn text-xs py-2 font-medium rounded-lg text-slate-700 transition">
                                     <i class="fa-solid fa-right-left mr-1"></i>Cambios
                                 </button>
                             </div>
@@ -278,7 +278,7 @@
                         <span id="badgeCriterio" class="text-[11px] font-extrabold px-3 py-1.5 rounded-xl bg-red-50 text-[#E2001A] uppercase tracking-wide"></span>
                     </div>
                 </div>
-                <div id="resultsRutas" class="space-y-4">
+                <div id="resultsRutas" class="space-y-4" aria-live="polite" aria-atomic="false">
                     <div class="card-surface rounded-2xl p-12 text-center text-slate-400">
                         <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-300 flex items-center justify-center mx-auto mb-4 text-2xl">
                             <i class="fa-solid fa-train-subway"></i>
@@ -303,19 +303,19 @@
 
                     <form onsubmit="event.preventDefault(); buscarLlegadas();" class="space-y-4">
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nombre o ID de Estación</label>
+                            <label for="estacionLlegadas" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nombre o ID de Estación</label>
                             <input type="text" id="estacionLlegadas" value="Atocha" required
                                 class="w-full px-4 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E2001A]/30 focus:border-[#E2001A]">
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Filtrar por Línea (Opcional)</label>
+                            <label for="filtroLinea" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Filtrar por Línea (Opcional)</label>
                             <input type="text" id="filtroLinea" placeholder="Ej: C4, C5, C10..."
                                 class="w-full px-4 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E2001A]/30 focus:border-[#E2001A]">
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Número de Trenes</label>
+                            <label for="maxLlegadas" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Número de Trenes</label>
                             <select id="maxLlegadas" class="w-full px-4 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-sm font-medium">
                                 <option value="5">5 próximos trenes</option>
                                 <option value="10" selected>10 próximos trenes</option>
@@ -332,7 +332,7 @@
             </section>
 
             <section class="lg:col-span-8">
-                <div id="resultsLlegadas" class="space-y-3">
+                <div id="resultsLlegadas" class="space-y-3" aria-live="polite" aria-atomic="false">
                     <div class="card-surface rounded-2xl p-12 text-center text-slate-400">
                         <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-300 flex items-center justify-center mx-auto mb-4 text-2xl">
                             <i class="fa-solid fa-tv"></i>
@@ -349,7 +349,7 @@
             <div class="card-surface rounded-2xl p-5 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="w-full md:w-1/2 relative">
                     <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-400"></i>
-                    <input type="text" id="buscarEstacionTexto" onkeyup="filtrarDirectorioEstaciones()" placeholder="Filtrar estación por nombre o código..."
+                    <input type="text" id="buscarEstacionTexto" aria-label="Filtrar estaciones por nombre o código" onkeyup="filtrarDirectorioEstaciones()" placeholder="Filtrar estación por nombre o código..."
                         class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E2001A]/30 focus:border-[#E2001A]">
                 </div>
                 <button onclick="cargarTodasEstaciones()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold transition flex items-center gap-2">
@@ -358,7 +358,7 @@
                 </button>
             </div>
 
-            <div id="resultsEstaciones" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div id="resultsEstaciones" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" aria-live="polite" aria-atomic="false">
             </div>
         </div>
 
@@ -373,7 +373,7 @@
                         </h2>
                         <p class="text-xs text-slate-500">Pulsa una línea para abrir su recorrido completo, o una estación para ver sus llegadas y buscar rutas.</p>
                     </div>
-                    <span id="mapaEstadoTrenes" class="mapa-estado-trenes" hidden></span>
+                    <span id="mapaEstadoTrenes" class="mapa-estado-trenes" role="status" aria-live="polite" hidden></span>
                 </div>
                 <div class="mapa-barra">
                     <input type="search" id="mapaBuscarEstacion" list="mapaListaEstaciones" placeholder="Buscar estación en el mapa..." aria-label="Buscar estación en el mapa" autocomplete="off">
@@ -382,8 +382,8 @@
                 </div>
                 <div class="schematic-map rounded-2xl border border-slate-200 p-2">
                     <div id="mapaLienzo" class="mapa-lienzo">
-                        <div id="mapaSvg" aria-live="polite">
-                            <div class="py-16 text-center text-sm text-slate-500">
+                        <div id="mapaSvg" role="region" aria-label="Mapa de Cercanías Madrid">
+                            <div class="py-16 text-center text-sm text-slate-500" role="status" aria-live="polite">
                                 <i class="fa-solid fa-spinner fa-spin mr-2 text-[#E2001A]"></i>Cargando mapa de Cercanías...
                             </div>
                         </div>
@@ -392,11 +392,11 @@
                             <button type="button" id="mapaZoomMenos" title="Reducir" aria-label="Reducir el mapa">&minus;</button>
                             <button type="button" id="mapaZoomTodo" title="Ver todo el mapa" aria-label="Ver todo el mapa"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg></button>
                         </div>
-                        <div id="mapaFicha" class="mapa-ficha" hidden></div>
+                        <div id="mapaFicha" class="mapa-ficha" role="region" aria-label="Estación seleccionada" hidden></div>
                     </div>
                 </div>
                 <p class="mt-2.5 text-xs text-slate-400">Arrastra para mover el mapa. Amplía con los botones, con doble clic, con Ctrl + rueda del ratón o pellizcando en pantallas táctiles.</p>
-                <div id="mapaSelectorLineas" class="mt-4 flex flex-wrap gap-2" aria-label="Seleccionar línea de Cercanías"></div>
+                <div id="mapaSelectorLineas" class="mt-4 flex flex-wrap gap-2" role="group" aria-label="Seleccionar línea de Cercanías"></div>
             </div>
 
             <div id="mapaVistaLinea" class="hidden card-surface rounded-2xl p-6">
@@ -413,7 +413,7 @@
                     </div>
                 </div>
                 <div id="mapaLineaContenedor" class="schematic-map rounded-2xl border border-slate-200 overflow-auto p-3">
-                    <svg id="mapaLineaSvg" viewBox="0 0 1100 430" role="img" aria-label="Recorrido de línea con todas sus estaciones" focusable="false" class="block h-auto"></svg>
+                    <svg id="mapaLineaSvg" viewBox="0 0 1100 430" role="group" aria-label="Recorrido de línea con todas sus estaciones" focusable="false" class="block h-auto"></svg>
                 </div>
             </div>
         </div>
@@ -435,8 +435,8 @@
 
     <!-- MODAL DE CUENTA / LOGIN / REGISTRO / PANEL PERSONAL (EP-08) -->
     <div id="modalUsuario" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 p-6 relative">
-            <button type="button" onclick="cerrarModalUsuario()" class="absolute top-4 right-4 w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 text-xl font-bold flex items-center justify-center">&times;</button>
+        <div role="dialog" aria-modal="true" aria-labelledby="tituloModalUsuario" class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 p-6 relative">
+            <button type="button" onclick="cerrarModalUsuario()" aria-label="Cerrar ventana de usuario" class="absolute top-4 right-4 w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 text-xl font-bold flex items-center justify-center">&times;</button>
 
             <!-- VISTA 1: NO AUTENTICADO (LOGIN / REGISTRO US-013) -->
             <div id="vistaAuthModal" class="space-y-4">
@@ -445,7 +445,7 @@
                         <i class="fa-solid fa-user-shield text-lg"></i>
                     </span>
                     <div>
-                        <h2 class="text-lg font-bold text-slate-800 leading-tight">Área de Usuarios</h2>
+                        <h2 id="tituloModalUsuario" class="text-lg font-bold text-slate-800 leading-tight">Área de Usuarios</h2>
                         <p class="text-xs text-slate-500">Guarda tus estaciones favoritas y trayectos habituales</p>
                     </div>
                 </div>
@@ -453,23 +453,23 @@
                     Inicia sesión o crea una cuenta gratuita para guardar tus estaciones favoritas y rutas habituales.
                 </p>
 
-                <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold">
-                    <button type="button" id="subtab-login" onclick="cambiarModoAuth('login')" class="py-2 rounded-lg bg-white text-[#E2001A] shadow-xs">Iniciar Sesión</button>
-                    <button type="button" id="subtab-registro" onclick="cambiarModoAuth('registro')" class="py-2 rounded-lg text-slate-600">Crear Cuenta</button>
+                <div role="group" aria-label="Tipo de acceso" class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+                    <button type="button" id="subtab-login" aria-pressed="true" aria-controls="formLogin" onclick="cambiarModoAuth('login')" class="py-2 rounded-lg bg-white text-[#E2001A] shadow-xs">Iniciar Sesión</button>
+                    <button type="button" id="subtab-registro" aria-pressed="false" aria-controls="formRegistro" onclick="cambiarModoAuth('registro')" class="py-2 rounded-lg text-slate-600">Crear Cuenta</button>
                 </div>
 
-                <div id="authMensajeError" class="hidden text-xs bg-red-50 text-red-700 border border-red-200 p-3 rounded-xl font-semibold"></div>
-                <div id="authMensajeOk" class="hidden text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 p-3 rounded-xl font-semibold"></div>
+                <div id="authMensajeError" role="alert" aria-live="assertive" class="hidden text-xs bg-red-50 text-red-700 border border-red-200 p-3 rounded-xl font-semibold"></div>
+                <div id="authMensajeOk" role="status" aria-live="polite" class="hidden text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 p-3 rounded-xl font-semibold"></div>
 
                 <!-- Formulario Login -->
                 <form id="formLogin" onsubmit="event.preventDefault(); enviarLogin();" class="space-y-3">
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Correo electrónico</label>
+                        <label for="loginEmail" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Correo electrónico</label>
                         <input type="email" id="loginEmail" required placeholder="tu@email.com"
                             class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:border-[#E2001A]">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Contraseña</label>
+                        <label for="loginPassword" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Contraseña</label>
                         <input type="password" id="loginPassword" required placeholder="••••••••"
                             class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:border-[#E2001A]">
                     </div>
@@ -481,17 +481,17 @@
                 <!-- Formulario Registro -->
                 <form id="formRegistro" onsubmit="event.preventDefault(); enviarRegistro();" class="hidden space-y-3">
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre</label>
+                        <label for="regNombre" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre</label>
                         <input type="text" id="regNombre" required placeholder="Ej: Ana García"
                             class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:border-[#E2001A]">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Correo electrónico</label>
+                        <label for="regEmail" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Correo electrónico</label>
                         <input type="email" id="regEmail" required placeholder="tu@email.com"
                             class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:border-[#E2001A]">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Contraseña (mínimo 8 caracteres)</label>
+                        <label for="regPassword" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Contraseña (mínimo 8 caracteres)</label>
                         <input type="password" id="regPassword" minlength="8" required placeholder="Mínimo 8 caracteres"
                             class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:border-[#E2001A]">
                     </div>
@@ -577,6 +577,7 @@
             favoritas: [],
             rutas: []
         };
+        let focoAnteriorModalUsuario = null;
 
         function headersAuth() {
             return {
@@ -631,24 +632,54 @@
         }
 
         function abrirModalUsuario(invitacion = false) {
-            document.getElementById('modalUsuario').classList.remove('hidden');
+            const modal = document.getElementById('modalUsuario');
+            const dialogo = modal.querySelector('[role="dialog"]');
+            if (modal.classList.contains('hidden')) focoAnteriorModalUsuario = document.activeElement;
+            modal.classList.remove('hidden');
             document.getElementById('authMensajeError').classList.add('hidden');
             document.getElementById('authMensajeOk').classList.add('hidden');
             document.getElementById('avisoInvitacionLogin').classList.toggle('hidden', !invitacion);
 
             if (sesionUsuario.token && sesionUsuario.usuario) {
+                dialogo.setAttribute('aria-labelledby', 'perfilNombre');
                 document.getElementById('vistaAuthModal').classList.add('hidden');
                 document.getElementById('vistaPerfilModal').classList.remove('hidden');
                 renderizarPanelPerfil();
             } else {
+                dialogo.setAttribute('aria-labelledby', 'tituloModalUsuario');
                 document.getElementById('vistaPerfilModal').classList.add('hidden');
                 document.getElementById('vistaAuthModal').classList.remove('hidden');
             }
+            requestAnimationFrame(() => {
+                const primerControl = modal.querySelector('button:not([disabled]), input:not([disabled])');
+                primerControl?.focus();
+            });
         }
 
         function cerrarModalUsuario() {
             document.getElementById('modalUsuario').classList.add('hidden');
+            if (focoAnteriorModalUsuario?.isConnected) focoAnteriorModalUsuario.focus();
+            focoAnteriorModalUsuario = null;
         }
+
+        document.addEventListener('keydown', evento => {
+            const modal = document.getElementById('modalUsuario');
+            if (modal.classList.contains('hidden')) return;
+            if (evento.key === 'Escape') {
+                evento.preventDefault();
+                cerrarModalUsuario();
+            } else if (evento.key === 'Tab') {
+                const controles = [...modal.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])')]
+                    .filter(control => control.getClientRects().length > 0);
+                if (!controles.length) return;
+                const primero = controles[0], ultimo = controles[controles.length - 1];
+                if (evento.shiftKey && document.activeElement === primero) {
+                    evento.preventDefault(); ultimo.focus();
+                } else if (!evento.shiftKey && document.activeElement === ultimo) {
+                    evento.preventDefault(); primero.focus();
+                }
+            }
+        });
 
         function cambiarModoAuth(modo) {
             const esLogin = modo === 'login';
@@ -656,6 +687,8 @@
             document.getElementById('formRegistro').classList.toggle('hidden', esLogin);
             document.getElementById('subtab-login').className = esLogin ? 'py-2 rounded-lg bg-white text-[#E2001A] shadow-xs' : 'py-2 rounded-lg text-slate-600';
             document.getElementById('subtab-registro').className = !esLogin ? 'py-2 rounded-lg bg-white text-[#E2001A] shadow-xs' : 'py-2 rounded-lg text-slate-600';
+            document.getElementById('subtab-login').setAttribute('aria-pressed', String(esLogin));
+            document.getElementById('subtab-registro').setAttribute('aria-pressed', String(!esLogin));
             document.getElementById('authMensajeError').classList.add('hidden');
         }
 
@@ -880,6 +913,7 @@
             ['rutas', 'llegadas', 'estaciones', 'mapa'].forEach(p => {
                 document.getElementById(`sec-${p}`).classList.add('hidden');
                 document.getElementById(`tab-${p}`).classList.remove('active');
+                document.getElementById(`tab-${p}`).setAttribute('aria-pressed', String(p === pestana));
             });
 
             document.getElementById(`sec-${pestana}`).classList.remove('hidden');
@@ -888,12 +922,15 @@
             if (pestana === 'estaciones' && listaEstacionesCache.length === 0) {
                 cargarTodasEstaciones();
             }
-            if (pestana === 'mapa') renderMapaLineas();
+            if (pestana === 'mapa') { renderMapaLineas(); iniciarTrenesMapa(); } else { pararTrenesMapa(); }
         }
 
         function setCriterio(c) {
             criterioActual = c;
-            document.querySelectorAll('.criterio-btn').forEach(b => b.className = 'criterio-btn text-xs py-2 font-semibold rounded-lg text-slate-600 transition');
+            document.querySelectorAll('.criterio-btn').forEach(b => {
+                b.className = 'criterio-btn text-xs py-2 font-semibold rounded-lg text-slate-600 transition';
+                b.setAttribute('aria-pressed', String(b.id === `btn-${c}`));
+            });
             document.getElementById(`btn-${c}`).className = 'criterio-btn text-xs py-2 font-bold rounded-lg bg-white text-[#E2001A] shadow-xs transition';
             if (document.getElementById('origen').value && document.getElementById('destino').value) buscarRutas();
         }
@@ -1175,7 +1212,7 @@
                 listaEstacionesCache = await res.json();
                 renderDirectorioEstaciones(listaEstacionesCache);
             } catch (err) {
-                container.innerHTML = `<div class="col-span-full text-red-600 text-center font-bold">Error al cargar las estaciones.</div>`;
+                container.innerHTML = `<div class="col-span-full text-red-600 text-center font-bold" role="alert">Error al cargar las estaciones.</div>`;
             }
         }
 
@@ -1255,14 +1292,15 @@
                 const svg = contenedor.querySelector('svg');
                 if (!svg) throw new Error('El archivo del mapa no contiene un SVG válido.');
                 svg.classList.add('mapa-real-svg');
-                svg.setAttribute('role', 'img');
+                svg.setAttribute('role', 'group');
                 svg.setAttribute('aria-label', 'Mapa interactivo de líneas de Cercanías Madrid');
                 prepararInteraccionesMapa(svg);
                 iniciarMapaInteractivo(svg);
+                iniciarTrenesMapa();
                 contenedor.dataset.rendered = 'true';
             } catch (error) {
                 contenedor.innerHTML = `
-                    <div class="py-12 text-center text-sm text-red-700">
+                    <div class="py-12 text-center text-sm text-red-700" role="alert">
                         <i class="fa-solid fa-triangle-exclamation mr-2"></i>${error.message}
                     </div>`;
                 delete contenedor.dataset.rendered;
@@ -1297,7 +1335,17 @@
                 const linea = elemento.dataset.linea;
                 elemento.dataset.mapLine = linea;
                 if (!mapaLineas[linea]) return;
-                elemento.setAttribute('aria-label', `Abrir línea ${linea}`);
+                if (elemento.getAttribute('pointer-events') === 'stroke') {
+                    elemento.setAttribute('role', 'button');
+                    elemento.setAttribute('tabindex', '0');
+                    elemento.setAttribute('aria-label', `Abrir línea ${linea}`);
+                    elemento.addEventListener('keydown', evento => {
+                        if (evento.key === 'Enter' || evento.key === ' ') {
+                            evento.preventDefault();
+                            abrirDetalleLinea(linea);
+                        }
+                    });
+                }
                 elemento.addEventListener('mouseenter', () => resaltarLineaMapa(linea));
                 elemento.addEventListener('mouseleave', limpiarResaltadoMapa);
                 elemento.addEventListener('click', () => abrirDetalleLinea(linea));
@@ -1466,6 +1514,10 @@
                 const rotulo = grupoNombre
                     ? [...grupoNombre.querySelectorAll('tspan')].map(t => t.textContent).join(' ').replace(/- /g, '-')
                     : nombre;
+                grupo.setAttribute('role', 'button');
+                grupo.setAttribute('tabindex', '0');
+                grupo.setAttribute('aria-label', `Consultar llegadas en ${rotulo}`);
+                grupoNombre?.setAttribute('aria-hidden', 'true');
                 puntos.forEach(p => {
                     const toque = document.createElementNS(SVG_NS, 'circle');
                     toque.setAttribute('cx', p.x); toque.setAttribute('cy', p.y); toque.setAttribute('r', 9);
@@ -1476,6 +1528,12 @@
                     e.stopPropagation();
                     seleccionarEstacionMapa(id);
                 }));
+                grupo.addEventListener('keydown', evento => {
+                    if (evento.key === 'Enter' || evento.key === ' ') {
+                        evento.preventDefault();
+                        seleccionarEstacionMapa(id);
+                    }
+                });
                 v.estaciones.set(id, { id, nombre, rotulo, lineas: (grupo.dataset.lineas || '').split(' ').filter(Boolean), puntos, x, y, radio, grupo, grupoNombre });
             });
         }
@@ -1494,9 +1552,10 @@
 
             const fav = esEstacionFavorita(e.id);
             const ficha = document.getElementById('mapaFicha');
+            ficha.setAttribute('aria-labelledby', 'mapaFichaTitulo');
             ficha.innerHTML = `
                 <button type="button" class="mapa-ficha-cerrar" aria-label="Cerrar">&times;</button>
-                <h3></h3>
+                <h3 id="mapaFichaTitulo"></h3>
                 <div class="mapa-ficha-lineas"></div>
                 <div class="mapa-ficha-acciones">
                     <button type="button" class="principal" data-accion="llegadas"><i class="fa-solid fa-clock mr-1"></i>Próximas llegadas</button>
@@ -1654,7 +1713,7 @@
                 if (!p) return;
                 const linea = lineaDelMapa(tren.linea);
                 const g = document.createElementNS(SVG_NS, 'g');
-                g.dataset.tren = tren.id ?? '';
+                g.dataset.tren = tren.id ?? tren.tripId ?? '';
                 g.dataset.trenLinea = linea;
                 g.setAttribute('pointer-events', 'auto');
                 if (v.ocultas.has(linea)) g.style.display = 'none';
@@ -1668,14 +1727,20 @@
                 capa.appendChild(g);
                 situados++;
             });
+            capa.classList.toggle('mapa-trenes-obsoletos', !!estado?.obsoleto);
             const texto = document.getElementById('mapaEstadoTrenes');
             if (estado?.actualizado) {
                 const hora = new Date(estado.actualizado).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                const cuantos = `${situados} ${situados === 1 ? 'tren' : 'trenes'}`;
                 texto.textContent = estado.obsoleto
-                    ? `Posiciones de trenes sin actualizar desde las ${hora}`
-                    : `Trenes en tiempo real · actualizado a las ${hora}`;
+                    ? `Posiciones sin actualizar desde las ${hora}: pueden no ser las actuales (${cuantos})`
+                    : `${cuantos} en tiempo real · actualizado a las ${hora}`;
                 texto.classList.toggle('obsoleto', !!estado.obsoleto);
                 texto.hidden = false;
+            } else {
+                texto.textContent = '';
+                texto.classList.remove('obsoleto');
+                texto.hidden = true;
             }
             return situados;
         }
@@ -1686,6 +1751,70 @@
             document.getElementById('mapaEstadoTrenes').hidden = true;
         }
 
+        // ---- Trenes en tiempo real (US-024): /api/trenes/mapa cada 30 s mientras se ve el mapa ----
+        // La web espera del backend (parte de US-024) una respuesta así:
+        //   { "disponible": true,                       // la última descarga de posiciones de Renfe salió bien
+        //     "actualizado": "2026-11-16T15:04:00Z",    // hora de esa descarga, o null si aún no hay ninguna
+        //     "obsoleto": false,                        // si esa descarga es demasiado antigua
+        //     "trenes": [ { "tripId": "...", "linea": "C5", "destino": "Humanes", "retrasoSegundos": 180,
+        //                   "desde": "35600", "hasta": "35608", "progreso": 0.5 } ] }
+        // desde y hasta son los stop_id de las dos estaciones seguidas entre las que está el tren y
+        // progreso la fracción recorrida de ese tramo (0 = sale de desde, 1 = llega a hasta). Mientras
+        // el endpoint no exista (404) no se dibuja nada ni se muestra ningún aviso.
+        const INTERVALO_TRENES_MS = 30000;
+        let temporizadorTrenes = null;
+        let endpointTrenesDisponible = true;
+
+        async function actualizarTrenesMapa() {
+            if (!mapaVista.svg) return;
+            const texto = document.getElementById('mapaEstadoTrenes');
+            try {
+                const respuesta = await fetch('/api/trenes/mapa');
+                if (respuesta.status === 404) {
+                    // El backend todavía no ofrece las posiciones: se deja de preguntar sin avisar
+                    endpointTrenesDisponible = false;
+                    pararTrenesMapa();
+                    limpiarTrenesMapa();
+                    return;
+                }
+                if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+                const datos = await respuesta.json();
+                if (!datos.actualizado) {
+                    // Renfe no ha enviado posiciones: no se dibuja ningún tren ni se inventan
+                    limpiarTrenesMapa();
+                    texto.textContent = 'Posiciones de trenes no disponibles ahora mismo. Los horarios de la web son los planificados.';
+                    texto.classList.add('obsoleto');
+                    texto.hidden = false;
+                    return;
+                }
+                pintarTrenesMapa(datos.trenes || [], { actualizado: datos.actualizado, obsoleto: datos.obsoleto || !datos.disponible });
+            } catch (error) {
+                // Sin conexión con el servidor: los trenes que hubiera se quedan, pero como no actualizados
+                mapaVista.svg.querySelector('#mapa-capa-trenes')?.classList.add('mapa-trenes-obsoletos');
+                texto.textContent = 'No se ha podido consultar la posición de los trenes. Se reintentará en unos segundos.';
+                texto.classList.add('obsoleto');
+                texto.hidden = false;
+            }
+        }
+
+        function iniciarTrenesMapa() {
+            if (temporizadorTrenes || !endpointTrenesDisponible || !mapaVista.svg || document.getElementById('sec-mapa')?.classList.contains('hidden')) return;
+            actualizarTrenesMapa();
+            temporizadorTrenes = setInterval(actualizarTrenesMapa, INTERVALO_TRENES_MS);
+        }
+
+        function pararTrenesMapa() {
+            clearInterval(temporizadorTrenes);
+            temporizadorTrenes = null;
+        }
+
+        // Si la pestaña del navegador queda en segundo plano no se sigue preguntando
+        document.addEventListener('visibilitychange', () => {
+            const enMapa = !document.getElementById('sec-mapa')?.classList.contains('hidden');
+            if (document.hidden) pararTrenesMapa(); else if (enMapa) iniciarTrenesMapa();
+        });
+
+        // Lo que puede usar el resto de la web (por ejemplo, la capa de tiempo real de US-024)
         window.mapaCercanias = {
             pintarTrenes: pintarTrenesMapa, limpiarTrenes: limpiarTrenesMapa, posicionTren: posicionTrenMapa,
             seleccionarEstacion: seleccionarEstacionMapa, verTodo: verTodoElMapa, zoom: zoomMapa
