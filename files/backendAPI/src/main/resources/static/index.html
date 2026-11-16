@@ -116,6 +116,7 @@
         .mapa-estado-trenes { font-size: 12px; color: #475569; }
         .mapa-estado-trenes[hidden] { display: none; }
         .mapa-estado-trenes.obsoleto { color: #b45309; font-weight: 600; }
+        .mapa-real-svg .mapa-trenes-obsoletos { opacity: .45; }
         .mapa-real-svg [data-estacion], .mapa-real-svg [data-estacion-nombre] { pointer-events: auto; cursor: pointer; }
         .mapa-real-svg [data-estacion-nombre]:hover text { fill: #E2001A; }
         .mapa-real-svg .mapa-atenuada { opacity: .22; }
@@ -921,7 +922,7 @@
             if (pestana === 'estaciones' && listaEstacionesCache.length === 0) {
                 cargarTodasEstaciones();
             }
-            if (pestana === 'mapa') renderMapaLineas();
+            if (pestana === 'mapa') { renderMapaLineas(); iniciarTrenesMapa(); } else { pararTrenesMapa(); }
         }
 
         function setCriterio(c) {
@@ -1295,6 +1296,7 @@
                 svg.setAttribute('aria-label', 'Mapa interactivo de líneas de Cercanías Madrid');
                 prepararInteraccionesMapa(svg);
                 iniciarMapaInteractivo(svg);
+                iniciarTrenesMapa();
                 contenedor.dataset.rendered = 'true';
             } catch (error) {
                 contenedor.innerHTML = `
@@ -1711,7 +1713,7 @@
                 if (!p) return;
                 const linea = lineaDelMapa(tren.linea);
                 const g = document.createElementNS(SVG_NS, 'g');
-                g.dataset.tren = tren.id ?? '';
+                g.dataset.tren = tren.id ?? tren.tripId ?? '';
                 g.dataset.trenLinea = linea;
                 g.setAttribute('pointer-events', 'auto');
                 if (v.ocultas.has(linea)) g.style.display = 'none';
@@ -1725,12 +1727,14 @@
                 capa.appendChild(g);
                 situados++;
             });
+            capa.classList.toggle('mapa-trenes-obsoletos', !!estado?.obsoleto);
             const texto = document.getElementById('mapaEstadoTrenes');
             if (estado?.actualizado) {
                 const hora = new Date(estado.actualizado).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                const cuantos = `${situados} ${situados === 1 ? 'tren' : 'trenes'}`;
                 texto.textContent = estado.obsoleto
-                    ? `Posiciones de trenes sin actualizar desde las ${hora}`
-                    : `Trenes en tiempo real · actualizado a las ${hora}`;
+                    ? `Posiciones sin actualizar desde las ${hora}: pueden no ser las actuales (${cuantos})`
+                    : `${cuantos} en tiempo real · actualizado a las ${hora}`;
                 texto.classList.toggle('obsoleto', !!estado.obsoleto);
                 texto.hidden = false;
             } else {
@@ -1747,6 +1751,70 @@
             document.getElementById('mapaEstadoTrenes').hidden = true;
         }
 
+        // ---- Trenes en tiempo real (US-024): /api/trenes/mapa cada 30 s mientras se ve el mapa ----
+        // La web espera del backend (parte de US-024) una respuesta así:
+        //   { "disponible": true,                       // la última descarga de posiciones de Renfe salió bien
+        //     "actualizado": "2026-11-16T15:04:00Z",    // hora de esa descarga, o null si aún no hay ninguna
+        //     "obsoleto": false,                        // si esa descarga es demasiado antigua
+        //     "trenes": [ { "tripId": "...", "linea": "C5", "destino": "Humanes", "retrasoSegundos": 180,
+        //                   "desde": "35600", "hasta": "35608", "progreso": 0.5 } ] }
+        // desde y hasta son los stop_id de las dos estaciones seguidas entre las que está el tren y
+        // progreso la fracción recorrida de ese tramo (0 = sale de desde, 1 = llega a hasta). Mientras
+        // el endpoint no exista (404) no se dibuja nada ni se muestra ningún aviso.
+        const INTERVALO_TRENES_MS = 30000;
+        let temporizadorTrenes = null;
+        let endpointTrenesDisponible = true;
+
+        async function actualizarTrenesMapa() {
+            if (!mapaVista.svg) return;
+            const texto = document.getElementById('mapaEstadoTrenes');
+            try {
+                const respuesta = await fetch('/api/trenes/mapa');
+                if (respuesta.status === 404) {
+                    // El backend todavía no ofrece las posiciones: se deja de preguntar sin avisar
+                    endpointTrenesDisponible = false;
+                    pararTrenesMapa();
+                    limpiarTrenesMapa();
+                    return;
+                }
+                if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+                const datos = await respuesta.json();
+                if (!datos.actualizado) {
+                    // Renfe no ha enviado posiciones: no se dibuja ningún tren ni se inventan
+                    limpiarTrenesMapa();
+                    texto.textContent = 'Posiciones de trenes no disponibles ahora mismo. Los horarios de la web son los planificados.';
+                    texto.classList.add('obsoleto');
+                    texto.hidden = false;
+                    return;
+                }
+                pintarTrenesMapa(datos.trenes || [], { actualizado: datos.actualizado, obsoleto: datos.obsoleto || !datos.disponible });
+            } catch (error) {
+                // Sin conexión con el servidor: los trenes que hubiera se quedan, pero como no actualizados
+                mapaVista.svg.querySelector('#mapa-capa-trenes')?.classList.add('mapa-trenes-obsoletos');
+                texto.textContent = 'No se ha podido consultar la posición de los trenes. Se reintentará en unos segundos.';
+                texto.classList.add('obsoleto');
+                texto.hidden = false;
+            }
+        }
+
+        function iniciarTrenesMapa() {
+            if (temporizadorTrenes || !endpointTrenesDisponible || !mapaVista.svg || document.getElementById('sec-mapa')?.classList.contains('hidden')) return;
+            actualizarTrenesMapa();
+            temporizadorTrenes = setInterval(actualizarTrenesMapa, INTERVALO_TRENES_MS);
+        }
+
+        function pararTrenesMapa() {
+            clearInterval(temporizadorTrenes);
+            temporizadorTrenes = null;
+        }
+
+        // Si la pestaña del navegador queda en segundo plano no se sigue preguntando
+        document.addEventListener('visibilitychange', () => {
+            const enMapa = !document.getElementById('sec-mapa')?.classList.contains('hidden');
+            if (document.hidden) pararTrenesMapa(); else if (enMapa) iniciarTrenesMapa();
+        });
+
+        // Lo que puede usar el resto de la web (por ejemplo, la capa de tiempo real de US-024)
         window.mapaCercanias = {
             pintarTrenes: pintarTrenesMapa, limpiarTrenes: limpiarTrenesMapa, posicionTren: posicionTrenMapa,
             seleccionarEstacion: seleccionarEstacionMapa, verTodo: verTodoElMapa, zoom: zoomMapa
