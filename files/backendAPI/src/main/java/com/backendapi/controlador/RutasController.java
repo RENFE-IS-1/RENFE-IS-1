@@ -75,6 +75,93 @@ public class RutasController {
         }
         return actualizadorTiempoReal.getPosicionesEnVivo();
     }
+    
+    /** US-024: Sitúa cada tren sobre el tramo de vía entre las dos estaciones más próximas a su GPS. */
+    @GetMapping("/trenes/mapa")
+    public java.util.Map<String, Object> obtenerTrenesParaMapa() {
+        List<GtfsRtJsonDto.VehiclePosition> posiciones = (actualizadorTiempoReal != null)
+                ? actualizadorTiempoReal.getPosicionesEnVivo()
+                : java.util.Collections.emptyList();
+
+        List<Estacion> todasEstaciones = red.getAllEstaciones();
+        java.util.List<java.util.Map<String, Object>> trenes = new java.util.ArrayList<>();
+
+        for (GtfsRtJsonDto.VehiclePosition vp : posiciones) {
+            if (vp == null || vp.getPosition() == null) continue;
+
+            double lat = vp.getPosition().getLatitude();
+            double lon = vp.getPosition().getLongitude();
+            if (lat == 0.0 && lon == 0.0) continue;
+
+            String tripId = (vp.getTrip() != null && vp.getTrip().getTripId() != null) ? vp.getTrip().getTripId() : "";
+            String linea = extraerLineaDeRouteId(tripId);
+
+            // Filtramos estaciones de esa línea si la conocemos; si no, usamos todas
+            List<Estacion> candidatas = !linea.isBlank() ? red.getEstacionesDeLinea(linea) : java.util.Collections.emptyList();
+            if (candidatas.size() < 2) candidatas = todasEstaciones;
+
+            Estacion[] dosCercanas = buscarDosEstacionesMasCercanas(candidatas, lat, lon);
+            Estacion estA = dosCercanas[0];
+            Estacion estB = dosCercanas[1];
+            if (estA == null) continue;
+
+            double progreso = 0.0;
+            String hastaId = estA.getId();
+
+            if (estB != null) {
+                double dAx = estB.getLatitud() - estA.getLatitud();
+                double dAy = estB.getLongitud() - estA.getLongitud();
+                double len2 = dAx * dAx + dAy * dAy;
+                if (len2 > 1e-10) {
+                    double t = ((lat - estA.getLatitud()) * dAx + (lon - estA.getLongitud()) * dAy) / len2;
+                    progreso = Math.max(0.0, Math.min(1.0, t));
+                    hastaId = estB.getId();
+                }
+            }
+
+            java.util.Map<String, Object> item = new java.util.LinkedHashMap<>();
+            item.put("tripId", tripId);
+            item.put("linea", linea);
+            item.put("destino", "");
+            item.put("retrasoSegundos", 0);
+            item.put("desde", estA.getId());
+            item.put("hasta", hastaId);
+            item.put("progreso", Math.round(progreso * 100.0) / 100.0);
+            trenes.add(item);
+        }
+
+        java.time.Instant actualizado = !trenes.isEmpty() ? java.time.Instant.now() : null;
+
+        java.util.Map<String, Object> respuesta = new java.util.LinkedHashMap<>();
+        respuesta.put("disponible", actualizadorTiempoReal != null);
+        respuesta.put("actualizado", actualizado != null ? actualizado.toString() : null);
+        respuesta.put("obsoleto", false);
+        respuesta.put("trenes", trenes);
+        return respuesta;
+    }
+
+    private Estacion[] buscarDosEstacionesMasCercanas(List<Estacion> estaciones, double lat, double lon) {
+        Estacion primera = null, segunda = null;
+        double dist1 = Double.MAX_VALUE, dist2 = Double.MAX_VALUE;
+        for (Estacion e : estaciones) {
+            double dLat = e.getLatitud() - lat;
+            double dLon = e.getLongitud() - lon;
+            double d2 = dLat * dLat + dLon * dLon;
+            if (d2 < dist1) {
+                dist2 = dist1; segunda = primera;
+                dist1 = d2; primera = e;
+            } else if (d2 < dist2) {
+                dist2 = d2; segunda = e;
+            }
+        }
+        return new Estacion[]{ primera, segunda };
+    }
+
+    private String extraerLineaDeRouteId(String routeId) {
+        if (routeId == null || routeId.isBlank()) return "";
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(C\\d+[a-z]?)", java.util.regex.Pattern.CASE_INSENSITIVE).matcher(routeId);
+        return m.find() ? m.group(1).toUpperCase() : routeId;
+    }
 
     /** Todas las estaciones o, con ?nombre=, las que coinciden (sin distinguir tildes ni mayúsculas). */
     @GetMapping("/estaciones")

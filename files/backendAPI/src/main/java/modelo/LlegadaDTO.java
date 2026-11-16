@@ -1,6 +1,5 @@
 package modelo;
 
-<<<<<<< HEAD
 import java.time.LocalTime;
 import java.time.LocalDateTime;
 
@@ -52,19 +51,3 @@ public class LlegadaDTO {
     public LocalDateTime getUltimaActualizacion() { return ultimaActualizacion; }
     public void setUltimaActualizacion(LocalDateTime ultimaActualizacion) { this.ultimaActualizacion = ultimaActualizacion; }
 }
-=======
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-
-/** Datos de una llegada preparados para la respuesta REST. */
-public record LlegadaDTO(
-        String linea,
-        String destino,
-        LocalTime horaPlanificada,
-        LocalTime horaEstimada,
-        int retrasoMinutos,
-        EstadoTren estado,
-        boolean esTiempoReal,
-        LocalDateTime ultimaActualizacion) {
-}
->>>>>>> becc6aac16d3e43825f815039bb896013fb88807

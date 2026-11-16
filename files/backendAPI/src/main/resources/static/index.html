@@ -117,6 +117,22 @@
         .mapa-estado-trenes[hidden] { display: none; }
         .mapa-estado-trenes.obsoleto { color: #b45309; font-weight: 600; }
         .mapa-real-svg .mapa-trenes-obsoletos { opacity: .45; }
+        .mapa-tren-marcador {
+            transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            cursor: pointer;
+        }
+        .mapa-tren-marcador:hover .mapa-tren-cuerpo {
+            stroke: #E2001A;
+            stroke-width: 2.2;
+        }
+        @keyframes pulsoTrenVivo {
+            0% { r: 8; opacity: 0.55; }
+            100% { r: 17; opacity: 0; }
+        }
+        .mapa-tren-pulso {
+            animation: pulsoTrenVivo 2.2s ease-out infinite;
+            pointer-events: none;
+        }
         .mapa-real-svg [data-estacion], .mapa-real-svg [data-estacion-nombre] { pointer-events: auto; cursor: pointer; }
         .mapa-real-svg [data-estacion-nombre]:hover text { fill: #E2001A; }
         .mapa-real-svg .mapa-atenuada { opacity: .22; }
@@ -1297,6 +1313,7 @@
                 prepararInteraccionesMapa(svg);
                 iniciarMapaInteractivo(svg);
                 iniciarTrenesMapa();
+                iniciarTrenesMapa();
                 contenedor.dataset.rendered = 'true';
             } catch (error) {
                 contenedor.innerHTML = `
@@ -1708,25 +1725,44 @@
             const capa = v.svg.querySelector('#mapa-capa-trenes');
             capa.innerHTML = '';
             let situados = 0;
-            (trenes || []).forEach(tren => {
-                const p = tren.x != null && tren.y != null ? { x: tren.x, y: tren.y } : posicionTrenMapa(tren.linea, tren.desde, tren.hasta, tren.progreso);
+
+            (trenes || []).forEach((tren, idx) => {
+                const p = tren.x != null && tren.y != null
+                    ? { x: tren.x, y: tren.y }
+                    : posicionTrenMapa(tren.linea, tren.desde, tren.hasta, tren.progreso);
                 if (!p) return;
+
                 const linea = lineaDelMapa(tren.linea);
+                const color = colorDeLinea(linea);
+                const textoOscuro = ['C5', 'C10'].includes(linea);
                 const g = document.createElementNS(SVG_NS, 'g');
+                g.setAttribute('class', 'mapa-tren-marcador');
+                g.setAttribute('transform', `translate(${p.x.toFixed(1)}, ${p.y.toFixed(1)})`);
                 g.dataset.tren = tren.id ?? tren.tripId ?? '';
                 g.dataset.trenLinea = linea;
                 g.setAttribute('pointer-events', 'auto');
                 if (v.ocultas.has(linea)) g.style.display = 'none';
+
                 const retraso = Math.round((tren.retrasoSegundos || 0) / 60);
                 const titulo = document.createElementNS(SVG_NS, 'title');
-                titulo.textContent = `${tren.linea || 'Tren'}${tren.destino ? ' → ' + tren.destino : ''}${retraso > 0 ? ` · +${retraso} min` : ''}`;
+                titulo.textContent = `Tren ${tren.linea || ''}${tren.destino ? ' → ' + tren.destino : ''}${retraso > 0 ? ` · +${retraso} min` : ' · En servicio'}`;
                 g.appendChild(titulo);
-                g.insertAdjacentHTML('beforeend',
-                    `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="8" fill="#fff" stroke="#1f2937" stroke-width="1.5"/>` +
-                    `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="5" fill="${colorDeLinea(linea)}"/>`);
+
+                const pulso = (idx % 3 === 0)
+                    ? `<circle cx="0" cy="0" r="8" fill="${color}" class="mapa-tren-pulso"/>`
+                    : '';
+
+                const etiqueta = linea
+                    ? `<rect class="mapa-tren-cuerpo" x="-11" y="-7.5" width="22" height="15" rx="7.5" fill="${color}" stroke="#ffffff" stroke-width="1.8"/>` +
+                      `<text x="0" y="3" text-anchor="middle" font-size="8.2" font-weight="800" font-family="Plus Jakarta Sans, Inter, sans-serif" fill="${textoOscuro ? '#111827' : '#ffffff'}">${escaparHtml(linea)}</text>`
+                    : `<circle class="mapa-tren-cuerpo" cx="0" cy="0" r="6.5" fill="#0f172a" stroke="#ffffff" stroke-width="1.8"/>` +
+                      `<circle cx="0" cy="0" r="2.2" fill="#ffffff"/>`;
+
+                g.insertAdjacentHTML('beforeend', pulso + etiqueta);
                 capa.appendChild(g);
                 situados++;
             });
+
             capa.classList.toggle('mapa-trenes-obsoletos', !!estado?.obsoleto);
             const texto = document.getElementById('mapaEstadoTrenes');
             if (estado?.actualizado) {
@@ -1737,10 +1773,6 @@
                     : `${cuantos} en tiempo real · actualizado a las ${hora}`;
                 texto.classList.toggle('obsoleto', !!estado.obsoleto);
                 texto.hidden = false;
-            } else {
-                texto.textContent = '';
-                texto.classList.remove('obsoleto');
-                texto.hidden = true;
             }
             return situados;
         }
@@ -1751,16 +1783,6 @@
             document.getElementById('mapaEstadoTrenes').hidden = true;
         }
 
-        // ---- Trenes en tiempo real (US-024): /api/trenes/mapa cada 30 s mientras se ve el mapa ----
-        // La web espera del backend (parte de US-024) una respuesta así:
-        //   { "disponible": true,                       // la última descarga de posiciones de Renfe salió bien
-        //     "actualizado": "2026-11-16T15:04:00Z",    // hora de esa descarga, o null si aún no hay ninguna
-        //     "obsoleto": false,                        // si esa descarga es demasiado antigua
-        //     "trenes": [ { "tripId": "...", "linea": "C5", "destino": "Humanes", "retrasoSegundos": 180,
-        //                   "desde": "35600", "hasta": "35608", "progreso": 0.5 } ] }
-        // desde y hasta son los stop_id de las dos estaciones seguidas entre las que está el tren y
-        // progreso la fracción recorrida de ese tramo (0 = sale de desde, 1 = llega a hasta). Mientras
-        // el endpoint no exista (404) no se dibuja nada ni se muestra ningún aviso.
         const INTERVALO_TRENES_MS = 30000;
         let temporizadorTrenes = null;
         let endpointTrenesDisponible = true;
@@ -1771,7 +1793,6 @@
             try {
                 const respuesta = await fetch('/api/trenes/mapa');
                 if (respuesta.status === 404) {
-                    // El backend todavía no ofrece las posiciones: se deja de preguntar sin avisar
                     endpointTrenesDisponible = false;
                     pararTrenesMapa();
                     limpiarTrenesMapa();
@@ -1780,7 +1801,6 @@
                 if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
                 const datos = await respuesta.json();
                 if (!datos.actualizado) {
-                    // Renfe no ha enviado posiciones: no se dibuja ningún tren ni se inventan
                     limpiarTrenesMapa();
                     texto.textContent = 'Posiciones de trenes no disponibles ahora mismo. Los horarios de la web son los planificados.';
                     texto.classList.add('obsoleto');
@@ -1789,7 +1809,6 @@
                 }
                 pintarTrenesMapa(datos.trenes || [], { actualizado: datos.actualizado, obsoleto: datos.obsoleto || !datos.disponible });
             } catch (error) {
-                // Sin conexión con el servidor: los trenes que hubiera se quedan, pero como no actualizados
                 mapaVista.svg.querySelector('#mapa-capa-trenes')?.classList.add('mapa-trenes-obsoletos');
                 texto.textContent = 'No se ha podido consultar la posición de los trenes. Se reintentará en unos segundos.';
                 texto.classList.add('obsoleto');
@@ -1808,11 +1827,12 @@
             temporizadorTrenes = null;
         }
 
-        // Si la pestaña del navegador queda en segundo plano no se sigue preguntando
         document.addEventListener('visibilitychange', () => {
             const enMapa = !document.getElementById('sec-mapa')?.classList.contains('hidden');
             if (document.hidden) pararTrenesMapa(); else if (enMapa) iniciarTrenesMapa();
         });
+
+
 
         // Lo que puede usar el resto de la web (por ejemplo, la capa de tiempo real de US-024)
         window.mapaCercanias = {
