@@ -119,15 +119,29 @@ public class RutasController {
                 }
             }
 
+            int retrasoSegundos = 0;
+            if (!linea.isBlank()) {
+                try {
+                    List<Llegada> prox = consultaLlegadas.proximasLlegadas(estA, ahora(), 3, linea);
+                    for (Llegada l : prox) {
+                        if (l.retrasoMinutos() > 0) {
+                            retrasoSegundos = l.retrasoMinutos() * 60;
+                            break;
+                        }
+                    }
+                } catch (Exception ignored) {}
+            }
+
             java.util.Map<String, Object> item = new java.util.LinkedHashMap<>();
             item.put("tripId", tripId);
             item.put("linea", linea);
             item.put("destino", "");
-            item.put("retrasoSegundos", 0);
+            item.put("retrasoSegundos", retrasoSegundos);
             item.put("desde", estA.getId());
             item.put("hasta", hastaId);
             item.put("progreso", Math.round(progreso * 100.0) / 100.0);
             trenes.add(item);
+            
         }
 
         java.time.Instant actualizado = !trenes.isEmpty() ? java.time.Instant.now() : null;

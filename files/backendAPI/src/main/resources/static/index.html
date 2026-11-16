@@ -125,13 +125,26 @@
             stroke: #E2001A;
             stroke-width: 2.2;
         }
-        @keyframes pulsoTrenVivo {
-            0% { r: 8; opacity: 0.55; }
-            100% { r: 17; opacity: 0; }
+		@keyframes pulsoTrenVivo {
+            0% { r: 8.5; opacity: 0.85; stroke-width: 3; }
+            100% { r: 19; opacity: 0; stroke-width: 0.5; }
         }
         .mapa-tren-pulso {
-            animation: pulsoTrenVivo 2.2s ease-out infinite;
+            animation: pulsoTrenVivo 4s ease-out infinite;
             pointer-events: none;
+        }
+.mapa-ocultar-trenes #mapa-capa-trenes {
+            display: none !important;
+        }
+        .mapa-ocultar-retrasos .mapa-tren-pulso {
+            display: none !important;
+        }
+        .mapa-ocultar-retrasos .mapa-tren-cuerpo {
+            fill: var(--color-linea) !important;
+            stroke: #ffffff !important;
+        }
+        .mapa-ocultar-retrasos .mapa-tren-texto {
+            fill: var(--texto-linea) !important;
         }
         .mapa-real-svg [data-estacion], .mapa-real-svg [data-estacion-nombre] { pointer-events: auto; cursor: pointer; }
         .mapa-real-svg [data-estacion-nombre]:hover text { fill: #E2001A; }
@@ -396,6 +409,28 @@
                     <datalist id="mapaListaEstaciones"></datalist>
                     <div id="mapaFiltros" class="mapa-filtros" role="group" aria-label="Líneas visibles en el mapa"></div>
                 </div>
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                <span class="text-xs font-semibold text-slate-500 mr-1">Capas en vivo:</span>
+                <button type="button" id="btnToggleTrenes" data-activo="true" onclick="alternarFiltroTrenes('trenes')"
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer bg-emerald-600 text-white shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-white"></span>
+                    <span>Trenes en vivo</span>
+                </button>
+                <button type="button" id="btnToggleRetrasos" data-activo="true" onclick="alternarFiltroTrenes('retrasos')"
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer bg-[#E2001A] text-white shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                    <span>Destacar retrasos</span>
+                </button>
+            </div>
+    <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+        <input type="checkbox" id="toggleMostrarTrenes" checked onchange="aplicarFiltrosVisualesTrenes()" class="rounded text-red-600 focus:ring-red-500">
+        <span>Mostrar trenes en tiempo real</span>
+    </label>
+    <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+        <input type="checkbox" id="toggleMostrarRetrasos" checked onchange="aplicarFiltrosVisualesTrenes()" class="rounded text-red-600 focus:ring-red-500">
+        <span>Destacar retrasos (aura roja)</span>
+    </label>
+</div>
                 <div class="schematic-map rounded-2xl border border-slate-200 p-2">
                     <div id="mapaLienzo" class="mapa-lienzo">
                         <div id="mapaSvg" role="region" aria-label="Mapa de Cercanías Madrid">
@@ -1718,6 +1753,33 @@
             }
             return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
         }
+        
+        function alternarFiltroTrenes(tipo) {
+            const btn = document.getElementById(tipo === 'trenes' ? 'btnToggleTrenes' : 'btnToggleRetrasos');
+            if (!btn) return;
+            const activo = btn.dataset.activo !== 'true';
+            btn.dataset.activo = String(activo);
+
+            if (tipo === 'trenes') {
+                btn.className = activo
+                    ? 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer bg-emerald-600 text-white shadow-sm'
+                    : 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer bg-white text-slate-500 border border-slate-300 hover:bg-slate-50';
+            } else {
+                btn.className = activo
+                    ? 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer bg-[#E2001A] text-white shadow-sm'
+                    : 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer bg-white text-slate-500 border border-slate-300 hover:bg-slate-50';
+            }
+            aplicarFiltrosVisualesTrenes();
+        }
+
+        function aplicarFiltrosVisualesTrenes() {
+            const svg = mapaVista.svg;
+            if (!svg) return;
+            const verTrenes = document.getElementById('btnToggleTrenes')?.dataset.activo !== 'false';
+            const verRetrasos = document.getElementById('btnToggleRetrasos')?.dataset.activo !== 'false';
+            svg.classList.toggle('mapa-ocultar-trenes', !verTrenes);
+            svg.classList.toggle('mapa-ocultar-retrasos', !verRetrasos);
+        }
 
         function pintarTrenesMapa(trenes, estado) {
             const v = mapaVista;
@@ -1744,24 +1806,33 @@
                 if (v.ocultas.has(linea)) g.style.display = 'none';
 
                 const retraso = Math.round((tren.retrasoSegundos || 0) / 60);
+                const tieneRetraso = retraso > 0;
+
                 const titulo = document.createElementNS(SVG_NS, 'title');
-                titulo.textContent = `Tren ${tren.linea || ''}${tren.destino ? ' → ' + tren.destino : ''}${retraso > 0 ? ` · +${retraso} min` : ' · En servicio'}`;
+                titulo.textContent = `Tren ${tren.linea || ''}${tren.destino ? ' → ' + tren.destino : ''}${tieneRetraso ? ` · Retraso: +${retraso} min` : ' · En hora'}`;
                 g.appendChild(titulo);
 
-                const pulso = (idx % 3 === 0)
-                    ? `<circle cx="0" cy="0" r="8" fill="${color}" class="mapa-tren-pulso"/>`
+                const pulso = tieneRetraso
+                    ? `<circle cx="0" cy="0" r="8.5" fill="rgba(226, 0, 26, 0.35)" stroke="#E2001A" stroke-width="2" class="mapa-tren-pulso"/>`
                     : '';
 
+                const colorFondo = tieneRetraso ? color : '#16a34a';
+                const colorBorde = tieneRetraso ? '#E2001A' : '#ffffff';
+                const colorTexto = (tieneRetraso && ['C5', 'C10'].includes(linea)) ? '#111827' : '#ffffff';
+                const textoLineaOriginal = ['C5', 'C10'].includes(linea) ? '#111827' : '#ffffff';
+
                 const etiqueta = linea
-                    ? `<rect class="mapa-tren-cuerpo" x="-11" y="-7.5" width="22" height="15" rx="7.5" fill="${color}" stroke="#ffffff" stroke-width="1.8"/>` +
-                      `<text x="0" y="3" text-anchor="middle" font-size="8.2" font-weight="800" font-family="Plus Jakarta Sans, Inter, sans-serif" fill="${textoOscuro ? '#111827' : '#ffffff'}">${escaparHtml(linea)}</text>`
-                    : `<circle class="mapa-tren-cuerpo" cx="0" cy="0" r="6.5" fill="#0f172a" stroke="#ffffff" stroke-width="1.8"/>` +
+                    ? `<rect class="mapa-tren-cuerpo" style="--color-linea: ${color};" data-retraso="${tieneRetraso}" x="-11" y="-7.5" width="22" height="15" rx="7.5" fill="${colorFondo}" stroke="${colorBorde}" stroke-width="1.8"/>` +
+                      `<text class="mapa-tren-texto" style="--texto-linea: ${textoLineaOriginal};" x="0" y="3" text-anchor="middle" font-size="8.2" font-weight="800" font-family="Plus Jakarta Sans, Inter, sans-serif" fill="${colorTexto}">${escaparHtml(linea)}</text>`
+                    : `<circle class="mapa-tren-cuerpo" style="--color-linea: #0f172a;" data-retraso="${tieneRetraso}" cx="0" cy="0" r="6.5" fill="${tieneRetraso ? '#E2001A' : '#16a34a'}" stroke="#ffffff" stroke-width="1.8"/>` +
                       `<circle cx="0" cy="0" r="2.2" fill="#ffffff"/>`;
 
                 g.insertAdjacentHTML('beforeend', pulso + etiqueta);
                 capa.appendChild(g);
                 situados++;
             });
+
+            aplicarFiltrosVisualesTrenes();
 
             capa.classList.toggle('mapa-trenes-obsoletos', !!estado?.obsoleto);
             const texto = document.getElementById('mapaEstadoTrenes');
