@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
  *
  * Estado: una incidencia está activa mientras no tenga hora de fin. No se guarda un campo
  * "activa" aparte para que no pueda contradecir a la hora de fin; se calcula con isActiva().
- *
- * Código asistido por IA (Claude) y revisado por el equipo.
  */
 @Entity
 @Table(name = "incidencias", indexes = {

@@ -6,8 +6,6 @@ package com.backendapi.modelo;
  * - AVISO_OFICIAL: aviso publicado por una fuente externa (feed de alertas GTFS-RT de Renfe).
  * - DETECCION_PROPIA: incidencia detectada por la aplicación al acumularse retrasos en una línea
  *   (al menos 3 trenes con 10 minutos o más de retraso).
- *
- * Código asistido por IA (Claude) y revisado por el equipo.
  */
 public enum OrigenIncidencia {
     AVISO_OFICIAL,
