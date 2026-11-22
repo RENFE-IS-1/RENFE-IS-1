@@ -182,6 +182,51 @@ class RutasControllerIntegrationTest {
         http.perform(get("/api/lineas/C99/estaciones"))
                 .andExpect(status().isNotFound());
     }
+    
+    /** Sin actualizador en tiempo real, /api/trenes/mapa responde 200 con lista vacía. */
+    @Test
+    void endpointTrenesMapaSinActualizadorDevuelveListaVacia() throws Exception {
+        http.perform(get("/api/trenes/mapa"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.disponible").value(false))
+                .andExpect(jsonPath("$.trenes").isEmpty());
+    }
+
+    /** Con posiciones GPS activas, /api/trenes/mapa sitúa cada tren en el tramo y calcula su progreso. */
+    @Test
+    void endpointTrenesMapaSituaTrenEnTramoConCoordenadasGps() throws Exception {
+        com.backendapi.ActualizadorTiempoReal actualizadorMock =
+                org.mockito.Mockito.mock(com.backendapi.ActualizadorTiempoReal.class);
+
+        modelo.GtfsRtJsonDto.Trip trip = new modelo.GtfsRtJsonDto.Trip();
+        trip.setTripId("1000_C1_TEST");
+
+        modelo.GtfsRtJsonDto.Position pos = new modelo.GtfsRtJsonDto.Position();
+        pos.setLatitude(40.25);   // Punto intermedio entre Atocha (40.0) y Chamartín (40.5)
+        pos.setLongitude(-3.35);
+
+        modelo.GtfsRtJsonDto.VehiclePosition vp = new modelo.GtfsRtJsonDto.VehiclePosition();
+        vp.setTrip(trip);
+        vp.setPosition(pos);
+
+        org.mockito.Mockito.when(actualizadorMock.getPosicionesEnVivo()).thenReturn(List.of(vp));
+
+        RutasController controladorConMapa = new RutasController(
+                red,
+                new BuscadorEstaciones(red),
+                new ConsultaLlegadas(red),
+                servicioRutas,
+                actualizadorMock);
+        MockMvc httpConMapa = MockMvcBuilders.standaloneSetup(controladorConMapa).build();
+
+        httpConMapa.perform(get("/api/trenes/mapa"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.disponible").value(true))
+                .andExpect(jsonPath("$.trenes.length()").value(1))
+                .andExpect(jsonPath("$.trenes[0].linea").value("C1"))
+                .andExpect(jsonPath("$.trenes[0].desde").value("A"))
+                .andExpect(jsonPath("$.trenes[0].hasta").value("C"));
+    }
 
     /** Implementación de prueba que guarda las entradas y responde con cero rutas. */
     private static class ServicioRutasDePrueba extends ServicioBuscadorRutas {
