@@ -127,6 +127,15 @@ public class RedTransporte {
         return 0;
     }
 
+    /**
+     * Viajes (trip_id de Renfe) que tienen datos de retraso en la última descarga (solo lectura).
+     * Lo necesita ServicioIncidencias (US-017) para recorrer todos los trenes y contar los
+     * retrasados de cada línea.
+     */
+    public Set<String> getViajesConRetraso() {
+        return retrasosPorViaje.keySet();
+    }
+
     /** Posición en el viaje de la parada a la que se refiere un retraso (por stop_sequence o, si no, por stop_id). */
     private static int posicionEnViaje(RetrasoParada r, List<ParadaHorario> paradas) {
         if (r.esDeTodoElViaje()) return 0;
