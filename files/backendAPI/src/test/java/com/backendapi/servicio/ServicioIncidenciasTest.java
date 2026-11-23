@@ -13,9 +13,18 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.backendapi.modelo.DeclaracionIncidencia;
 import com.backendapi.modelo.Incidencia;
+import com.backendapi.modelo.NivelConfianza;
 import com.backendapi.modelo.OrigenIncidencia;
+import com.backendapi.modelo.RolUsuario;
+import com.backendapi.modelo.TipoIncidenciaUsuario;
+import com.backendapi.modelo.Usuario;
+import com.backendapi.repositorio.DeclaracionIncidenciaRepository;
 import com.backendapi.repositorio.IncidenciaRepository;
 
 import modelo.Linea;
@@ -24,7 +33,8 @@ import modelo.Viaje;
 import repositorio.RedTransporte;
 
 /**
- * Tests unitarios de ServicioIncidencias, parte 1: detección por retrasos (US-017, criterios 2, 3 y 4).
+ * Tests unitarios de ServicioIncidencias: detección por retrasos (US-017, criterios 2, 3 y 4) e
+ * incidencias declaradas por viajeros (agrupación, nivel de confianza y cierre por un gestor).
  *
  * Usa una RedTransporte de prueba con trenes inventados y un repositorio simulado (mock), así que no
  * necesita base de datos ni conexión a Internet.
@@ -36,9 +46,10 @@ class ServicioIncidenciasTest {
 
     private RedTransporte red;
     private IncidenciaRepository repositorio;
+    private DeclaracionIncidenciaRepository declaraciones;
     private ServicioIncidencias servicio;
 
-    /** Prepara una red con las líneas C3 y C4, datos en tiempo real disponibles y un repositorio simulado. */
+    /** Prepara una red con las líneas C3 y C4, datos en tiempo real disponibles y repositorios simulados. */
     @BeforeEach
     void preparar() {
         red = new RedTransporte();
@@ -47,7 +58,8 @@ class ServicioIncidenciasTest {
         red.setHorariosTiempoRealActivos(true);
 
         repositorio = mock(IncidenciaRepository.class);
-        servicio = new ServicioIncidencias(repositorio, red);
+        declaraciones = mock(DeclaracionIncidenciaRepository.class);
+        servicio = new ServicioIncidencias(repositorio, declaraciones, red);
     }
 
     /**
@@ -213,5 +225,234 @@ class ServicioIncidenciasTest {
         servicio.detectarIncidenciasPorRetraso(AHORA);
 
         verifyNoInteractions(repositorio);
+    }
+
+    /** Una incidencia declarada por viajeros activa no la cierra la detección por retrasos. */
+    @Test
+    void deteccionPorRetrasos_noCierraLasDeclaradasPorViajeros() {
+        red.reemplazarRetrasos(Map.of());
+        Incidencia declarada = new Incidencia("C3", "AVERIA_TREN", "Avería en el tren",
+                OrigenIncidencia.DECLARADA_POR_USUARIO, null, AHORA.minusMinutes(30));
+        when(repositorio.findByOrigenAndFinIsNull(OrigenIncidencia.DETECCION_PROPIA)).thenReturn(List.of());
+
+        servicio.detectarIncidenciasPorRetraso(AHORA);
+
+        verify(repositorio, never()).findByOrigenAndFinIsNull(OrigenIncidencia.DECLARADA_POR_USUARIO);
+        assertTrue(declarada.isActiva());
+    }
+
+    // =====================================================================
+    // Incidencias declaradas por viajeros
+    // =====================================================================
+
+    /** Crea un usuario de prueba con un id y un rol; lo usan los tests de incidencias declaradas. */
+    private static Usuario usuario(long id, RolUsuario rol) {
+        Usuario u = new Usuario("Usuario " + id, "usuario" + id + "@cercanias.es", "hash", rol, true);
+        ReflectionTestUtils.setField(u, "id", id);
+        return u;
+    }
+
+    /** Hace que el repositorio simulado devuelva la misma incidencia que recibe al guardar, como el real. */
+    private void guardarDevuelveLaMismaIncidencia() {
+        when(repositorio.save(any(Incidencia.class))).thenAnswer(inv -> inv.getArgument(0));
+    }
+
+    /** Crea un grupo ya existente de declaraciones en la C3 con un id y un número de viajeros dado. */
+    private Incidencia grupoExistente(long id, int viajeros) {
+        Incidencia grupo = new Incidencia("C3", "AVERIA_TREN", "Avería en el tren",
+                OrigenIncidencia.DECLARADA_POR_USUARIO, null, AHORA.minusMinutes(10));
+        ReflectionTestUtils.setField(grupo, "id", id);
+        for (int i = 0; i < viajeros; i++) grupo.sumarDeclarante(AHORA.minusMinutes(10));
+        when(repositorio.findByLineaAndTipoAndOrigenAndFinIsNull("C3", "AVERIA_TREN", OrigenIncidencia.DECLARADA_POR_USUARIO))
+                .thenReturn(Optional.of(grupo));
+        return grupo;
+    }
+
+    /** Primera declaración en una línea: se crea un grupo nuevo con 1 viajero y confianza BAJA, y se guarda la declaración. */
+    @Test
+    void declarar_primeraDeclaracion_creaGrupoConConfianzaBaja() {
+        guardarDevuelveLaMismaIncidencia();
+        Usuario viajero = usuario(1, RolUsuario.VIAJERO);
+
+        Incidencia grupo = servicio.declararIncidencia(viajero, "c3", TipoIncidenciaUsuario.AVERIA_TREN,
+                null, "  Tren parado en Atocha  ", AHORA);
+
+        assertEquals("C3", grupo.getLinea());
+        assertEquals("AVERIA_TREN", grupo.getTipo());
+        assertEquals(OrigenIncidencia.DECLARADA_POR_USUARIO, grupo.getOrigen());
+        assertEquals(1, grupo.getNumeroDeclarantes());
+        assertEquals(NivelConfianza.BAJA, grupo.getNivelConfianza());
+        assertEquals(AHORA, grupo.getInicio());
+        assertTrue(grupo.isActiva());
+
+        ArgumentCaptor<DeclaracionIncidencia> captor = ArgumentCaptor.forClass(DeclaracionIncidencia.class);
+        verify(declaraciones).save(captor.capture());
+        assertSame(grupo, captor.getValue().getIncidencia());
+        assertSame(viajero, captor.getValue().getUsuario());
+        assertEquals("Tren parado en Atocha", captor.getValue().getComentario());
+    }
+
+    /** Un segundo viajero declara lo mismo: se suma al grupo existente (no se crea otro) y la confianza pasa a MEDIA. */
+    @Test
+    void declarar_segundoViajero_seSumaAlGrupoConConfianzaMedia() {
+        guardarDevuelveLaMismaIncidencia();
+        Incidencia grupo = grupoExistente(50, 1);
+
+        Incidencia resultado = servicio.declararIncidencia(usuario(2, RolUsuario.VIAJERO), "C3",
+                TipoIncidenciaUsuario.AVERIA_TREN, null, null, AHORA);
+
+        assertSame(grupo, resultado);
+        assertEquals(2, grupo.getNumeroDeclarantes());
+        assertEquals(NivelConfianza.MEDIA, grupo.getNivelConfianza());
+        assertEquals(AHORA, grupo.getUltimaActualizacion());
+        assertEquals(AHORA.minusMinutes(10), grupo.getInicio());
+    }
+
+    /** Un tercer viajero distinto: la incidencia pasa a confianza ALTA (confirmada). */
+    @Test
+    void declarar_tercerViajero_confianzaAlta() {
+        guardarDevuelveLaMismaIncidencia();
+        Incidencia grupo = grupoExistente(50, 2);
+
+        servicio.declararIncidencia(usuario(3, RolUsuario.VIAJERO), "C3",
+                TipoIncidenciaUsuario.AVERIA_TREN, null, null, AHORA);
+
+        assertEquals(3, grupo.getNumeroDeclarantes());
+        assertEquals(NivelConfianza.ALTA, grupo.getNivelConfianza());
+    }
+
+    /** El mismo viajero intenta declarar dos veces la misma incidencia: 409 y el contador no cambia. */
+    @Test
+    void declarar_mismoViajeroDosVeces_conflictoYNoCuentaDosVeces() {
+        Incidencia grupo = grupoExistente(50, 1);
+        when(declaraciones.existsByIncidenciaIdAndUsuarioId(50L, 1L)).thenReturn(true);
+
+        ResponseStatusException e = assertThrows(ResponseStatusException.class, () ->
+                servicio.declararIncidencia(usuario(1, RolUsuario.VIAJERO), "C3",
+                        TipoIncidenciaUsuario.AVERIA_TREN, null, null, AHORA));
+
+        assertEquals(HttpStatus.CONFLICT, e.getStatusCode());
+        assertEquals(1, grupo.getNumeroDeclarantes());
+        verify(declaraciones, never()).save(any());
+    }
+
+    /** Otro tipo en la misma línea: no se mezcla con el grupo de AVERIA_TREN, se crea un grupo nuevo. */
+    @Test
+    void declarar_otroTipoEnLaMismaLinea_creaOtroGrupo() {
+        guardarDevuelveLaMismaIncidencia();
+        Incidencia averia = grupoExistente(50, 2);
+
+        Incidencia aglomeracion = servicio.declararIncidencia(usuario(4, RolUsuario.VIAJERO), "C3",
+                TipoIncidenciaUsuario.AGLOMERACION, null, null, AHORA);
+
+        assertNotSame(averia, aglomeracion);
+        assertEquals("AGLOMERACION", aglomeracion.getTipo());
+        assertEquals(1, aglomeracion.getNumeroDeclarantes());
+        assertEquals(2, averia.getNumeroDeclarantes());
+    }
+
+    /** Tipo OTRO con el texto especificado: se acepta y la declaración guarda ese texto. */
+    @Test
+    void declarar_tipoOtroConEspecificacion_guardaElTexto() {
+        guardarDevuelveLaMismaIncidencia();
+
+        servicio.declararIncidencia(usuario(1, RolUsuario.VIAJERO), "C4", TipoIncidenciaUsuario.OTRO,
+                "Puerta del vagón bloqueada", null, AHORA);
+
+        ArgumentCaptor<DeclaracionIncidencia> captor = ArgumentCaptor.forClass(DeclaracionIncidencia.class);
+        verify(declaraciones).save(captor.capture());
+        assertEquals("Puerta del vagón bloqueada", captor.getValue().getEspecificacion());
+    }
+
+    /** Tipo OTRO sin especificar qué ocurre: 400 y no se guarda nada. */
+    @Test
+    void declarar_tipoOtroSinEspecificacion_error400() {
+        ResponseStatusException e = assertThrows(ResponseStatusException.class, () ->
+                servicio.declararIncidencia(usuario(1, RolUsuario.VIAJERO), "C3",
+                        TipoIncidenciaUsuario.OTRO, "   ", null, AHORA));
+
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        verify(repositorio, never()).save(any());
+    }
+
+    /** Sin tipo: 400. */
+    @Test
+    void declarar_sinTipo_error400() {
+        ResponseStatusException e = assertThrows(ResponseStatusException.class, () ->
+                servicio.declararIncidencia(usuario(1, RolUsuario.VIAJERO), "C3", null, null, null, AHORA));
+
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+    }
+
+    /** Línea que no existe en la red: 400 y no se guarda nada. */
+    @Test
+    void declarar_lineaInexistente_error400() {
+        ResponseStatusException e = assertThrows(ResponseStatusException.class, () ->
+                servicio.declararIncidencia(usuario(1, RolUsuario.VIAJERO), "C99",
+                        TipoIncidenciaUsuario.RETRASO, null, null, AHORA));
+
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        verify(repositorio, never()).save(any());
+    }
+
+    /** Un gestor o un analista no pueden declarar incidencias: 403. */
+    @Test
+    void declarar_usuarioQueNoEsViajero_error403() {
+        for (RolUsuario rol : List.of(RolUsuario.GESTOR, RolUsuario.ANALISTA)) {
+            ResponseStatusException e = assertThrows(ResponseStatusException.class, () ->
+                    servicio.declararIncidencia(usuario(9, rol), "C3",
+                            TipoIncidenciaUsuario.RETRASO, null, null, AHORA));
+            assertEquals(HttpStatus.FORBIDDEN, e.getStatusCode());
+        }
+        verify(repositorio, never()).save(any());
+    }
+
+    // --- Cierre por un gestor ---
+
+    /** Un gestor cierra una incidencia declarada: queda finalizada con la hora indicada. */
+    @Test
+    void finalizar_gestor_cierraLaIncidenciaDeclarada() {
+        guardarDevuelveLaMismaIncidencia();
+        Incidencia grupo = grupoExistente(50, 3);
+        when(repositorio.findById(50L)).thenReturn(Optional.of(grupo));
+
+        Incidencia cerrada = servicio.finalizarIncidenciaDeclarada(usuario(7, RolUsuario.GESTOR), 50L, AHORA);
+
+        assertFalse(cerrada.isActiva());
+        assertEquals(AHORA, cerrada.getFin());
+    }
+
+    /** Un viajero no puede cerrar incidencias: 403. */
+    @Test
+    void finalizar_viajero_error403() {
+        ResponseStatusException e = assertThrows(ResponseStatusException.class, () ->
+                servicio.finalizarIncidenciaDeclarada(usuario(1, RolUsuario.VIAJERO), 50L, AHORA));
+
+        assertEquals(HttpStatus.FORBIDDEN, e.getStatusCode());
+    }
+
+    /** Incidencia que no existe: 404. */
+    @Test
+    void finalizar_incidenciaInexistente_error404() {
+        when(repositorio.findById(99L)).thenReturn(Optional.empty());
+
+        ResponseStatusException e = assertThrows(ResponseStatusException.class, () ->
+                servicio.finalizarIncidenciaDeclarada(usuario(7, RolUsuario.GESTOR), 99L, AHORA));
+
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
+    }
+
+    /** Una incidencia de Renfe o de detección propia no se cierra a mano: 400 y sigue activa. */
+    @Test
+    void finalizar_incidenciaQueNoEsDeclarada_error400() {
+        Incidencia retraso = new Incidencia("C3", ServicioIncidencias.TIPO_RETRASO, "3 trenes...",
+                OrigenIncidencia.DETECCION_PROPIA, null, AHORA.minusMinutes(5));
+        when(repositorio.findById(60L)).thenReturn(Optional.of(retraso));
+
+        ResponseStatusException e = assertThrows(ResponseStatusException.class, () ->
+                servicio.finalizarIncidenciaDeclarada(usuario(7, RolUsuario.GESTOR), 60L, AHORA));
+
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        assertTrue(retraso.isActiva());
     }
 }

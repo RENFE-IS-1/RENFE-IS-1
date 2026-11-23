@@ -11,8 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.backendapi.modelo.DeclaracionIncidencia;
 import com.backendapi.modelo.Incidencia;
 import com.backendapi.modelo.OrigenIncidencia;
+import com.backendapi.modelo.RolUsuario;
+import com.backendapi.modelo.TipoIncidenciaUsuario;
+import com.backendapi.modelo.Usuario;
 
 /**
  * Tests de IncidenciaRepository (US-017).
@@ -32,9 +36,19 @@ class IncidenciaRepositoryTest {
     @Autowired
     private IncidenciaRepository repositorio;
 
-    /** Vacía la tabla antes de cada test para que unos tests no influyan en otros. */
+    @Autowired
+    private DeclaracionIncidenciaRepository declaraciones;
+
+    @Autowired
+    private UsuarioRepository usuarios;
+
+    /**
+     * Vacía las tablas de incidencias antes de cada test para que unos tests no influyan en otros.
+     * Primero las declaraciones, porque apuntan a las incidencias.
+     */
     @BeforeEach
     void vaciarTabla() {
+        declaraciones.deleteAll();
         repositorio.deleteAll();
     }
 
@@ -185,5 +199,89 @@ class IncidenciaRepositoryTest {
         guardar("C3", OrigenIncidencia.DETECCION_PROPIA, null, BASE);
 
         assertTrue(repositorio.findByLineaOrderByInicioDesc("C10").isEmpty());
+    }
+
+    // --- findByLineaAndTipoAndOrigenAndFinIsNull ---
+
+    /** Comprueba que encuentra el grupo activo de una línea y un tipo, donde se suman las declaraciones de los viajeros. */
+    @Test
+    void findByLineaAndTipoAndOrigenAndFinIsNull_encuentraElGrupoDeLaLineaYTipo() {
+        Incidencia averia = repositorio.save(new Incidencia("C3", "AVERIA_TREN", "Avería en el tren",
+                OrigenIncidencia.DECLARADA_POR_USUARIO, null, BASE));
+        repositorio.save(new Incidencia("C3", "AGLOMERACION", "Aglomeración",
+                OrigenIncidencia.DECLARADA_POR_USUARIO, null, BASE));
+
+        Optional<Incidencia> resultado = repositorio.findByLineaAndTipoAndOrigenAndFinIsNull(
+                "C3", "AVERIA_TREN", OrigenIncidencia.DECLARADA_POR_USUARIO);
+
+        assertTrue(resultado.isPresent());
+        assertEquals(averia.getId(), resultado.get().getId());
+    }
+
+    /** Comprueba que un grupo ya cerrado no se reutiliza: una nueva declaración empezará otro grupo. */
+    @Test
+    void findByLineaAndTipoAndOrigenAndFinIsNull_grupoCerrado_noLoDevuelve() {
+        Incidencia cerrada = new Incidencia("C3", "AVERIA_TREN", "Avería en el tren",
+                OrigenIncidencia.DECLARADA_POR_USUARIO, null, BASE);
+        cerrada.finalizar(BASE.plusHours(1));
+        repositorio.save(cerrada);
+
+        assertTrue(repositorio.findByLineaAndTipoAndOrigenAndFinIsNull(
+                "C3", "AVERIA_TREN", OrigenIncidencia.DECLARADA_POR_USUARIO).isEmpty());
+    }
+
+    /** Comprueba que el número de declarantes se guarda y se lee correctamente de la base de datos. */
+    @Test
+    void save_incidenciaDeclarada_conservaElNumeroDeDeclarantes() {
+        Incidencia grupo = new Incidencia("C3", "AVERIA_TREN", "Avería en el tren",
+                OrigenIncidencia.DECLARADA_POR_USUARIO, null, BASE);
+        grupo.sumarDeclarante(BASE);
+        grupo.sumarDeclarante(BASE.plusMinutes(1));
+        repositorio.save(grupo);
+
+        Incidencia leida = repositorio.findById(grupo.getId()).orElseThrow();
+        assertEquals(2, leida.getNumeroDeclarantes());
+    }
+
+    // --- DeclaracionIncidenciaRepository ---
+
+    /** Crea y guarda un viajero de prueba con un email único; lo usan los tests de declaraciones. */
+    private Usuario guardarViajero() {
+        return usuarios.save(new Usuario("Viajero", "viajero_" + System.nanoTime() + "@cercanias.es",
+                "hash", RolUsuario.VIAJERO, true));
+    }
+
+    /** Comprueba que se detecta si un viajero ya declaró una incidencia, para no contarlo dos veces. */
+    @Test
+    void existsByIncidenciaIdAndUsuarioId_detectaSiElViajeroYaDeclaro() {
+        Usuario viajero = guardarViajero();
+        Usuario otro = guardarViajero();
+        Incidencia grupo = repositorio.save(new Incidencia("C3", "AVERIA_TREN", "Avería en el tren",
+                OrigenIncidencia.DECLARADA_POR_USUARIO, null, BASE));
+        declaraciones.save(new DeclaracionIncidencia(grupo, viajero, TipoIncidenciaUsuario.AVERIA_TREN,
+                null, null, BASE));
+
+        assertTrue(declaraciones.existsByIncidenciaIdAndUsuarioId(grupo.getId(), viajero.getId()));
+        assertFalse(declaraciones.existsByIncidenciaIdAndUsuarioId(grupo.getId(), otro.getId()));
+
+        usuarios.delete(viajero);
+        usuarios.delete(otro);
+    }
+
+    /** Comprueba que si el viajero borra su cuenta, su declaración y la incidencia se conservan sin el vínculo al usuario. */
+    @Test
+    void borrarUsuario_conservaSuDeclaracionSinUsuario() {
+        Usuario viajero = guardarViajero();
+        Incidencia grupo = repositorio.save(new Incidencia("C3", "AVERIA_TREN", "Avería en el tren",
+                OrigenIncidencia.DECLARADA_POR_USUARIO, null, BASE));
+        DeclaracionIncidencia declaracion = declaraciones.save(new DeclaracionIncidencia(grupo, viajero,
+                TipoIncidenciaUsuario.AVERIA_TREN, null, "Comentario", BASE));
+
+        usuarios.delete(viajero);
+
+        DeclaracionIncidencia leida = declaraciones.findById(declaracion.getId()).orElseThrow();
+        assertNull(leida.getUsuario());
+        assertEquals("Comentario", leida.getComentario());
+        assertTrue(repositorio.findById(grupo.getId()).isPresent());
     }
 }

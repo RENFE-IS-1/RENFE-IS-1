@@ -37,6 +37,13 @@ public interface IncidenciaRepository extends JpaRepository<Incidencia, Long> {
     List<Incidencia> findByOrigenAndFinIsNull(OrigenIncidencia origen);
 
     /**
+     * Busca la incidencia activa de una línea con un tipo y un origen concretos.
+     * Lo necesitamos para agrupar en una sola incidencia las declaraciones de varios viajeros sobre
+     * la misma línea y el mismo tipo.
+     */
+    Optional<Incidencia> findByLineaAndTipoAndOrigenAndFinIsNull(String linea, String tipo, OrigenIncidencia origen);
+
+    /**
      * Devuelve todas las incidencias activas, de la que empezó más tarde a la más antigua.
      * Lo necesitamos para el endpoint de incidencias y para mostrar en US-031 las incidencias
      * activas en este momento.

@@ -61,6 +61,13 @@ public class Incidencia {
     @Column(nullable = false)
     private LocalDateTime ultimaActualizacion;
 
+    /**
+     * Número de viajeros distintos que han declarado esta incidencia. Solo se usa en las de origen
+     * DECLARADA_POR_USUARIO. Es Integer (admite null) para que la columna se pueda añadir a una tabla
+     * que ya tenga incidencias guardadas; null se trata como 0.
+     */
+    private Integer numeroDeclarantes;
+
     /** Constructor vacío exigido por JPA. */
     public Incidencia() {}
 
@@ -100,6 +107,29 @@ public class Incidencia {
             this.fin = momento;
             this.ultimaActualizacion = momento;
         }
+    }
+
+    /**
+     * Suma un viajero más a una incidencia declarada por usuarios y actualiza su hora de última
+     * actualización. Lo necesitamos para agrupar en una sola incidencia las declaraciones de varios
+     * viajeros sobre la misma línea y el mismo tipo.
+     */
+    public void sumarDeclarante(LocalDateTime momento) {
+        this.numeroDeclarantes = getNumeroDeclarantes() + 1;
+        this.ultimaActualizacion = momento;
+    }
+
+    /** Número de viajeros que la han declarado (0 si no es una incidencia declarada); lo necesitamos para mostrarlo y calcular la confianza. */
+    public int getNumeroDeclarantes() {
+        return numeroDeclarantes == null ? 0 : numeroDeclarantes;
+    }
+
+    /**
+     * Nivel de confianza según los viajeros que la han declarado, o null si no es una incidencia
+     * declarada por usuarios. Lo necesitamos para dar valor a que se acumulen declaraciones.
+     */
+    public NivelConfianza getNivelConfianza() {
+        return origen == OrigenIncidencia.DECLARADA_POR_USUARIO ? NivelConfianza.desde(getNumeroDeclarantes()) : null;
     }
 
     public Long getId() { return id; }
