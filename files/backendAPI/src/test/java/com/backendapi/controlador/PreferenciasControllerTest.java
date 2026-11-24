@@ -102,7 +102,7 @@ class PreferenciasControllerTest {
                           "nombre": "Casa - Universidad",
                           "origen": "Atocha",
                           "destino": "Cantoblanco",
-                          "criterio": "MAS_RAPIDA"
+                          "criterio": "tiempo"
                         }
                         """))
                 .andExpect(status().isCreated())
@@ -131,5 +131,101 @@ class PreferenciasControllerTest {
                 .header("Authorization", authHeader))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isEmpty());
+    }
+
+    // ---- Casos límite añadidos en la revisión del código ----
+
+    @Test
+    void sinCabeceraAuthorization_devuelve401() throws Exception {
+        mockMvc.perform(get("/api/usuarios/favoritos")).andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/usuarios/rutas")).andExpect(status().isUnauthorized());
+        mockMvc.perform(post("/api/usuarios/rutas")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"nombre": "Casa", "origen": "Atocha", "destino": "Sol"}
+                        """))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void guardarRuta_rechazaCriterioDesconocidoYTextosDemasiadoLargos() throws Exception {
+        mockMvc.perform(post("/api/usuarios/rutas")
+                .header("Authorization", authHeader)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"nombre": "Casa", "origen": "Atocha", "destino": "Sol", "criterio": "velocidad"}
+                        """))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(post("/api/usuarios/rutas")
+                .header("Authorization", authHeader)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"nombre": "%s", "origen": "Atocha", "destino": "Sol"}
+                        """.formatted("x".repeat(101))))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(post("/api/usuarios/rutas")
+                .header("Authorization", authHeader)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"nombre": "Casa", "origen": "  ", "destino": "Sol"}
+                        """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void anadirFavorita_rechazaIdentificadorDemasiadoLargo() throws Exception {
+        mockMvc.perform(post("/api/usuarios/favoritos")
+                .header("Authorization", authHeader)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"stopId": "%s", "nombreEstacion": "Atocha"}
+                        """.formatted("1".repeat(51))))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void rutaDeOtroUsuario_noSePuedeRenombrarNiBorrar() throws Exception {
+        MvcResult creada = mockMvc.perform(post("/api/usuarios/rutas")
+                .header("Authorization", authHeader)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"nombre": "Trabajo", "origen": "Atocha", "destino": "Chamartín"}
+                        """))
+                .andExpect(status().isCreated())
+                .andReturn();
+        long id = objectMapper.readTree(creada.getResponse().getContentAsString()).get("id").asLong();
+
+        // Segundo viajero
+        String otroEmail = "otro_" + System.nanoTime() + "@cercanias.es";
+        mockMvc.perform(post("/api/auth/registro")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"nombre": "Otra", "email": "%s", "password": "Password123!", "aceptaPrivacidad": true}
+                        """.formatted(otroEmail)))
+                .andExpect(status().isCreated());
+        MvcResult login = mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"email": "%s", "password": "Password123!"}
+                        """.formatted(otroEmail)))
+                .andReturn();
+        String otroAuth = "Bearer " + objectMapper.readTree(login.getResponse().getContentAsString()).get("token").asText();
+
+        mockMvc.perform(put("/api/usuarios/rutas/" + id)
+                .header("Authorization", otroAuth)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"nombre": "Robada"}
+                        """))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(delete("/api/usuarios/rutas/" + id).header("Authorization", otroAuth))
+                .andExpect(status().isNotFound());
+
+        // La ruta sigue siendo del primer usuario, con su nombre
+        mockMvc.perform(get("/api/usuarios/rutas").header("Authorization", authHeader))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nombre").value("Trabajo"));
     }
 }
