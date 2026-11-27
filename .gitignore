@@ -32,6 +32,7 @@ bin/"data/"
 
 jcode-windows-x86_64.exe
 %WIKI_DIR%
+RENFE-IS-1.wiki
 .metadata/
 # Proyecto antiguo de terminal (ya no está en el repositorio): que Eclipse no vuelva a subir nada
 files/Java/
