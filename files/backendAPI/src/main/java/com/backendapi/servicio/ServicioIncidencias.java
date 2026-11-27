@@ -12,6 +12,7 @@ import modelo.Linea;
 import modelo.Viaje;
 import repositorio.RedTransporte;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +53,10 @@ public class ServicioIncidencias {
 
     /** Nombre comercial de una línea de Cercanías dentro de un trip_id, p. ej. "C3" o "C4a". */
     private static final Pattern PATRON_LINEA = Pattern.compile("(C\\d+[a-z]?)", Pattern.CASE_INSENSITIVE);
+
+    /** Longitudes máximas de los textos del viajero: las mismas que las columnas de DeclaracionIncidencia. */
+    static final int MAX_ESPECIFICACION = 200;
+    static final int MAX_COMENTARIO = 1000;
 
     private final IncidenciaRepository repositorio;
     private final DeclaracionIncidenciaRepository declaraciones;
@@ -146,13 +151,26 @@ public class ServicioIncidencias {
             }
         }
         Matcher m = PATRON_LINEA.matcher(tripId);
-        return m.find() ? m.group(1).toUpperCase() : null;
+        return m.find() ? nombreComercial(m.group(1)) : null;
+    }
+
+    /**
+     * Escribe el nombre de una línea como en los horarios GTFS: "C" mayúscula y la letra de ramal en
+     * minúscula ("c4A" -> "C4a"). Revisión: antes se pasaba todo a mayúsculas y salía "C4A", así que
+     * los trenes de la C4a con trip_id conocido y los de trip_id desconocido se contaban como dos
+     * líneas distintas (y podían quedarse por debajo del mínimo de 3 trenes en las dos).
+     */
+    static String nombreComercial(String linea) {
+        return "C" + linea.substring(1).toLowerCase();
     }
 
     /**
      * Un viajero declara una incidencia en una línea. Si ya hay una incidencia declarada activa en esa
      * línea con ese tipo, el viajero se suma a ella (sube su nivel de confianza); si no, se crea una
      * nueva. Lo necesitamos para que los viajeros puedan avisar de incidencias desde la aplicación.
+     *
+     * Ojo con el tipo OTRO: todas las declaraciones OTRO de una línea van al mismo grupo aunque cada
+     * viajero describa algo distinto, así que su nivel de confianza mezcla incidencias diferentes.
      *
      * @param usuario        viajero con la sesión iniciada
      * @param linea          línea afectada, p. ej. "C3"
@@ -162,7 +180,8 @@ public class ServicioIncidencias {
      * @param ahora          momento de la declaración
      * @return la incidencia (grupo) en la que queda la declaración
      * @throws ResponseStatusException 403 si no es VIAJERO; 400 si falta el tipo, falta la especificación
-     *         de OTRO o la línea no existe; 409 si ese viajero ya declaró esa incidencia
+     *         de OTRO, algún texto es demasiado largo o la línea no existe; 409 si ese viajero ya
+     *         declaró esa incidencia
      */
     @Transactional
     public Incidencia declararIncidencia(Usuario usuario, String linea, TipoIncidenciaUsuario tipo,
@@ -176,6 +195,17 @@ public class ServicioIncidencias {
         String textoEspecificacion = textoOpcional(especificacion);
         if (tipo.requiereEspecificacion() && textoEspecificacion == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Indica qué ocurre cuando el tipo es \"Otra incidencia\".");
+        }
+        String textoComentario = textoOpcional(comentario);
+        // Revisión: sin estos límites, un texto más largo que su columna hacía fallar el guardado
+        // con un error 500 en vez de un 400 que la web pueda explicar al viajero.
+        if (textoEspecificacion != null && textoEspecificacion.length() > MAX_ESPECIFICACION) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "La descripción de la incidencia no puede tener más de " + MAX_ESPECIFICACION + " caracteres.");
+        }
+        if (textoComentario != null && textoComentario.length() > MAX_COMENTARIO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "El comentario no puede tener más de " + MAX_COMENTARIO + " caracteres.");
         }
         String lineaNormalizada = normalizarLineaExistente(linea);
 
@@ -192,10 +222,22 @@ public class ServicioIncidencias {
                     OrigenIncidencia.DECLARADA_POR_USUARIO, null, ahora);
         }
 
+        // Limitación conocida: si dos viajeros declaran a la vez, los dos pueden leer el mismo número
+        // de declarantes y el contador sumar uno de menos (o, si aún no había grupo, crearse dos
+        // grupos). Con el tráfico del proyecto es muy improbable; si hiciera falta, la solución sería
+        // bloqueo optimista (@Version en Incidencia).
         grupo.sumarDeclarante(ahora);
         grupo = repositorio.save(grupo);
-        declaraciones.save(new DeclaracionIncidencia(grupo, usuario, tipo, textoEspecificacion,
-                textoOpcional(comentario), ahora));
+        try {
+            declaraciones.save(new DeclaracionIncidencia(grupo, usuario, tipo, textoEspecificacion,
+                    textoComentario, ahora));
+        } catch (DataIntegrityViolationException e) {
+            // Revisión: si el mismo viajero envía la declaración dos veces casi a la vez (doble clic),
+            // las dos pasan la comprobación de arriba y la base de datos rechaza la segunda por la
+            // restricción única (incidencia, usuario). Se responde 409 como en el caso normal, en vez
+            // de 500, y la transacción se deshace, así que tampoco cuenta dos veces.
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya has declarado esta incidencia.");
+        }
         return grupo;
     }
 

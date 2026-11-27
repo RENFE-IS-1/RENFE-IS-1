@@ -13,6 +13,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
@@ -454,5 +455,90 @@ class ServicioIncidenciasTest {
 
         assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
         assertTrue(retraso.isActiva());
+    }
+
+    // --- Casos límite añadidos en la revisión del código ---
+
+    /**
+     * Trenes de la C4a: uno con trip_id de los horarios GTFS y dos con un trip_id desconocido. Los tres
+     * deben contar para la misma línea "C4a" (antes los de trip_id desconocido iban a "C4A" y no se
+     * llegaba al mínimo de 3 en ninguna de las dos).
+     */
+    @Test
+    void ramalConLetra_tripIdConocidoYDesconocido_cuentanEnLaMismaLinea() {
+        red.addLinea(new Linea("R_C4a", "C4a", "Alcobendas - Parla", "2C5AA0"));
+        red.addViaje(new Viaje("1001J1C4a", "R_C4a", "SVC"));
+        red.reemplazarRetrasos(Map.of(
+                "1001J1C4a", List.of(RetrasoParada.deTodoElViaje(700)),
+                "9002X2C4a", List.of(RetrasoParada.deTodoElViaje(700)),
+                "9003X3C4A", List.of(RetrasoParada.deTodoElViaje(700))));
+
+        servicio.detectarIncidenciasPorRetraso(AHORA);
+
+        assertEquals("C4a", incidenciaGuardada().getLinea());
+    }
+
+    /** El nombre sacado del trip_id se escribe como en los horarios: C mayúscula, letra de ramal en minúscula. */
+    @Test
+    void nombreComercial_normalizaMayusculas() {
+        assertEquals("C4a", ServicioIncidencias.nombreComercial("C4A"));
+        assertEquals("C8b", ServicioIncidencias.nombreComercial("c8B"));
+        assertEquals("C10", ServicioIncidencias.nombreComercial("c10"));
+    }
+
+    /** Textos más largos que sus columnas: 400 antes de tocar la base de datos (antes daba 500). */
+    @Test
+    void declarar_textosDemasiadoLargos_error400SinGuardarNada() {
+        ResponseStatusException especificacion = assertThrows(ResponseStatusException.class, () ->
+                servicio.declararIncidencia(usuario(1, RolUsuario.VIAJERO), "C3", TipoIncidenciaUsuario.OTRO,
+                        "x".repeat(ServicioIncidencias.MAX_ESPECIFICACION + 1), null, AHORA));
+        ResponseStatusException comentario = assertThrows(ResponseStatusException.class, () ->
+                servicio.declararIncidencia(usuario(1, RolUsuario.VIAJERO), "C3", TipoIncidenciaUsuario.RETRASO,
+                        null, "x".repeat(ServicioIncidencias.MAX_COMENTARIO + 1), AHORA));
+
+        assertEquals(HttpStatus.BAD_REQUEST, especificacion.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, comentario.getStatusCode());
+        verify(repositorio, never()).save(any());
+        verify(declaraciones, never()).save(any());
+    }
+
+    /** Justo en el límite sí se acepta. */
+    @Test
+    void declarar_textosEnElLimite_seAceptan() {
+        guardarDevuelveLaMismaIncidencia();
+
+        Incidencia grupo = servicio.declararIncidencia(usuario(1, RolUsuario.VIAJERO), "C3", TipoIncidenciaUsuario.OTRO,
+                "x".repeat(ServicioIncidencias.MAX_ESPECIFICACION), "y".repeat(ServicioIncidencias.MAX_COMENTARIO), AHORA);
+
+        assertEquals(1, grupo.getNumeroDeclarantes());
+    }
+
+    /**
+     * Doble clic: la comprobación previa no ve la primera declaración, pero la base de datos rechaza la
+     * segunda por la restricción única. Debe responder 409, no 500.
+     */
+    @Test
+    void declarar_dobleEnvioSimultaneo_conflictoEnVezDeError500() {
+        guardarDevuelveLaMismaIncidencia();
+        grupoExistente(50, 1);
+        when(declaraciones.existsByIncidenciaIdAndUsuarioId(50L, 2L)).thenReturn(false);
+        when(declaraciones.save(any(DeclaracionIncidencia.class)))
+                .thenThrow(new DataIntegrityViolationException("unique (incidencia_id, usuario_id)"));
+
+        ResponseStatusException e = assertThrows(ResponseStatusException.class, () ->
+                servicio.declararIncidencia(usuario(2, RolUsuario.VIAJERO), "C3",
+                        TipoIncidenciaUsuario.AVERIA_TREN, null, null, AHORA));
+
+        assertEquals(HttpStatus.CONFLICT, e.getStatusCode());
+    }
+
+    /** Los textos solo con espacios cuentan como vacíos: OTRO con especificación "   " es un 400. */
+    @Test
+    void declarar_tipoOtroConEspecificacionEnBlanco_error400() {
+        ResponseStatusException e = assertThrows(ResponseStatusException.class, () ->
+                servicio.declararIncidencia(usuario(1, RolUsuario.VIAJERO), "C3", TipoIncidenciaUsuario.OTRO,
+                        "   ", null, AHORA));
+
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     }
 }
