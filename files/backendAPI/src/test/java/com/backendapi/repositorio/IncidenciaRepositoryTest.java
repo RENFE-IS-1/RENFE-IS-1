@@ -82,33 +82,44 @@ class IncidenciaRepositoryTest {
         assertEquals(1, repositorio.count());
     }
 
-    // --- findByIdExternoAndFinIsNull ---
+    // --- findByIdExternoAndLineaAndFinIsNull ---
 
-    /** Comprueba que encuentra un aviso oficial activo por su id de Renfe, para no duplicarlo. */
+    /** Comprueba que encuentra un aviso oficial activo por su id de Renfe y su línea, para no duplicarlo. */
     @Test
-    void findByIdExternoAndFinIsNull_avisoActivo_loEncuentra() {
+    void findByIdExternoAndLineaAndFinIsNull_avisoActivo_loEncuentra() {
         Incidencia aviso = guardar("C5", OrigenIncidencia.AVISO_OFICIAL, "ALERTA_1", BASE);
 
-        Optional<Incidencia> resultado = repositorio.findByIdExternoAndFinIsNull("ALERTA_1");
+        Optional<Incidencia> resultado = repositorio.findByIdExternoAndLineaAndFinIsNull("ALERTA_1", "C5");
 
         assertTrue(resultado.isPresent());
         assertEquals(aviso.getId(), resultado.get().getId());
     }
 
+    /** Comprueba que un mismo aviso en dos líneas son dos incidencias distintas y no se confunden. */
+    @Test
+    void findByIdExternoAndLineaAndFinIsNull_mismoAvisoEnDosLineas_devuelveLaDeCadaLinea() {
+        Incidencia c3 = guardar("C3", OrigenIncidencia.AVISO_OFICIAL, "ALERTA_1", BASE);
+        Incidencia c4 = guardar("C4", OrigenIncidencia.AVISO_OFICIAL, "ALERTA_1", BASE);
+
+        assertEquals(c3.getId(), repositorio.findByIdExternoAndLineaAndFinIsNull("ALERTA_1", "C3").orElseThrow().getId());
+        assertEquals(c4.getId(), repositorio.findByIdExternoAndLineaAndFinIsNull("ALERTA_1", "C4").orElseThrow().getId());
+        assertTrue(repositorio.findByIdExternoAndLineaAndFinIsNull("ALERTA_1", "C5").isEmpty());
+    }
+
     /** Comprueba que un aviso ya finalizado no cuenta como activo: si reaparece, será uno nuevo. */
     @Test
-    void findByIdExternoAndFinIsNull_avisoFinalizado_noLoDevuelve() {
+    void findByIdExternoAndLineaAndFinIsNull_avisoFinalizado_noLoDevuelve() {
         guardarFinalizada("C5", OrigenIncidencia.AVISO_OFICIAL, "ALERTA_1", BASE, BASE.plusHours(1));
 
-        assertTrue(repositorio.findByIdExternoAndFinIsNull("ALERTA_1").isEmpty());
+        assertTrue(repositorio.findByIdExternoAndLineaAndFinIsNull("ALERTA_1", "C5").isEmpty());
     }
 
     /** Comprueba que no devuelve nada para un id que no está guardado. */
     @Test
-    void findByIdExternoAndFinIsNull_idDesconocido_noDevuelveNada() {
+    void findByIdExternoAndLineaAndFinIsNull_idDesconocido_noDevuelveNada() {
         guardar("C5", OrigenIncidencia.AVISO_OFICIAL, "ALERTA_1", BASE);
 
-        assertTrue(repositorio.findByIdExternoAndFinIsNull("OTRA_ALERTA").isEmpty());
+        assertTrue(repositorio.findByIdExternoAndLineaAndFinIsNull("OTRA_ALERTA", "C5").isEmpty());
     }
 
     // --- findByLineaAndOrigenAndFinIsNull ---

@@ -1,5 +1,6 @@
 package repositorio;
 
+import modelo.AvisoOficial;
 import modelo.Estacion;
 import modelo.Linea;
 import modelo.ParadaHorario;
@@ -49,6 +50,7 @@ public class RedTransporte {
 
     private volatile Map<String, List<RetrasoParada>> retrasosPorViaje = Map.of();
     private volatile List<String> incidencias = List.of();
+    private volatile List<AvisoOficial> avisosOficiales = List.of();
 
     public boolean isPosicionesTiempoRealActivas() { return posicionesTiempoRealActivas; }
     public void setPosicionesTiempoRealActivas(boolean activas) { this.posicionesTiempoRealActivas = activas; }
@@ -154,6 +156,22 @@ public class RedTransporte {
     /** Incidencias de la última descarga (lista de solo lectura). */
     public List<String> getIncidencias() {
         return incidencias;
+    }
+
+    /**
+     * Sustituye los avisos oficiales por los de la última descarga del feed de alertas.
+     * Lo necesita ClienteApiRenfe para dejar los avisos completos (con sus rutas) a ServicioIncidencias (US-017).
+     */
+    public void reemplazarAvisosOficiales(List<AvisoOficial> nuevos) {
+        this.avisosOficiales = List.copyOf(nuevos);
+    }
+
+    /**
+     * Avisos oficiales de la última descarga (lista de solo lectura).
+     * Lo necesita ServicioIncidencias para registrarlos como incidencias de las líneas afectadas (US-017).
+     */
+    public List<AvisoOficial> getAvisosOficiales() {
+        return avisosOficiales;
     }
 
     // --- ESCRITURA ---

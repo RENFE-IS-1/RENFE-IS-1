@@ -33,7 +33,7 @@ class ActualizadorTiempoRealTest {
         servicioIncidencias = mock(ServicioIncidencias.class);
     }
 
-    /** Con la descarga activa: primero se actualizan los datos de Renfe y después se detectan las incidencias. */
+    /** Con la descarga activa: primero se actualizan los datos de Renfe y después se detectan retrasos y avisos oficiales. */
     @Test
     void actualizar_activo_descargaYDespuesDetectaIncidencias() {
         ActualizadorTiempoReal actualizador = new ActualizadorTiempoReal(cliente, red, servicioIncidencias, true);
@@ -43,6 +43,7 @@ class ActualizadorTiempoRealTest {
         InOrder orden = inOrder(cliente, servicioIncidencias);
         orden.verify(cliente).actualizarTiempoReal(red);
         orden.verify(servicioIncidencias).detectarIncidenciasPorRetraso(any(LocalDateTime.class));
+        orden.verify(servicioIncidencias).registrarAvisosOficiales(any(LocalDateTime.class));
     }
 
     /** Con la descarga desactivada (renfe.api.activo=false, como en los tests) no se descarga ni se detecta nada. */
@@ -55,7 +56,10 @@ class ActualizadorTiempoRealTest {
         verifyNoInteractions(cliente, servicioIncidencias);
     }
 
-    /** Si la detección de incidencias falla, el error no corta la actualización ni llega al programador de tareas. */
+    /**
+     * Si la detección por retrasos falla, el error no corta la actualización ni llega al programador
+     * de tareas, y los avisos oficiales se registran igualmente.
+     */
     @Test
     void actualizar_errorAlDetectar_noRompeLaActualizacion() {
         doThrow(new RuntimeException("Base de datos no disponible"))
@@ -64,5 +68,17 @@ class ActualizadorTiempoRealTest {
 
         assertDoesNotThrow(actualizador::actualizar);
         verify(cliente).actualizarTiempoReal(red);
+        verify(servicioIncidencias).registrarAvisosOficiales(any(LocalDateTime.class));
+    }
+
+    /** Si el registro de avisos oficiales falla, el error tampoco corta la actualización. */
+    @Test
+    void actualizar_errorAlRegistrarAvisos_noRompeLaActualizacion() {
+        doThrow(new RuntimeException("Base de datos no disponible"))
+                .when(servicioIncidencias).registrarAvisosOficiales(any(LocalDateTime.class));
+        ActualizadorTiempoReal actualizador = new ActualizadorTiempoReal(cliente, red, servicioIncidencias, true);
+
+        assertDoesNotThrow(actualizador::actualizar);
+        verify(servicioIncidencias).detectarIncidenciasPorRetraso(any(LocalDateTime.class));
     }
 }

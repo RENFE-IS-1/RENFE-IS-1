@@ -5,10 +5,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,14 +30,18 @@ import com.backendapi.modelo.Usuario;
 import com.backendapi.repositorio.DeclaracionIncidenciaRepository;
 import com.backendapi.repositorio.IncidenciaRepository;
 
+import modelo.AvisoOficial;
+import modelo.Estacion;
 import modelo.Linea;
+import modelo.ParadaHorario;
 import modelo.RetrasoParada;
 import modelo.Viaje;
 import repositorio.RedTransporte;
 
 /**
- * Tests unitarios de ServicioIncidencias: detección por retrasos (US-017, criterios 2, 3 y 4) e
- * incidencias declaradas por viajeros (agrupación, nivel de confianza y cierre por un gestor).
+ * Tests unitarios de ServicioIncidencias: detección por retrasos (US-017, criterios 2, 3 y 4), avisos
+ * oficiales de Renfe (criterio 1) e incidencias declaradas por viajeros (agrupación, nivel de
+ * confianza y cierre por un gestor).
  *
  * Usa una RedTransporte de prueba con trenes inventados y un repositorio simulado (mock), así que no
  * necesita base de datos ni conexión a Internet.
@@ -540,5 +546,198 @@ class ServicioIncidenciasTest {
                         "   ", null, AHORA));
 
         assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+    }
+
+    // =====================================================================
+    // Avisos oficiales de Renfe (US-017, criterio 1)
+    // =====================================================================
+
+    /** Hora de inicio de los avisos de prueba: una hora antes de la revisión, en segundos UTC como los manda Renfe. */
+    private static final long INICIO_AVISO = AHORA.minusHours(1).atZone(ZoneId.of("Europe/Madrid")).toEpochSecond();
+
+    /**
+     * Añade a la red las rutas con los route_id reales de Renfe para C3 y C4 y marca la descarga de
+     * alertas como correcta. Lo usan los tests de avisos oficiales.
+     */
+    private void prepararRutasDeRenfe() {
+        red.addLinea(new Linea("10T0007C3", "C3", "Chamartín - Aranjuez", "952585"));
+        red.addLinea(new Linea("10T0011C4", "C4", "Parla - Colmenar Viejo", "2C5AA0"));
+        red.setIncidenciasTiempoRealActivas(true);
+    }
+
+    /** Aviso de prueba como el del feed real: afecta a C3, C4 y una ruta de otro núcleo (Asturias). */
+    private static AvisoOficial avisoAtocha() {
+        return new AvisoOficial("AVISO_528848", null,
+                "#MadC3 #MadC4 Debido a una acumulación de trenes en la estación de Atocha.",
+                Set.of("10T0007C3", "10T0011C4", "20T0001C1"), Set.of(), INICIO_AVISO);
+    }
+
+    /** Devuelve todas las incidencias que el servicio ha guardado; lo usan los tests de avisos. */
+    private List<Incidencia> incidenciasGuardadas(int veces) {
+        ArgumentCaptor<Incidencia> captor = ArgumentCaptor.forClass(Incidencia.class);
+        verify(repositorio, times(veces)).save(captor.capture());
+        return captor.getAllValues();
+    }
+
+    /** Un aviso de C3 y C4: se crea una incidencia por línea, con el id del aviso, su hora de inicio y sin hashtags. */
+    @Test
+    void avisos_avisoDeDosLineas_creaUnaIncidenciaPorLinea() {
+        prepararRutasDeRenfe();
+        red.reemplazarAvisosOficiales(List.of(avisoAtocha()));
+
+        servicio.registrarAvisosOficiales(AHORA);
+
+        List<Incidencia> creadas = incidenciasGuardadas(2);
+        assertEquals(Set.of("C3", "C4"), Set.of(creadas.get(0).getLinea(), creadas.get(1).getLinea()));
+        for (Incidencia i : creadas) {
+            assertEquals(OrigenIncidencia.AVISO_OFICIAL, i.getOrigen());
+            assertEquals(ServicioIncidencias.TIPO_AVISO_OFICIAL, i.getTipo());
+            assertEquals("AVISO_528848", i.getIdExterno());
+            assertEquals(AHORA.minusHours(1), i.getInicio());
+            assertEquals("Debido a una acumulación de trenes en la estación de Atocha.", i.getDescripcion());
+            assertTrue(i.isActiva());
+        }
+    }
+
+    /** El aviso sigue en el feed y ya estaba registrado: no se duplica, se actualiza la existente. */
+    @Test
+    void avisos_avisoYaRegistrado_noSeDuplicaYSeActualiza() {
+        prepararRutasDeRenfe();
+        red.reemplazarAvisosOficiales(List.of(new AvisoOficial("AVISO_1", null, "Texto nuevo",
+                Set.of("10T0007C3"), Set.of(), INICIO_AVISO)));
+        Incidencia existente = new Incidencia("C3", ServicioIncidencias.TIPO_AVISO_OFICIAL, "Texto viejo",
+                OrigenIncidencia.AVISO_OFICIAL, "AVISO_1", AHORA.minusHours(1));
+        when(repositorio.findByIdExternoAndLineaAndFinIsNull("AVISO_1", "C3")).thenReturn(Optional.of(existente));
+        when(repositorio.findByOrigenAndFinIsNull(OrigenIncidencia.AVISO_OFICIAL)).thenReturn(List.of(existente));
+
+        servicio.registrarAvisosOficiales(AHORA);
+
+        assertSame(existente, incidenciasGuardadas(1).get(0));
+        assertEquals("Texto nuevo", existente.getDescripcion());
+        assertEquals(AHORA, existente.getUltimaActualizacion());
+        assertTrue(existente.isActiva());
+    }
+
+    /** El aviso ya no está en el feed: su incidencia se cierra con la hora de la revisión. */
+    @Test
+    void avisos_avisoQueSaleDelFeed_seCierra() {
+        prepararRutasDeRenfe();
+        red.reemplazarAvisosOficiales(List.of());
+        Incidencia activa = new Incidencia("C3", ServicioIncidencias.TIPO_AVISO_OFICIAL, "Aviso",
+                OrigenIncidencia.AVISO_OFICIAL, "AVISO_1", AHORA.minusHours(2));
+        when(repositorio.findByOrigenAndFinIsNull(OrigenIncidencia.AVISO_OFICIAL)).thenReturn(List.of(activa));
+
+        servicio.registrarAvisosOficiales(AHORA);
+
+        assertFalse(activa.isActiva());
+        assertEquals(AHORA, activa.getFin());
+    }
+
+    /** El aviso deja de afectar a una línea: se cierra la incidencia de esa línea y la de la otra sigue. */
+    @Test
+    void avisos_avisoQueDejaDeAfectarAUnaLinea_cierraSoloEsaLinea() {
+        prepararRutasDeRenfe();
+        red.reemplazarAvisosOficiales(List.of(new AvisoOficial("AVISO_1", null, "Aviso",
+                Set.of("10T0007C3"), Set.of(), INICIO_AVISO)));
+        Incidencia c3 = new Incidencia("C3", ServicioIncidencias.TIPO_AVISO_OFICIAL, "Aviso",
+                OrigenIncidencia.AVISO_OFICIAL, "AVISO_1", AHORA.minusHours(1));
+        Incidencia c4 = new Incidencia("C4", ServicioIncidencias.TIPO_AVISO_OFICIAL, "Aviso",
+                OrigenIncidencia.AVISO_OFICIAL, "AVISO_1", AHORA.minusHours(1));
+        when(repositorio.findByIdExternoAndLineaAndFinIsNull("AVISO_1", "C3")).thenReturn(Optional.of(c3));
+        when(repositorio.findByOrigenAndFinIsNull(OrigenIncidencia.AVISO_OFICIAL)).thenReturn(List.of(c3, c4));
+
+        servicio.registrarAvisosOficiales(AHORA);
+
+        assertTrue(c3.isActiva());
+        assertFalse(c4.isActiva());
+    }
+
+    /** Si la última descarga de alertas ha fallado, no se crea ni se cierra nada. */
+    @Test
+    void avisos_descargaFallida_noCambiaNada() {
+        prepararRutasDeRenfe();
+        red.setIncidenciasTiempoRealActivas(false);
+        red.reemplazarAvisosOficiales(List.of(avisoAtocha()));
+
+        servicio.registrarAvisosOficiales(AHORA);
+
+        verifyNoInteractions(repositorio);
+    }
+
+    /** Un aviso solo de otros núcleos (rutas que no están en la red de Madrid) no crea ninguna incidencia. */
+    @Test
+    void avisos_rutasDeOtrosNucleos_seIgnoran() {
+        prepararRutasDeRenfe();
+        red.reemplazarAvisosOficiales(List.of(new AvisoOficial("AVISO_ASTURIAS", null, "Aviso en Asturias",
+                Set.of("20T0001C1", "20T0002C1"), Set.of(), INICIO_AVISO)));
+
+        servicio.registrarAvisosOficiales(AHORA);
+
+        verify(repositorio, never()).save(any());
+    }
+
+    /** Un aviso sin rutas pero con una estación: se registra en las líneas que pasan por esa estación. */
+    @Test
+    void avisos_soloConEstacion_usaLasLineasDeLaEstacion() {
+        prepararRutasDeRenfe();
+        red.addEstacion(new Estacion("18000", "Atocha", 40.4065, -3.6908));
+        red.addViaje(new Viaje("V1", "10T0007C3", "SVC"));
+        red.addParadaHorario(new ParadaHorario("V1", 28800, 28800, "18000", 1));
+        red.reemplazarAvisosOficiales(List.of(new AvisoOficial("AVISO_2", null, "Ascensor averiado en Atocha",
+                Set.of(), Set.of("18000"), INICIO_AVISO)));
+
+        servicio.registrarAvisosOficiales(AHORA);
+
+        assertEquals("C3", incidenciasGuardadas(1).get(0).getLinea());
+    }
+
+    /** Un aviso con hora de inicio futura (obras anunciadas) todavía no se registra. */
+    @Test
+    void avisos_inicioFuturo_todaviaNoSeRegistra() {
+        prepararRutasDeRenfe();
+        long manana = AHORA.plusDays(1).atZone(ZoneId.of("Europe/Madrid")).toEpochSecond();
+        red.reemplazarAvisosOficiales(List.of(new AvisoOficial("AVISO_OBRAS", null, "Obras mañana",
+                Set.of("10T0007C3"), Set.of(), manana)));
+
+        servicio.registrarAvisosOficiales(AHORA);
+
+        verify(repositorio, never()).save(any());
+    }
+
+    /** Un aviso sin hora de inicio se registra con la hora de la revisión. */
+    @Test
+    void avisos_sinHoraDeInicio_usaLaHoraDeLaRevision() {
+        prepararRutasDeRenfe();
+        red.reemplazarAvisosOficiales(List.of(new AvisoOficial("AVISO_3", null, "Aviso",
+                Set.of("10T0007C3"), Set.of(), null)));
+
+        servicio.registrarAvisosOficiales(AHORA);
+
+        assertEquals(AHORA, incidenciasGuardadas(1).get(0).getInicio());
+    }
+
+    /** La detección de avisos no cierra incidencias de otros orígenes (retrasos o declaradas). */
+    @Test
+    void avisos_noTocanOtrosOrigenes() {
+        prepararRutasDeRenfe();
+        red.reemplazarAvisosOficiales(List.of());
+
+        servicio.registrarAvisosOficiales(AHORA);
+
+        verify(repositorio, never()).findByOrigenAndFinIsNull(OrigenIncidencia.DETECCION_PROPIA);
+        verify(repositorio, never()).findByOrigenAndFinIsNull(OrigenIncidencia.DECLARADA_POR_USUARIO);
+    }
+
+    /** Texto del aviso: se quitan los hashtags iniciales, se antepone el título si lo hay y se recorta si es muy largo. */
+    @Test
+    void descripcionDeAviso_limpiaHashtagsTituloYLongitud() {
+        assertEquals("Retrasos en Atocha", ServicioIncidencias.descripcionDeAviso(new AvisoOficial(
+                "A", null, "  #MadC3 #MadC4   Retrasos en Atocha", Set.of(), Set.of(), null)));
+        assertEquals("Obras: Corte de vía", ServicioIncidencias.descripcionDeAviso(new AvisoOficial(
+                "A", "Obras", "Corte de vía", Set.of(), Set.of(), null)));
+        assertEquals("Aviso oficial de Renfe", ServicioIncidencias.descripcionDeAviso(new AvisoOficial(
+                "A", null, null, Set.of(), Set.of(), null)));
+        assertEquals(ServicioIncidencias.MAX_DESCRIPCION, ServicioIncidencias.descripcionDeAviso(new AvisoOficial(
+                "A", null, "x".repeat(3000), Set.of(), Set.of(), null)).length());
     }
 }

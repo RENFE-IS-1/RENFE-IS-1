@@ -16,11 +16,12 @@ import java.util.Optional;
 public interface IncidenciaRepository extends JpaRepository<Incidencia, Long> {
 
     /**
-     * Busca el aviso oficial activo con ese identificador del feed de Renfe.
-     * Lo necesitamos para no registrar dos veces el mismo aviso, ya que el feed se descarga
-     * cada 60 segundos (criterio 3).
+     * Busca la incidencia activa de un aviso oficial del feed de Renfe en una línea concreta.
+     * Lo necesitamos para no registrar dos veces el mismo aviso, ya que el feed se descarga cada
+     * 60 segundos (criterio 3). Se busca por aviso y línea porque un mismo aviso puede afectar a
+     * varias líneas (p. ej. C3 y C4) y se guarda una incidencia por cada una.
      */
-    Optional<Incidencia> findByIdExternoAndFinIsNull(String idExterno);
+    Optional<Incidencia> findByIdExternoAndLineaAndFinIsNull(String idExterno, String linea);
 
     /**
      * Busca la incidencia activa de una línea con un origen concreto.

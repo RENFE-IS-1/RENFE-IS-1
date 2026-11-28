@@ -21,7 +21,7 @@ import modelo.GtfsRtJsonDto;
  * un minuto por defecto). La primera descarga se hace justo después de arrancar, en segundo plano,
  * así el servidor no espera a la API de Renfe para empezar a responder.
  *
- * Después de cada descarga revisa los retrasos para detectar incidencias (US-017).
+ * Después de cada descarga revisa los retrasos y los avisos oficiales para registrar incidencias (US-017).
  */
 @Component
 public class ActualizadorTiempoReal {
@@ -47,19 +47,25 @@ public class ActualizadorTiempoReal {
     }
 
     /**
-     * Descarga los datos en tiempo real de Renfe y, con ellos, detecta las incidencias por retraso.
-     * La detección va después de la descarga porque necesita los retrasos recién actualizados.
-     * Si la detección falla solo se anota el error: los datos del mapa y de las llegadas ya están
-     * actualizados y no deben verse afectados.
+     * Descarga los datos en tiempo real de Renfe y, con ellos, detecta las incidencias por retraso y
+     * registra los avisos oficiales. Las dos tareas van después de la descarga porque necesitan los
+     * datos recién actualizados, y cada una tiene su propio try/catch: si una falla solo se anota el
+     * error, la otra se ejecuta igual y los datos del mapa y de las llegadas no se ven afectados.
      */
     @Scheduled(initialDelay = 0, fixedDelayString = "${renfe.api.intervalo-ms:60000}")
     public void actualizar() {
         if (!activo) return;
         cliente.actualizarTiempoReal(red);
+        LocalDateTime ahora = LocalDateTime.now(MADRID);
         try {
-            servicioIncidencias.detectarIncidenciasPorRetraso(LocalDateTime.now(MADRID));
+            servicioIncidencias.detectarIncidenciasPorRetraso(ahora);
         } catch (Exception e) {
             System.err.println("Fallo al detectar incidencias por retraso: " + e.getMessage());
+        }
+        try {
+            servicioIncidencias.registrarAvisosOficiales(ahora);
+        } catch (Exception e) {
+            System.err.println("Fallo al registrar los avisos oficiales: " + e.getMessage());
         }
     }
 

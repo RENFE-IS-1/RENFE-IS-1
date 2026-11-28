@@ -1,6 +1,7 @@
 package loader;
 
 import interfaces.FuenteDatosExterna;
+import modelo.AvisoOficial;
 import modelo.GtfsRtJsonDto;
 import modelo.RetrasoParada;
 import modelo.Viaje;
@@ -16,8 +17,11 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Descarga los datos en tiempo real de Renfe (GTFS-RT en JSON): posiciones de los trenes, retrasos
@@ -195,10 +199,24 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
         return new RetrasoParada(stu.getStopId(), stu.getStopSequence(), retraso);
     }
 
-    private boolean actualizarIncidencias(RedTransporte red) {
+    /**
+     * Descarga el feed de alertas de Renfe. Guarda en la red los textos de las incidencias (como antes)
+     * y, para US-017, los avisos completos con sus rutas y su hora de inicio. Acotado al paquete para
+     * poder probarlo con respuestas HTTP simuladas.
+     */
+    boolean actualizarIncidencias(RedTransporte red) {
         try {
             GtfsRtJsonDto datos = restTemplate.getForObject(urlIncidencias, GtfsRtJsonDto.class);
             if (datos == null || datos.getEntity() == null) return false;
+
+            // US-017: avisos completos. El feed de Renfe a veces repite el mismo id; se guarda una sola vez.
+            Map<String, AvisoOficial> avisos = new LinkedHashMap<>();
+            for (GtfsRtJsonDto.Entity e : datos.getEntity()) {
+                if (e.getAlert() != null && e.getId() != null && !e.getId().isBlank()) {
+                    avisos.putIfAbsent(e.getId(), avisoDe(e.getId(), e.getAlert()));
+                }
+            }
+            red.reemplazarAvisosOficiales(new ArrayList<>(avisos.values()));
 
             List<String> incidencias = new ArrayList<>();
             for (GtfsRtJsonDto.Entity e : datos.getEntity()) {
@@ -220,5 +238,38 @@ public class ClienteApiRenfe implements FuenteDatosExterna {
             System.err.println("Motivo del fallo: " + e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * Convierte un aviso del JSON de Renfe en un AvisoOficial: título, descripción, rutas y estaciones
+     * afectadas y hora de inicio. Lo necesitamos para que ServicioIncidencias no dependa del formato del JSON.
+     */
+    private static AvisoOficial avisoDe(String id, GtfsRtJsonDto.Alert alerta) {
+        Set<String> rutas = new LinkedHashSet<>();
+        Set<String> estaciones = new LinkedHashSet<>();
+        if (alerta.getInformedEntity() != null) {
+            for (GtfsRtJsonDto.EntitySelector afectado : alerta.getInformedEntity()) {
+                if (afectado == null) continue;
+                if (afectado.getRouteId() != null && !afectado.getRouteId().isBlank()) rutas.add(afectado.getRouteId().trim());
+                if (afectado.getStopId() != null && !afectado.getStopId().isBlank()) estaciones.add(afectado.getStopId().trim());
+            }
+        }
+        Long inicio = null;
+        if (alerta.getActivePeriod() != null) {
+            for (GtfsRtJsonDto.TimeRange periodo : alerta.getActivePeriod()) {
+                if (periodo != null && periodo.getStart() != null) { inicio = periodo.getStart(); break; }
+            }
+        }
+        return new AvisoOficial(id, primerTexto(alerta.getHeaderText()), primerTexto(alerta.getDescriptionText()),
+                rutas, estaciones, inicio);
+    }
+
+    /** Devuelve el primer texto traducido de un campo del aviso, o null si no hay; lo necesitamos para leer título y descripción. */
+    private static String primerTexto(GtfsRtJsonDto.TranslatedString texto) {
+        if (texto == null || texto.getTranslation() == null) return null;
+        for (GtfsRtJsonDto.Translation t : texto.getTranslation()) {
+            if (t != null && t.getText() != null && !t.getText().isBlank()) return t.getText().trim();
+        }
+        return null;
     }
 }

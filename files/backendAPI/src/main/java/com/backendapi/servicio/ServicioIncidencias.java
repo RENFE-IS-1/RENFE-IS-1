@@ -8,6 +8,7 @@ import com.backendapi.modelo.TipoIncidenciaUsuario;
 import com.backendapi.modelo.Usuario;
 import com.backendapi.repositorio.DeclaracionIncidenciaRepository;
 import com.backendapi.repositorio.IncidenciaRepository;
+import modelo.AvisoOficial;
 import modelo.Linea;
 import modelo.Viaje;
 import repositorio.RedTransporte;
@@ -18,11 +19,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,6 +39,9 @@ import java.util.regex.Pattern;
  * trenes de una misma línea llevan MIN_RETRASO_SEGUNDOS o más de retraso, se registra una
  * incidencia por retraso en esa línea (criterio 2). Si se sigue detectando no se duplica
  * (criterio 3) y, cuando deja de detectarse, se cierra con su hora de fin (criterio 4).
+ *
+ * Parte 2: avisos oficiales de Renfe. Cada aviso del feed de alertas se registra como incidencia
+ * de cada línea afectada (criterio 1), sin duplicarse, y se cierra cuando sale del feed.
  *
  * Incidencias declaradas por viajeros: un VIAJERO declara una incidencia en una línea eligiendo un
  * tipo de una lista cerrada. Las declaraciones de varios viajeros sobre la misma línea y el mismo
@@ -53,6 +62,18 @@ public class ServicioIncidencias {
 
     /** Nombre comercial de una línea de Cercanías dentro de un trip_id, p. ej. "C3" o "C4a". */
     private static final Pattern PATRON_LINEA = Pattern.compile("(C\\d+[a-z]?)", Pattern.CASE_INSENSITIVE);
+
+    /** Tipo que se guarda en las incidencias de avisos oficiales: el feed de Renfe no manda título. */
+    static final String TIPO_AVISO_OFICIAL = "AVISO_OFICIAL";
+
+    /** Longitud máxima de la descripción de una incidencia: la misma que su columna en Incidencia. */
+    static final int MAX_DESCRIPCION = 2000;
+
+    /** Hashtags del principio de los avisos de Renfe, p. ej. "#MadC3 #MadC4 "; la línea ya se guarda aparte. */
+    private static final Pattern HASHTAGS_INICIALES = Pattern.compile("^(\\s*#\\S+)+\\s*");
+
+    /** Zona horaria de los avisos: Renfe da la hora de inicio en segundos UTC y se guarda en hora de Madrid. */
+    private static final ZoneId MADRID = ZoneId.of("Europe/Madrid");
 
     /** Longitudes máximas de los textos del viajero: las mismas que las columnas de DeclaracionIncidencia. */
     static final int MAX_ESPECIFICACION = 200;
@@ -162,6 +183,105 @@ public class ServicioIncidencias {
      */
     static String nombreComercial(String linea) {
         return "C" + linea.substring(1).toLowerCase();
+    }
+
+    /**
+     * Registra los avisos oficiales de la última descarga del feed de alertas de Renfe como incidencias
+     * de las líneas afectadas (US-017, criterio 1). Se guarda una incidencia por cada aviso y línea:
+     * si ya existe activa se actualiza y no se duplica (criterio 3), y las de avisos que ya no están
+     * en el feed se cierran con su hora de fin (criterio 4). Se llamará en cada actualización.
+     *
+     * Si la última descarga de alertas ha fallado no se cambia nada, para no cerrar avisos por un
+     * fallo de la API. Los avisos con hora de inicio futura (p. ej. obras anunciadas) aún no se
+     * registran: empezarán a contar cuando llegue esa hora.
+     *
+     * @param ahora momento de la revisión
+     */
+    @Transactional
+    public void registrarAvisosOficiales(LocalDateTime ahora) {
+        if (!red.isIncidenciasTiempoRealActivas()) return;
+
+        // 1. Crear o actualizar una incidencia por cada aviso vigente y cada línea afectada.
+        Set<String> vigentes = new HashSet<>();
+        for (AvisoOficial aviso : red.getAvisosOficiales()) {
+            LocalDateTime inicio = inicioDeAviso(aviso, ahora);
+            if (inicio.isAfter(ahora)) continue;
+            String descripcion = descripcionDeAviso(aviso);
+
+            for (String linea : lineasDeAviso(aviso)) {
+                vigentes.add(claveAviso(aviso.id(), linea));
+                Optional<Incidencia> existente = repositorio.findByIdExternoAndLineaAndFinIsNull(aviso.id(), linea);
+                if (existente.isPresent()) {
+                    Incidencia incidencia = existente.get();
+                    incidencia.registrarNuevaDeteccion(ahora, descripcion);
+                    repositorio.save(incidencia);
+                } else {
+                    repositorio.save(new Incidencia(linea, TIPO_AVISO_OFICIAL, descripcion,
+                            OrigenIncidencia.AVISO_OFICIAL, aviso.id(), inicio));
+                }
+            }
+        }
+
+        // 2. Cerrar las incidencias de avisos oficiales que ya no aparecen en el feed.
+        for (Incidencia incidencia : repositorio.findByOrigenAndFinIsNull(OrigenIncidencia.AVISO_OFICIAL)) {
+            if (!vigentes.contains(claveAviso(incidencia.getIdExterno(), incidencia.getLinea()))) {
+                incidencia.finalizar(ahora);
+                repositorio.save(incidencia);
+            }
+        }
+    }
+
+    /**
+     * Averigua las líneas de Madrid a las que afecta un aviso (p. ej. "C3", "C4a").
+     * Lo necesitamos para guardar el aviso en cada línea afectada. Primero usa las rutas (route_id)
+     * del aviso; si no trae rutas, usa las líneas que pasan por sus estaciones. Las rutas que no
+     * están en la red (otros núcleos de Cercanías) se ignoran, porque la red solo carga Madrid.
+     */
+    private Set<String> lineasDeAviso(AvisoOficial aviso) {
+        Set<String> lineas = new LinkedHashSet<>();
+        for (String routeId : aviso.routeIds()) {
+            Linea linea = red.getLinea(routeId);
+            if (linea != null) anadirNombre(lineas, linea);
+        }
+        if (aviso.routeIds().isEmpty()) {
+            for (String stopId : aviso.stopIds()) {
+                for (Linea linea : red.getLineasEnEstacion(stopId)) anadirNombre(lineas, linea);
+            }
+        }
+        return lineas;
+    }
+
+    /** Añade el nombre comercial de una línea a un conjunto si lo tiene; lo usa lineasDeAviso. */
+    private static void anadirNombre(Set<String> lineas, Linea linea) {
+        if (linea.getShortName() != null && !linea.getShortName().isBlank()) lineas.add(linea.getShortName().trim());
+    }
+
+    /**
+     * Hora de inicio de un aviso en hora de Madrid, o "ahora" si Renfe no la indica.
+     * Lo necesitamos para guardar como inicio de la incidencia la hora real en que empezó (criterio 5).
+     */
+    private static LocalDateTime inicioDeAviso(AvisoOficial aviso, LocalDateTime ahora) {
+        if (aviso.inicioEpoch() == null) return ahora;
+        return LocalDateTime.ofInstant(Instant.ofEpochSecond(aviso.inicioEpoch()), MADRID);
+    }
+
+    /**
+     * Texto de la incidencia a partir del aviso: título (si lo hay) y descripción, sin los hashtags del
+     * principio y recortado a la longitud de la columna. Lo necesitamos para que el viajero lea un
+     * texto limpio y para que un aviso muy largo no haga fallar el guardado.
+     */
+    static String descripcionDeAviso(AvisoOficial aviso) {
+        String texto = aviso.descripcion() == null ? "" : HASHTAGS_INICIALES.matcher(aviso.descripcion()).replaceFirst("").trim();
+        if (aviso.titulo() != null && !aviso.titulo().isBlank()) {
+            texto = texto.isEmpty() ? aviso.titulo().trim() : aviso.titulo().trim() + ": " + texto;
+        }
+        if (texto.isEmpty()) texto = "Aviso oficial de Renfe";
+        return texto.length() > MAX_DESCRIPCION ? texto.substring(0, MAX_DESCRIPCION) : texto;
+    }
+
+    /** Clave aviso + línea; la necesitamos para saber qué incidencias de avisos siguen en el feed. */
+    private static String claveAviso(String idExterno, String linea) {
+        return idExterno + "|" + linea;
     }
 
     /**

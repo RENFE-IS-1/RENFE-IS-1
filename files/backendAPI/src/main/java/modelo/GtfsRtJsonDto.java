@@ -58,11 +58,45 @@ public class GtfsRtJsonDto {
         private TranslatedString headerText;
         @JsonProperty("description_text") @JsonAlias("descriptionText")
         private TranslatedString descriptionText;
+        /** Rutas o estaciones afectadas por el aviso (US-017: para saber a qué líneas afecta). */
+        @JsonProperty("informed_entity") @JsonAlias("informedEntity")
+        private List<EntitySelector> informedEntity;
+        /** Periodos en los que el aviso está vigente (US-017: para guardar su hora de inicio). */
+        @JsonProperty("active_period") @JsonAlias("activePeriod")
+        private List<TimeRange> activePeriod;
 
         public TranslatedString getHeaderText() { return headerText; }
         public void setHeaderText(TranslatedString headerText) { this.headerText = headerText; }
         public TranslatedString getDescriptionText() { return descriptionText; }
         public void setDescriptionText(TranslatedString descriptionText) { this.descriptionText = descriptionText; }
+        public List<EntitySelector> getInformedEntity() { return informedEntity; }
+        public void setInformedEntity(List<EntitySelector> informedEntity) { this.informedEntity = informedEntity; }
+        public List<TimeRange> getActivePeriod() { return activePeriod; }
+        public void setActivePeriod(List<TimeRange> activePeriod) { this.activePeriod = activePeriod; }
+    }
+
+    /** Elemento afectado por un aviso: una ruta (route_id) o una estación (stop_id). */
+    public static class EntitySelector {
+        @JsonProperty("route_id") @JsonAlias("routeId")
+        private String routeId;
+        @JsonProperty("stop_id") @JsonAlias("stopId")
+        private String stopId;
+
+        public String getRouteId() { return routeId; }
+        public void setRouteId(String routeId) { this.routeId = routeId; }
+        public String getStopId() { return stopId; }
+        public void setStopId(String stopId) { this.stopId = stopId; }
+    }
+
+    /** Periodo de vigencia de un aviso, en segundos desde 1970 (UTC). Renfe solo suele mandar start. */
+    public static class TimeRange {
+        private Long start;
+        private Long end;
+
+        public Long getStart() { return start; }
+        public void setStart(Long start) { this.start = start; }
+        public Long getEnd() { return end; }
+        public void setEnd(Long end) { this.end = end; }
     }
 
     public static class TranslatedString {
